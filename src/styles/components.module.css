@@ -1,0 +1,45 @@
+/* nav　がなぜかエラーになる。HTML5に対応してないのかな？？
+ nav {
+  //s 位置を指定するモード 
+  position: fixed;
+  // 下の幅を０に
+  bottom: 0;
+  // 高さを１００％に
+  width: 100%;
+} */
+
+.undermenu {
+  display: table;
+  width: 100%;
+  /*要素の黒丸なし*/
+  list-style: none;
+  padding-left: 0;
+}
+
+/* undermenuクラス内のli要素に適用 */
+.undermenu > li {
+  float: auto;
+  display: table-cell;
+}
+
+.username {
+  color: pink;
+}
+
+.userprofile {
+  color: skyblue;
+}
+
+.topmenu {
+  display: table;
+  width: 100%;
+  /*要素の黒丸なし*/
+  list-style: none;
+  padding-left: 0;
+}
+
+/* undermenuクラス内のli要素に適用 */
+.topmenu > li {
+  float: auto;
+  display: table-cell;
+}
