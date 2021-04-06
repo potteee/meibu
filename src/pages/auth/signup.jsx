@@ -24,7 +24,7 @@ const SignUp = () => {
 
   //useCallbackを使った方がパフォーマンスが良い
   const inputUserName = useCallback((event)=> {
-      setUsername(event.target.value)
+      setUserName(event.target.value)
   },[setUserName]);
 
   const inputEmail = useCallback((event)=> {
@@ -41,7 +41,7 @@ const SignUp = () => {
 
   const accountButtonClicked = () => {
     //   console.log('bbbb');
-      dispatch(signUp(username,email,password,confirmPassword));
+      dispatch(signUp(userName,email,password,confirmPassword));
     //   console.log('aaaa');
       router.push('/auth/signin');
   }
@@ -54,7 +54,7 @@ const SignUp = () => {
           <div className="module-spacer--medium" />
           <TextInput
               fullWidth={true} label={"ユーザー名"} multiline={false} required={true}
-              rows={1} value={username} type={"text"} onChange={inputUserName}
+              rows={1} value={userName} type={"text"} onChange={inputUserName}
           />
           <TextInput
               fullWidth={true} label={"メールアドレス"} multiline={false} required={true}

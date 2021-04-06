@@ -168,6 +168,7 @@ export const signUp = ( userName, email, password, confirmPassword) => {
                     const uid = user.uid
                     const timestamp = FirebaseTimestamp.now()
                     const workId = "99"
+                    const workName = "dummyData"
 
                     const userInitialData = {
                         uid: uid,
@@ -190,7 +191,9 @@ export const signUp = ( userName, email, password, confirmPassword) => {
                     }
 
                     const postedWorksId = {
-                        workId : workId, //ダミー値
+                        workId : workId, //ダミー値(99)
+                        workName : workName, //dummyData
+                        uid : uid,
                         created_at: timestamp,
                         updated_at: timestamp,
                         isPublic: false,
@@ -233,7 +236,7 @@ export const signUp = ( userName, email, password, confirmPassword) => {
     }
 }
 
-export const addPostedWork = ( uid , workId ) => {
+export const addPostedWork = ( uid , workId ,workName) => {
     return async (dispatch) => {
         //updateは連想配列に代入して変数をupdate()内に指定しないとエラーになる・・・。
         // 配列のアップデート記法はこれ。
@@ -246,8 +249,12 @@ export const addPostedWork = ( uid , workId ) => {
 
         const postedWorksId = {
             workId : workId,
+            workName : workName,
+            uid : uid,
             created_at: timestamp,
-            updated_at:timestamp,  
+            updated_at:timestamp,
+            isPublic: false,
+            isSpoiler: false,
         }
 
         await privateUserRef.doc(uid)

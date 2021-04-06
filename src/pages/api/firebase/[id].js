@@ -1,49 +1,54 @@
-import React from 'react'
+import React from 'react' 
+import firebase from 'firebase/app';
 
 const handler = async({ query: { id } }, res) => {
-  var admin = require('firebase-admin');
-
   console.log("apiStart");
+  var admin = require("firebase-admin");
+  console.log(id+"+id api");
+
+  //// admin SDK
   const serviceAccount = require('../../../../meibu-86430-firebase-adminsdk-n1251-724c587f22.json')
 
-  console.log(process.env.FIREBASE_CONFIG);
+  const initialized = admin.apps.some(app => app.name === "adminSDK");
   
-  const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG
-    )
-  adminConfig.credential = admin.credential.cert(serviceAccount)
-  var app = admin.initializeApp(adminConfig);
-  const db = admin.firestore();
-  // const handler = async({ query: { id } }, res) => {
-    // (async() => {
-//   console.log(db+"+ db ")
-// db.collection('users').doc(id).get()
-        await db.collection('users').doc(id).get()
-        .then(snapshot => {
-          let dbData = snapshot.data()
-          console.log(dbData+"+data collection")
-        //   setUserSex(dbData.userSex)
-        //   setUserProfile(dbData.userProfile)
-        //   setUserImage(dbData.userImage)
+  if(initialized){
+    // admin.app()
+    admin.app('adminSDK')
+  } else {
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+    }, 'adminSDK');
+  }
+  
+  const FirestoreSDK = admin.app('adminSDK').firestore();
 
-        // DB access
-          const apiWorksName = { names: dbData.userProfile,id: id }
-          // const apiWorksName = { names: 'apiWorksName',id: id }
-          // const filtered = people.filter((p) => p.id === id)
-          
-          // console.log(JSON.stringify(res)+"+res")
-          // console.log(JSON.stringify(req)+"+req")
-          
-          
-        // Redux access
-          console.log(JSON.stringify(apiWorksName)+"+apiWorksName")
-          res.status(200).json(apiWorksName)
-        })
-        .catch((error) => {
-        //   alert('Get users DB fail')
-        // throw new Error(error)
-        res.json({ error });
-        })  
-    // })
+  // DB access
+  await FirestoreSDK
+  .collectionGroup('postedWorksId')
+  // .where('workId','!=','99')
+  .where('workId','!=',null)
+  .where('uid','==',id)
+  .get()
+  .then(snapshot => {
+    console.log(JSON.stringify(snapshot)+"snapshot")
+
+    const workIdMap = snapshot.docs.map(map => map.data()["workName"])
+
+    // FirestoreSDK
+    // .collection('works')
+    // .where('workId','==','99')
+
+    const apiWorksName = { names: workIdMap, id: id }
+
+    console.log(JSON.stringify(apiWorksName)+"+apiWorksName")
+    res.status(200).json(apiWorksName)
+  // Redux access => cannot
+  })
+  .catch((error) => {
+  throw new Error(error)
+  res.json({ error });
+  })
 } 
 
-export default handler
+export default handler 
+// export const FirestoreSDK = admin.app('adminSDK').firestore();

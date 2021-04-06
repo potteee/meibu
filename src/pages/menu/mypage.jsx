@@ -38,6 +38,27 @@ const fetcher = async (url) => {
   return data
 }
 
+// function useWorkData () {
+//   const { query } = useRouter()
+
+//   const { data, error } = useSWR(
+//     query.id && `../api/firebase/${query.id}`, fetcher
+//   // const {data, error } = useSWR(['../api/firebase',22], (url,id) => fetcher(url, {id}),
+//     // イニシャル値を設定してしまうと、レンダリング直後に読みに行ってくれない。
+//     // ,{ initialData: {names: 'SWRinitialWorksName',id: '99'}},
+//     // { revalidateOnMount: true },
+//     // { refreshWhenOffline: true }
+//     ,{
+//     revalidateOnFocus: false,
+//     revalidateOnReconnect: false
+//     }
+//   )
+//   return {
+//     data : data,
+//     error : error
+//   }
+// }
+
 const MyPage = () => {
 // export default function MyPage() {
   const selector = useSelector((state) => state)
@@ -97,7 +118,6 @@ const MyPage = () => {
 //     }
 // }
 
-
   // const users = getUserId(selector)
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
   console.log(JSON.stringify(selector)+"+selector@mypage")
@@ -123,11 +143,15 @@ const MyPage = () => {
     // ,{ initialData: {names: 'SWRinitialWorksName',id: '99'}},
     // { revalidateOnMount: true },
     // { refreshWhenOffline: true }
+    ,{
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false
+    }
   )
   // const tmpWorkName = data
   
   if (error) return <div>Failed to load</div>
-  // if (!data) return <div>Loading...</div>
+  if (!data) return <div>Loading...nodata...</div>
 
   // setWorksName(data.names)
 
@@ -183,44 +207,54 @@ const MyPage = () => {
           throw new Error(error)
         })
         
-        db.collection('privateUsers').doc(uid2)
-        .collection('postedWorksId').where('workId','!=','99').get()
-        .then((snapshot) => {
-          console.log(snapshot+"+snapshot.data()")
-          if(snapshot.empty){
-            setWorkIds("投稿した作品はまだありません！")
-            console.log("投稿した作品はありません！")
-          }else{
-            let tmpWorkIds = []
-            snapshot.forEach((doc) => {
-              // tmpWorkIds.push(doc.data().workId) →データ取りたいときはこれ。
-              tmpWorkIds.push(doc.id)
-              // list.push(snapshot.data())
-              console.log(doc.id+"+doc.id")
-            })
-            
-            
-            console.log(JSON.stringify(snapshot.data)+"+snapshot.doc")
-            console.log(JSON.stringify(snapshot.empty)+"+snapshot.empty")
-            console.log(JSON.stringify(tmpWorkIds)+"+tmpWorkIds")
-            
-          }
+        // db.collection('privateUsers').doc(uid2)
+        // .collection('postedWorksId').where('workId','!=','99').get()
+        // .then((snapshot) => {
+        //   console.log(snapshot+"+snapshot.data()")
+        //   if(snapshot.empty){
+        //     setWorkIds("投稿した作品はまだありません！")
+        //     console.log("投稿した作品はありません！")
+        //   }else{
+        //     let tmpWorkIds = []
+        //     snapshot.forEach((doc) => {
+        //       // tmpWorkIds.push(doc.data().workId) →データ取りたいときはこれ。
+        //       tmpWorkIds.push(doc.id)
+        //       // list.push(snapshot.data())
+        //       console.log(doc.id+"+doc.id")
+        //     })            
+        //     console.log(JSON.stringify(snapshot.data)+"+snapshot.doc")
+        //     console.log(JSON.stringify(snapshot.empty)+"+snapshot.empty")
+        //     console.log(JSON.stringify(tmpWorkIds)+"+tmpWorkIds")
+        //   }
           
-          if(data){
-            setWorksName(data.names)
-          }
-          
-        })
-        .catch((error) => {
-          alert('Get worksId DB fail')
-          throw new Error(error)
-        })
+        // .catch((error) => {
+        //   alert('Get worksId DB fail')
+        //   throw new Error(error)
+        // })
+
+        //
+        // if(data.nam){
+        // const {data ,error} = useWorkData()
+
+        // if (error) return <div>Failed to load</div>
+        if(data){
+          let tmpWorksId = []
+          data.names.forEach((doc) => {
+            tmpWorksId.push(doc+",")
+          })
+          setWorksName(tmpWorksId)
+        } else {
+          setWorksName("投稿した作品はまだありません！")
+          console.log("投稿した作品はありません！")
+        }
+        // setWorksName(data.names)
+
+        // console.log(error+"+api error")
+        // console.log(JSON.stringify(data)+"+api tmpWorkName")
       }
     })()
   // },[selector])
   },[selector,data,fetcher])
-
-
 
   if(selector.users.isSignedIn === false){
     //ブラウザ更新時orログインから飛んできたときに'/'に行かないように。

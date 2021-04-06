@@ -101,7 +101,7 @@ const Post = () => {
     await dispatch(postWInfoCreate(workId,workName,workScore,uid))
 
     // 登録したユーザのDB情報に登録した作品のWorkIdを追加
-    await dispatch(addPostedWork(uid,workId))
+    await dispatch(addPostedWork(uid,workId,workName))
 
     router.push({
       pathname: '/post/'+id+'/works/'+workName,

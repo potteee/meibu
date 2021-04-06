@@ -9,5 +9,15 @@ const firebaseConfigPrm = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 }
 
+// const firebase = require('firebase');
 
-export default firebaseConfigPrm
+// const FIREBASE_CONFIG = {
+  //     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  //     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  //     storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  // };
+  
+  // export const Firebase = firebase.initializeApp(FIREBASE_CONFIG);
+  
+  export default firebaseConfigPrm
+  
