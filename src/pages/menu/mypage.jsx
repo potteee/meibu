@@ -17,16 +17,7 @@ import mypageEdit from './mypageEdit'
 
 //API
 import useSWR,{ mutate } from 'swr'
-// const fetcher = (url,{id}) => fetch(url,{id}).then((res) => res.json())
-// const fetcher = async(url,{id}) => await fetch(url,{id}).then((res) => res.json())
-// const fetcher = () => fetch('../api/firebase')
 
-////　プリフェッチしようと思ったがqueryの値を使わなきゃいけないから難しそう・・・？
-// function prefetch () {
-//   mutate('/api/data', fetch('/api/data').then(res => res.json()))
-//   // the second parameter is a Promise
-//   // SWR will use the result when it resolves
-// }
 
 const fetcher = async (url) => {
   const res = await fetch(url)
@@ -37,28 +28,6 @@ const fetcher = async (url) => {
   }
   return data
 }
-
-// function useWorkData () {
-//   const { query } = useRouter()
-
-//   const { data, error } = useSWR(
-//     query.id && `../api/firebase/${query.id}`, fetcher
-//   // const {data, error } = useSWR(['../api/firebase',22], (url,id) => fetcher(url, {id}),
-//     // イニシャル値を設定してしまうと、レンダリング直後に読みに行ってくれない。
-//     // ,{ initialData: {names: 'SWRinitialWorksName',id: '99'}},
-//     // { revalidateOnMount: true },
-//     // { refreshWhenOffline: true }
-//     ,{
-//     revalidateOnFocus: false,
-//     revalidateOnReconnect: false
-//     }
-//   )
-//   return {
-//     data : data,
-//     error : error
-//   }
-// }
-
 const MyPage = () => {
 // export default function MyPage() {
   const selector = useSelector((state) => state)
@@ -94,29 +63,6 @@ const MyPage = () => {
 
   /// display worksName
   const [worksName ,setWorksName] = useState("initialWorksName")
-  
-//   function hoge(){
-//     //　Object||ArrayならリストにINして循環参照チェック
-//     var checkList = [];
-//     return function(key,value){
-//         // 初回用
-//         if( key==='' ){
-//             checkList.push(value);
-//             return value;
-//         }
-//         // Node,Elementの類はカット
-//         // if( value instanceof Node ){
-//         //     return undefined;
-//         // }
-//         // Object,Arrayなら循環参照チェック
-//         if( typeof value==='object' && value!==null ){
-//             return checkList.every(function(v,i,a){
-//                 return value!==v;
-//             }) ? value: undefined;
-//         }
-//         return value;       
-//     }
-// }
 
   // const users = getUserId(selector)
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
@@ -135,10 +81,11 @@ const MyPage = () => {
   }
   // useSWR start
   
-  //　ここにapiで作品名を検索する機能を入れたい。
-  const { data, error } = useSWR(
+  //　ここにapiで作品名を検索する機能を入れたい。→入れた
+  //  ★初期ログイン直後に読み込んでくれるようにしないと。
+  const { data , error } = useSWR(
     () => query.id && `../api/firebase/${query.id}`, fetcher
-  // const {data, error } = useSWR(['../api/firebase',22], (url,id) => fetcher(url, {id}),
+    // const {data, error } = useSWR(['../api/firebase',22], (url,id) => fetcher(url, {id}),
     // イニシャル値を設定してしまうと、レンダリング直後に読みに行ってくれない。
     // ,{ initialData: {names: 'SWRinitialWorksName',id: '99'}},
     // { revalidateOnMount: true },
@@ -149,11 +96,6 @@ const MyPage = () => {
     }
   )
   // const tmpWorkName = data
-  
-  if (error) return <div>Failed to load</div>
-  if (!data) return <div>Loading...nodata...</div>
-
-  // setWorksName(data.names)
 
   console.log(error+"+api error")
   console.log(JSON.stringify(data)+"+api tmpWorkName")
@@ -163,6 +105,7 @@ const MyPage = () => {
   // setUid(getUserId(selector))
   // useEffectの中でdb呼び出すときはこの書き方（ifをつかう）
   // if使わないとapp呼び出されたときにレンダリングされてuidがないからエラーになる。
+  // 手前でreturnsしてもダメ
   useEffect(() => {
     (async() => {
       //Redux
@@ -181,7 +124,7 @@ const MyPage = () => {
         // await setUid(await getUserId(selector))
         console.log(uid2+"+uid useEffect in")
         
-        db.collection('users').doc(uid2).get()
+        await db.collection('users').doc(uid2).get()
         .then(snapshot => {
           let dbData = snapshot.data()
           console.log(dbData+"+data collection email")
@@ -194,7 +137,7 @@ const MyPage = () => {
           throw new Error(error)
         })
         
-        db.collection('privateUsers').doc(uid2).get()
+        await db.collection('privateUsers').doc(uid2).get()
         .then(snapshot => {
           let dbData = snapshot.data()
           console.log(dbData+"+data collection email")
@@ -235,7 +178,7 @@ const MyPage = () => {
         //
         // if(data.nam){
         // const {data ,error} = useWorkData()
-
+    
         // if (error) return <div>Failed to load</div>
         if(data){
           let tmpWorksId = []
@@ -244,17 +187,20 @@ const MyPage = () => {
           })
           setWorksName(tmpWorksId)
         } else {
-          setWorksName("投稿した作品はまだありません！")
+          // setWorksName("投稿した作品はまだありません！")
           console.log("投稿した作品はありません！")
         }
+      }
         // setWorksName(data.names)
 
         // console.log(error+"+api error")
         // console.log(JSON.stringify(data)+"+api tmpWorkName")
-      }
     })()
   // },[selector])
   },[selector,data,fetcher])
+
+  if (error) return <div>Failed to load</div>
+  // if (!data) return <div>Loading...</div>
 
   if(selector.users.isSignedIn === false){
     //ブラウザ更新時orログインから飛んできたときに'/'に行かないように。

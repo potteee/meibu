@@ -26,7 +26,7 @@ const handler = async({ query: { id } }, res) => {
   await FirestoreSDK
   .collectionGroup('postedWorksId')
   // .where('workId','!=','99')
-  .where('workId','!=',null)
+  .where('workId','!=','99')
   .where('uid','==',id)
   .get()
   .then(snapshot => {
