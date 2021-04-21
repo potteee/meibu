@@ -1,8 +1,10 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import Header from '../components/header'
-import Footer from '../components/footer'
+import Link from 'next/link'
 import {db} from '../firebase/index'
 import {useDispatch,useSelector} from 'react-redux'
+
+import Header from '../components/header'
+import Footer from '../components/footer'
 
 // import {fetchProducts} from '../reducks/users/operations'
 
@@ -16,7 +18,6 @@ const News = () => {
   const [workInfo, setWorkInfo] = useState({})
   const [workData, setWorkData] = useState([]);
   let worksData = [];
-
 
   useEffect(() => {
     (async() => {
@@ -63,13 +64,16 @@ const News = () => {
         <a>
             <li>
                 {/* {oneWorkData.id} */}
+              <Link href="/post/[id]" 
+              as={`/post/${oneWorkData.workId}`}>
                 <h2>作品名：{oneWorkData.workName}</h2>
-                <p>　スコア　　：{oneWorkData.workScore}</p>
-                {/* {oneWorkData.workCategoryCheckBox != [] &&( */}
-                <p>　ジャンル　：{oneWorkData.workCategoryCheckBox.map(cate => (
-                <span>{cate} </span>
-              ))}</p>
-                
+              </Link>
+              <p>　スコア　　：{oneWorkData.workScore}</p>
+
+              <p>　ジャンル　：{oneWorkData.workCategoryCheckBox.map(cate => ( 
+              <span>{cate} </span>
+              ))}
+              </p>
             </li>
         </a>
       ))}

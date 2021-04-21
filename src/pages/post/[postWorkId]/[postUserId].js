@@ -1,19 +1,21 @@
+// この位置に人ごとの作品採点情報をおく
+// [postUserId].js
+
+
 import { useRouter } from 'next/router'
 import Header from '../../../components/header'
 import Footer from '../../../components/footer'
 
-const Comment = () => {
+const postUserId = () => {
   const router = useRouter()
-  const { id, comment } = router.query
 
   return (
     <>
       <Header />
-      <h1>Post: {id}</h1>
-      <h1>Comment: {comment}</h1>
+
       <Footer />
     </>
   )
 }
 
-export default Comment
+export default postUserId

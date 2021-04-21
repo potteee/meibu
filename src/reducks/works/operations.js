@@ -47,7 +47,6 @@ export const postWorkCreate = (workName,workScore,workCategoryCheckBox,workComme
         
         // workInitialData.workScore.push(workScore)
         // workInitialData.workCategoryCheckBox = (workCategoryCheckBox)
-
         // workInitialData.workComment.push(workComment)
         // workInitialData.workInfo.push(workInfo)
         // workInitialData.updatorId.push(updatorId)

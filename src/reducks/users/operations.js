@@ -17,6 +17,7 @@ import { AddAlarmOutlined } from "@material-ui/icons";
 
 const usersRef = db.collection('users')
 const privateUserRef = db.collection('privateUsers')
+// const router = useRouter()
 // const usersRefAdmiin = admindb.collection('users')
 
 //何やってんのかよくわからん
@@ -61,7 +62,7 @@ export const listenAuthState = () => {
     }
 }
 
-export const signIn = (email,password) => {
+export const signIn = (email,password,router) => {
     // const router = useRouter()    
     return async (dispatch) => {
         //Validation
@@ -110,11 +111,16 @@ export const signIn = (email,password) => {
                         // console.log(JSON.stringify(foo_cookies)+"+cookies@operations@signin aft")
                         console.log(cookiesDocument+"+cookiesDocument@operations@signin aft2")
                         console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin after")
-                        // console.log(JSON.parse(JSON.stringify(foo_cookies)).userStatus+"cookies@operations@signin aft2")
-                        // console.log(JSON.stringify(JSON.parse(JSON.stringify(foo_cookies)).userStatus)+"cookies@operations@signin aft3")
-                        // console.log(JSON.parse(JSON.stringify(JSON.parse(JSON.stringify(foo_cookies)).userStatus))+"cookies@operations@signin aft3")
-                        // console.log(JSON.stringify(JSON.parse(JSON.stringify(JSON.parse(JSON.stringify(foo_cookies)).userStatus)))+"cookies@operations@signin aft3")
+
+                        //Someoneもう使ってないかも...?
+                        router.push({
+                            pathname: '/menu/mypage',
+                            query: { name: 'Someone' }
+                        })
                     })
+            }).catch(() => {
+                alert('アカウントもしくはパスワードに誤りがあります。')
+                // throw new Error(error)
             })
         
     }
@@ -136,18 +142,26 @@ export const signOut = () => {
     }
 }
 
-export const signUp = ( userName, email, password, confirmPassword) => {
+export const signUp = ( userName, email, password, confirmPassword,router) => {
     // const router = useRouter() ///ここダメって言われる。onClickのなかはだめ
     return async (dispatch) => {
+        var regexAtto = new RegExp(/^[a-zA-Z0-9!¥_¥]*$/)
+        // var regexAtto = new RegExp(/^[a-zA-Z0-9!-/:-¥[-`{-~]*$/)
+
         //Validation
         // if (username === "" || email=== "" || password === "" || confirmPassword === ""){
+        if(!regexAtto.test(userName)){
+            alert("ユーザ名に_(アンダーバー)以外の記号は使えません")
+            return false
+        }
+
         if(!isValidRequiredInput(email, password, confirmPassword)) {
             alert("必須項目が未入力です");
-            return false;
+            return false
         }
         if (password !== confirmPassword){
             alert("パスワードが一致しません。もう一度お試しください。");
-            return false;
+            return false
         }
         if (!isValidEmailFormat(email)) {
             // dispatch(hideLoadingAction());
@@ -217,12 +231,14 @@ export const signUp = ( userName, email, password, confirmPassword) => {
                         throw new Error(error)
                     })
 
+                    //サブコレクション(↓)はコレクションを作った後に追加
                     await privateUserRef.doc(uid)
                     .collection('postedWorksId')
                     .doc(workId)
                     .set(postedWorksId)
                     .then(() => {
                         console.log("posted initial db success!!!")
+                        router.push('/auth/signin')
                     }).catch((error) => {
                         alert('posted inital DB fail')
                         throw new Error(error)

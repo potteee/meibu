@@ -13,6 +13,8 @@ import {updateUsers} from '../../reducks/users/operations'
 
 import { useRouter } from 'next/router'
 
+// import mypageConfirm from './mypageConfirm'
+
 import Header from '../../components/header'
 import Footer from '../../components/footer'
 
@@ -38,9 +40,9 @@ const mypageEdit = () => {
   // private
   const [userLiveIn ,setUserLiveIn] = useState(""),
         [userWebsite ,setUserWebsite] = useState(""),
+        [userBirthday, setUserBirthday] = useState(""),
         [workIds ,setWorkIds] = useState([]),
         [userEmail, setUserEmail] = useState("")
-
 
   let usersChangeFlag = false
 
@@ -68,6 +70,16 @@ const mypageEdit = () => {
     setUserLiveIn(event.target.value)
     setPrivateChangeFlag(true)
   },[setUserLiveIn])
+
+  const inputUserWebsite = useCallback((event) => {
+    setUserWebsite(event.target.value)
+    setPrivateChangeFlag(true)
+  },[setUserWebsite])
+
+  const inputUserBirthday = useCallback((event) => {
+    setUserBirthday(event.target.value)
+    setPrivateChangeFlag(true)
+  },[setUserBirthday])
 
 
   let uid2 = getUserId(selector)
@@ -109,10 +121,11 @@ const mypageEdit = () => {
           await db.collection('privateUsers').doc(uid2).get()
           .then(snapshot => {
             let data = snapshot.data()
-            console.log(data+"+data collection email")
+            console.log(JSON.stringify(data)+"+data collection email")
             setUserEmail(data.email)
             setUserLiveIn(data.userLiveIn)
             setUserWebsite(data.userWebsite)
+            setUserBirthday(data.userBirthday)
           })
           .catch((error) => {
             alert('Get privateUsers DB fail')
@@ -148,26 +161,6 @@ const mypageEdit = () => {
   },[selector])//selectorを指定することでページ更新（リロード）時に再読み込みしてくれる。
 
   const changeButtonClicked = async() => {
-  //   const userInitialData = {
-  //     uid: uid,
-  //     userName: userName,
-  //     userSex: 0,//0:未登録、1:男、2:女
-  //     userProfile: "未登録",
-  //     userImage : "未登録",
-  //     role: "customer",
-  //   }
-    
-  //   const privateUserInitialData = {
-  //       uid : uid,
-  //       email: userEmail,
-  //       // postWorksId: [],
-  //       userLiveIn: "未登録",
-  //       userWebsite: "未登録",
-  //       userBirthday: "未登録",
-  //       created_at: timestamp,
-  //       updated_at: timestamp,   
-  //     }
-
     if(publicChangeFlag == true){
       db.collection('users').doc(uid2).update(
         {userName: userName,
@@ -182,11 +175,13 @@ const mypageEdit = () => {
           alert('users update DB fail')
           throw new Error(error)
       })
+    } else {
+        console.log("Didnt update publicUserData ")
+        // router.push('/menu/mypage')
     }
 
     if(privateChangeFlag == true){
       const timestamp = FirebaseTimestamp.now()
-
       db.collection('privateUsers').doc(uid2).update(
         {email: userEmail,
          userLiveIn: userLiveIn,
@@ -196,11 +191,20 @@ const mypageEdit = () => {
          updated_at: timestamp,  
         }
       ).then(() => {
-          console.log("priveteUsers update db success!!!")
+        //　大した情報保存してないから確認画面は廃止
+        // mypageConfirm(userName,userSex,userProfile,userImage,
+        // userLiveIn,userWebsite,userBirthday)
+
+        console.log("priveteUsers update db success!!!")
+
+        router.push('/menu/mypage')
       }).catch((error) => {
-          alert('PrivateUsers update DB fail')
-          throw new Error(error)
+        alert('PrivateUsers update DB fail')
+        throw new Error(error)
       })
+    } else {
+        console.log("Didnt update privateUserdata ")
+        router.push('/menu/mypage')
     }
   }
 
@@ -238,15 +242,22 @@ const mypageEdit = () => {
         fullWidth={true} label={"お住まい"} multiline={false} required={false}
         rows={1} value={userLiveIn} type={"text"} onChange={inputUserLiveIn}
       />
+      <TextInput
+        fullWidth={true} label={"Website/SNS"} multiline={false} required={false}
+        rows={1} value={userWebsite} type={"text"} onChange={inputUserWebsite}
+      />
+      <TextInput
+        fullWidth={true} label={"Birthday"} multiline={false} required={false}
+        rows={1} value={userBirthday} type={"text"} onChange={inputUserBirthday}
+      />
       <div className="center">
         <PrimaryButton
-            label={"変更内容を確認"}
+            label={"変更を確定"}
             onClick={changeButtonClicked}
         />  
       </div>
 
     </div>
-
     <Footer />
     </>
   )

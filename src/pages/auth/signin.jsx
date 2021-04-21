@@ -3,7 +3,7 @@ import { PrimaryButton, TextInput } from "../../styles/UIkit"
 
 import {useDispatch,useSelector} from "react-redux";
 import {signIn} from "../../reducks/users/operations";
-import {push} from "connected-react-router"
+// import {push} from "connected-react-router"
 
 import { useRouter } from 'next/router'
 
@@ -30,16 +30,16 @@ const SignIn = () => {
 
   const loginButtonClicked = async() => {
   // const loginButtonClicked = () => {
-    await dispatch(signIn(email, password))
+    await dispatch(signIn(email, password, router))
 
     // console.log(uid+"+uid@SignIn@pages")
     // JSON.stringify({uid});
     // router.push('/menu/mypage')
 
-    router.push({
-      pathname: '/menu/mypage',
-      query: { name: 'Someone' }
-  })
+    // router.push({
+    //   pathname: '/menu/mypage',
+    //   query: { name: 'Someone' }
+    // })
 
     // dispatch(MyPage()) //page配下にいくときはdispatchダメ
   }

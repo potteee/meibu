@@ -23,6 +23,7 @@ const handler = async({ query: { id } }, res) => {
   const FirestoreSDK = admin.app('adminSDK').firestore();
 
   // DB access
+  // collectionGroupを使ったsubCollectionの検索はadminSDKにしかできない。
   await FirestoreSDK
   .collectionGroup('postedWorksId')
   // .where('workId','!=','99')

@@ -17,24 +17,25 @@ const searchResult = () => {
     const router = useRouter()
     const dispatch = useDispatch()
     const selector = useSelector((state) => state)
-    const { w } = router.query
+    const { searchWord } = router.query
 
     const [workName, setWorkName] = useState("")
     const [checkBoxState, setCheckBoxState] = useState([])
     const [media, setMedia] = useState([])
 
-    console.log(w+"=w")
+    console.log(searchWord+"=searchWord")
 
     useEffect(() => {
       (async() => {
         console.log("useEffect Out")
-        if(w != undefined) {
+        if(searchWord != undefined) {
           console.log("useEffect Done")
 
           // 完全一致の作品しか持ってこれない。
           // 曖昧一致のライブラリあると思うので、
           // 採用する。
-          await db.collection('works').doc(w).get()
+          // というか現状workIdのフィールドをサーチしているので要修正
+          await db.collection('works').doc(searchWord).get()
             .then(doc => {
               data = doc.data()
               // setWorkData(data)
@@ -55,12 +56,13 @@ const searchResult = () => {
             // })
         }
       })()
-    },[w])
+    },[searchWord])
 
     const createNewWork = async() => {
       router.push({
-        pathname: '/post/index',
-        query: {w: w}
+        pathname: '/post/posting',
+        // pathname: '/post/index',
+        query: {searchWord: searchWord}
       })
       
     }
@@ -69,12 +71,13 @@ const searchResult = () => {
       <>
         <Header />
         <h2>検索結果ページ</h2>
-
         {/* render時にworkDataGetが読み込まれるうようにしたい */}
         {workName != "" && (
             <div>
               <h2>作品名: {workName}</h2>
               <h2>カテゴリ：{checkBoxState}</h2>
+
+              <a>こちらの作品を編集する　ボタン</a>
             </div>
         )}
         {workName == "" && (
@@ -83,6 +86,10 @@ const searchResult = () => {
             <div>お探しの作品が見つかりません.</div>
 
             <PrimaryButton label={"新しい作品として登録する"} onClick={createNewWork} />
+
+            <div> もしかして・・・ </div>
+
+            <a>曖昧検索結果一覧 </a>
 
         </div>
         )}

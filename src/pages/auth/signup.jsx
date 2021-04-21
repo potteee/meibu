@@ -40,10 +40,16 @@ const SignUp = () => {
   },[setConfirmPassword]);
 
   const accountButtonClicked = () => {
-    //   console.log('bbbb');
-      dispatch(signUp(userName,email,password,confirmPassword));
-    //   console.log('aaaa');
-      router.push('/auth/signin');
+    //   const signUpResult = dispatch(signUp(userName,email,password,confirmPassword));
+      dispatch(signUp(userName,email,password,confirmPassword,router));
+    //   .then((response) => {
+    //       console(response+"+responsessssss")
+    //   })
+    //   console.log(JSON.stringify(signUpResult)+"+signUpResult");
+    　// console.log('aaaa');
+    //   if(signUpResult != false){
+    //       router.push('/auth/signin');
+    //   } 
   }
 
   return (
@@ -53,7 +59,7 @@ const SignUp = () => {
           <h2 className="u-text__headline u-text-center">アカウント登録</h2>
           <div className="module-spacer--medium" />
           <TextInput
-              fullWidth={true} label={"ユーザー名"} multiline={false} required={true}
+              fullWidth={true} label={"ユーザー名(記号は _ のみ)"} multiline={false} required={true}
               rows={1} value={userName} type={"text"} onChange={inputUserName}
           />
           <TextInput

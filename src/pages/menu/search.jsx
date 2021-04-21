@@ -24,7 +24,7 @@ const Search = () => {
   const searchButtonClicked = () => {
     router.push({
       pathname: '/menu/searchResult',
-      query: {w: searchWord}
+      query: {searchWord: searchWord}
     })
   }
 

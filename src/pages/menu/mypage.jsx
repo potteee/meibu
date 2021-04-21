@@ -32,7 +32,7 @@ const MyPage = () => {
 // export default function MyPage() {
   const selector = useSelector((state) => state)
   const userID = parseCookies().userID
-  // const router = useRouter()
+  const router = useRouter()
   const { query } = useRouter()
 
   // const { name,id } = router.query
@@ -57,6 +57,7 @@ const MyPage = () => {
   const [userEmail ,setUserEmail] = useState("")
   const [userLiveIn ,setUserLiveIn] = useState("")
   const [userWebsite ,setUserWebsite] = useState("")
+  const [userBirthday ,setUserBirthday] = useState("")
 
   /// postedWorkId
   const [workIds ,setWorkIds] = useState([])
@@ -69,11 +70,6 @@ const MyPage = () => {
   console.log(JSON.stringify(selector)+"+selector@mypage")
   // console.log(name+"+query.name@mypage")
   console.log(query.id+"+query.id@mypage")
-
-  // const safeStringify = require('fast-safe-stringify')
-
-  // console.log(JSON.stringify({db})+"+ db ")
-  // console.log(safeStringify({db})+"+ db ")
   
   const noLoginState = () => {
     console.log("start noLoginState")
@@ -144,52 +140,31 @@ const MyPage = () => {
           setUserEmail(dbData.email)
           setUserLiveIn(dbData.userLiveIn)
           setUserWebsite(dbData.userWebsite)
+          setUserBirthday(dbData.userBirthday)
         })
         .catch((error) => {
           alert('Get privateUsers DB fail')
           throw new Error(error)
         })
-        
-        // db.collection('privateUsers').doc(uid2)
-        // .collection('postedWorksId').where('workId','!=','99').get()
-        // .then((snapshot) => {
-        //   console.log(snapshot+"+snapshot.data()")
-        //   if(snapshot.empty){
-        //     setWorkIds("投稿した作品はまだありません！")
-        //     console.log("投稿した作品はありません！")
-        //   }else{
-        //     let tmpWorkIds = []
-        //     snapshot.forEach((doc) => {
-        //       // tmpWorkIds.push(doc.data().workId) →データ取りたいときはこれ。
-        //       tmpWorkIds.push(doc.id)
-        //       // list.push(snapshot.data())
-        //       console.log(doc.id+"+doc.id")
-        //     })            
-        //     console.log(JSON.stringify(snapshot.data)+"+snapshot.doc")
-        //     console.log(JSON.stringify(snapshot.empty)+"+snapshot.empty")
-        //     console.log(JSON.stringify(tmpWorkIds)+"+tmpWorkIds")
-        //   }
-          
-        // .catch((error) => {
-        //   alert('Get worksId DB fail')
-        //   throw new Error(error)
-        // })
-
-        //
-        // if(data.nam){
-        // const {data ,error} = useWorkData()
     
         // if (error) return <div>Failed to load</div>
-        if(data){
-          let tmpWorksId = []
-          data.names.forEach((doc) => {
-            tmpWorksId.push(doc+",")
-          })
-          setWorksName(tmpWorksId)
-        } else {
-          // setWorksName("投稿した作品はまだありません！")
-          console.log("投稿した作品はありません！")
-        }
+        let tmpWorksId = []
+
+        if(data) {
+          if(data.names != undefined ||data.names != ""){
+            console.log(data.names+"+data.names")
+            data.names.forEach((doc) => {
+              tmpWorksId.push(doc+",")
+            })
+            setWorksName(tmpWorksId)
+            console.log("投稿した作品は"+tmpWorksId+"です");
+          } else {
+            tmpWorksId.push("投稿した作品はありません")
+            setWorksName(tmpWorksId)
+            // setWorksName("投稿した作品はまだありません！")
+            console.log("投稿した作品はありません！")
+          }
+        } 
       }
         // setWorksName(data.names)
 
@@ -246,8 +221,11 @@ const MyPage = () => {
       {/* <p>userEmail : {emailFunc}</p> */}
 
       <h3>プライベート情報</h3>
-      <p>お住まい : {userLiveIn}</p>
       <p>メール : {userEmail}</p>
+      <p>お住まい : {userLiveIn}</p>
+      <p>Web/SNS : {userWebsite}</p>
+      <p>誕生日 : {userBirthday}</p>
+      
       {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
       <p>投稿した作品 : {worksName}</p>
 

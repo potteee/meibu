@@ -1,23 +1,27 @@
-//oneWork.js
+import React, {useState, useEffect, useCallback} from 'react'
+import { PrimaryButton, TextInput ,CheckIconBox} from "../../../styles/UIkit"
+import FormGroup from '@material-ui/core/FormGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-import React, {useState, useEffect, useCallback} from 'react';
-import { PrimaryButton, TextInput } from "../../../../styles/UIkit"
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import Header from '../../../../components/header'
-import Footer from '../../../../components/footer'
-import {db} from '../../../../firebase/index'
+import Header from '../../../components/header'
+import Footer from '../../../components/footer'
+import {db} from '../../../firebase/index'
+import { parseCookies } from 'nookies'
+import { set } from 'immutable'
 import {useDispatch,useSelector} from 'react-redux'
 
+import {getUserId, getWorkId} from "../../../reducks/users/selectors";
+// import { postWorkCreate } from '../../../reducks/works/operations'
+import { addPostedWork } from '../../../reducks/users/operations'
 
-import { getWorkData } from '../../../../reducks/works/operations'
-import { DiscFull } from '@material-ui/icons';
-
-const oneWork = () => {
+//作品情報閲覧ページ
+const Post = () => {
     const router = useRouter()
     const dispatch = useDispatch()
     const selector = useSelector((state) => state)
-    const { id, onework ,workId} = router.query
+    // const { id, onework ,workId} = router.query
 
     // const [workData, setWorkData] = useState({})
     const [workName, setWorkName] = useState("")
@@ -25,15 +29,21 @@ const oneWork = () => {
     const [workComment, setWorkComment] = useState("")
     const [checkBoxState, setCheckBoxState] = useState([])
     const [workInfo, setWorkInfo] = useState("")
-    let data = undefined
+    // let data = undefined
+
+    const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
+    console.log(query+"+query")
+    const workId = /^\/post\//.test(query) ? query.split('\/post\/')[1] : ""
 
     console.log(workId+"=workId")
+    // console.log(id+"=id")
+    // console.log(onework+"=onework")
 
     const noWorkId = useCallback(() => {
       dispatch(router.push({
         pathname: '/',
         // pathname: '/post/'+id+'/works/'+workName+'-'+workIdLeft3,
-        query: {history: "onework"}
+        query: {history: "post"}
       }))
     },[])
 
@@ -66,26 +76,30 @@ const oneWork = () => {
         console.log("useEffect Out")
         if(workId != undefined) {
           console.log("useEffect Done")
+          console.log(workId+"+workId effect")
           await db.collection('works').doc(workId).get()
           // db.collection('works').doc(workId).get()
             .then(doc => {
-              data = doc.data()
-              // setWorkData(data)
-              setWorkName(data.workName)
+              let data = doc.data()
+              if (data){
+                console.log(JSON.stringify(data)+"+data JSONstr")
+                // setWorkData(data)
+                setWorkName(data.workName)
 
-              // let sum = 0;
-              // for(let i=0; i<data.workScore.length; i++){
-              //   sum += data.workScore[i]
-              // }
+                // let sum = 0;
+                // for(let i=0; i<data.workScore.length; i++){
+                //   sum += data.workScore[i]
+                // }
 
-              setWorkScore(data.workScore)
-              // setWorkScore(sum/data.workScore.length)
-              setWorkComment(data.workComment)
-              setCheckBoxState(data.workCategoryCheckBox)
-              
-              console.log(JSON.stringify(data)+"+works data")
-              console.log(JSON.stringify(checkBoxState)+"+works checkBoxState")
-              // console.log(JSON.stringify(workData)+"+workData")
+                setWorkScore(data.workScore)
+                // setWorkScore(sum/data.workScore.length)
+                setWorkComment(data.workComment)
+                setCheckBoxState(data.workCategoryCheckBox)
+                
+                console.log(JSON.stringify(data)+"+works data")
+                console.log(JSON.stringify(checkBoxState)+"+works checkBoxState")
+                // console.log(JSON.stringify(workData)+"+workData")
+              }
             })
             .catch((error) => {
               alert('works DB get fail')
@@ -94,27 +108,6 @@ const oneWork = () => {
         }
       })()
     },[workId])
-    
-    // const workDataGet = async() => {
-      //   return await dispatch(getWorkData(workId))
-      // } 
-      
-      //stateはindexのpushで渡ってきた引数
-      // const workId = location.state.workId
-
-    // const data = async() => {
-    //   return await dispatch(getWorkData(workId))
-    // }
-
-    // setWorkData(data)
-      
-    // if(data){
-    //   console.log(data+"+works data")
-    //   console.log(JSON.stringify(workData)+"+workData")
-    // } else {
-    //   console.log("data is not defined")
-    //   console.log(JSON.stringify(workData)+"+workData")
-    // }
 
     return (
       <>
@@ -144,6 +137,11 @@ const oneWork = () => {
               {/* <p>-----</p>
               <h2>comment:</h2>
               <h2>ーこの作品が読めるアプリー</h2> */}
+              <h2>同じジャンルの人気作</h2>
+
+              <h2>この作品を評価した人</h2>
+              
+
             </div>
           )}
         
@@ -155,4 +153,4 @@ const oneWork = () => {
     )
 }
 
-export default oneWork
+export default Post
