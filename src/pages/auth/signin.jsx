@@ -16,8 +16,14 @@ const SignIn = () => {
   const router = useRouter()
   // const uid = useSelector(state => state)
   const { hist } = router.query
+  const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
 
-  const [email, setEmail] = useState("")
+  const tmpEmail = /\?email=/.test(query) ? query.split('email=')[1] : ""
+
+  console.log(query+"+query")
+  console.log(decodeURIComponent(tmpEmail)+"+tmpEmail")
+
+  const [email, setEmail] = useState(decodeURIComponent(tmpEmail))
   const [password, setPassword] = useState("")
 
   const inputEmail = useCallback((e) => {

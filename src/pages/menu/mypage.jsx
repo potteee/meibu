@@ -80,7 +80,7 @@ const MyPage = () => {
   //　ここにapiで作品名を検索する機能を入れたい。→入れた
   //  ★初期ログイン直後に読み込んでくれるようにしないと。
   const { data , error } = useSWR(
-    () => query.id && `../api/firebase/${query.id}`, fetcher
+    () => query.id && `../api/firebase/postedWorksId/${query.id}`, fetcher
     // const {data, error } = useSWR(['../api/firebase',22], (url,id) => fetcher(url, {id}),
     // イニシャル値を設定してしまうと、レンダリング直後に読みに行ってくれない。
     // ,{ initialData: {names: 'SWRinitialWorksName',id: '99'}},
@@ -149,22 +149,27 @@ const MyPage = () => {
     
         // if (error) return <div>Failed to load</div>
         let tmpWorksId = []
+        let dataFlag = false
 
         if(data) {
-          if(data.names != undefined ||data.names != ""){
+          // if(data.names != undefined || data.names != "" || data.names.length != 0){
+          if(data.names.length != 0){
+            dataFlag = true
             console.log(data.names+"+data.names")
             data.names.forEach((doc) => {
-              tmpWorksId.push(doc+",")
+              tmpWorksId.push(doc+" ")
             })
             setWorksName(tmpWorksId)
-            console.log("投稿した作品は"+tmpWorksId+"です");
-          } else {
+            console.log("投稿した作品は "+tmpWorksId+" です");
+          } 
+        } 
+        if(dataFlag == false){
             tmpWorksId.push("投稿した作品はありません")
             setWorksName(tmpWorksId)
             // setWorksName("投稿した作品はまだありません！")
             console.log("投稿した作品はありません！")
-          }
-        } 
+        }
+
       }
         // setWorksName(data.names)
 

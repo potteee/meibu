@@ -4,9 +4,13 @@ import { db, FirebaseTimestamp } from "../../firebase/index";
 /// Redux no だからここに書いている
 
 
-const  postWInfoCreate = (workId,workName,workScore,uid,userName) => {
+const  postWInfoCreate = (workName,workScore,uid,userName,checkBoxState) => {
     return async (dispatch) => {
-        const wInfoRef = db.collection('wInfo').doc(workId)
+        const wInfoRef = db.collection('wInfo').doc()
+
+        //自動生成されたIDを取得
+        const workId = wInfoRef.id
+
         const assessmentRef = wInfoRef.collection('assessment').doc(uid)
     
         const timestamp = FirebaseTimestamp.now()
@@ -18,9 +22,9 @@ const  postWInfoCreate = (workId,workName,workScore,uid,userName) => {
             workName : workName,
             winfoCount : 1, //作成時の初期値なので1
             winfoScore : workScore,
-            winfoInfomation : "initialInfomation",
-            winfoCategory : "initialCategory",
-            winfoCreator : "initialCreator",
+            winfoInfomation : "no data at infomation",
+            winfoCategory : checkBoxState,
+            winfoCreator : "no data at Creator",
             winfoSeries : [],
             winfoMedia : [],
             winfoPublisher : [],
@@ -37,10 +41,12 @@ const  postWInfoCreate = (workId,workName,workScore,uid,userName) => {
         var assessment = {
             uid　: uid,
             userName : userName,
+            assessmentCategory : checkBoxState,
             updateTime : {},
             workScore : workScore ? workScore : -1, // -1は初期値
             worksLikedCount : 0,
             assessmentComment : {},
+            worksComment : {},
         }
 
         // wInfoData.editor[uid] = new Date()
@@ -54,7 +60,7 @@ const  postWInfoCreate = (workId,workName,workScore,uid,userName) => {
         console.log(JSON.stringify(wInfoData)+"+wInfoData")
 
         // wInfo作成
-        wInfoRef
+        await wInfoRef
         // .update(wInfoData)
         .set(wInfoData,
             { merge : true })
@@ -66,11 +72,12 @@ const  postWInfoCreate = (workId,workName,workScore,uid,userName) => {
         })
 
         // assessment作成
-        assessmentRef
+        return assessmentRef
         .set(assessment,
             { merge : true })
         .then(() => {
             console.log("assessmentRef updating or chreating")
+            return workId
         }).catch((error) => {
             alert('assessment DB fail')
             throw new Error(error)

@@ -107,14 +107,15 @@ const Posting = () => {
         goCheckBoxState.push("None")
       }
   
-      // ユーザに紐づく作品データをDBに登録
-      const workId = await dispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,uid))
+      // ユーザに紐づく作品データをDBに登録(redux/works(db))
+    //   const workId = await dispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,uid))
   
       // 作品の固有データをDBに登録
-      // 新規登録なのでScoreは入力値のまま　*-*-
-      await dispatch(postWInfoCreate(workId,workName,workScore,uid,userName,checkBoxState))
+      // 新規登録なのでScoreは入力値のまま　*-*- (wInfo)
+      const workId = await dispatch(postWInfoCreate(workName,workScore,uid,userName,goCheckBoxState))
   
-      // 登録したユーザのDB情報に登録した作品のWorkIdを追加
+      console.log(workId+"+workId posting m")
+      // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
       await dispatch(addPostedWork(uid,workId,workName))
   
       router.push({

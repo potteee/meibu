@@ -22,7 +22,7 @@ const News = () => {
   useEffect(() => {
     (async() => {
       // 全ドキュメントを取得
-      await db.collection('works').get()
+      await db.collection('wInfo').get()
       // db.collection('works').doc(workId).get()
         .then(snapshot => {
           snapshot.forEach((doc) => {
@@ -68,9 +68,8 @@ const News = () => {
               as={`/post/${oneWorkData.workId}`}>
                 <h2>作品名：{oneWorkData.workName}</h2>
               </Link>
-              <p>　スコア　　：{oneWorkData.workScore}</p>
-
-              <p>　ジャンル　：{oneWorkData.workCategoryCheckBox.map(cate => ( 
+              <p>　スコア　　：{oneWorkData.winfoScore}</p>
+              <p>　ジャンル　：{oneWorkData.winfoCategory.map(cate => ( 
               <span>{cate} </span>
               ))}
               </p>

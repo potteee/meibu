@@ -1,6 +1,8 @@
+// 現状呼び出されてない
+
 //redux-thunkを使うとこのようにasync/awaitを使える様になる。
 import {postWorkCreateAction} from "./actions";
-import { db, FirebaseTimestamp } from "../../firebase/index";
+// import { db, FirebaseTimestamp } from "../../firebase/index";
 
 
 export const postWorkCreate = (workName,workScore,workCategoryCheckBox,workComment,updatorId) => {
@@ -22,16 +24,6 @@ export const postWorkCreate = (workName,workScore,workCategoryCheckBox,workComme
         }
         const timestamp = FirebaseTimestamp.now()
 
-        /////////////** workIDを生成しているが、dbgetするときに自動生成する方法に変更する。
-        // var l = 8;
-        // // 生成する文字列に含める文字セット
-        // var c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        // var cl = c.length;
-        // var workId = "";
-        // for(var i=0; i<l; i++){
-        //     workId += c[Math.floor(Math.random()*cl)];
-        // }
-
         //このデータから定期的にデータを抽出して”表示するデータ”を作る
         let workInitialData = {
             uniquId : workId.substr(0,10)+updatorId.substr(0,10),//ユニークキーがないから作る　投稿者と作品ごとに作る
@@ -44,14 +36,7 @@ export const postWorkCreate = (workName,workScore,workCategoryCheckBox,workComme
             updatorId: updatorId,
             updateTime: timestamp,
         }
-        
-        // workInitialData.workScore.push(workScore)
-        // workInitialData.workCategoryCheckBox = (workCategoryCheckBox)
-        // workInitialData.workComment.push(workComment)
-        // workInitialData.workInfo.push(workInfo)
-        // workInitialData.updatorId.push(updatorId)
-        // workInitialData.updateTime.push(timestamp)
-
+    
         console.log(JSON.stringify(workInitialData)+"+workInitialData")
         
         return workRef.set(workInitialData)

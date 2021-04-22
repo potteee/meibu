@@ -155,7 +155,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
             return false
         }
 
-        if(!isValidRequiredInput(email, password, confirmPassword)) {
+        if(!isValidRequiredInput(userName,email, password, confirmPassword)) {
             alert("必須項目が未入力です");
             return false
         }
@@ -238,7 +238,12 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                     .set(postedWorksId)
                     .then(() => {
                         console.log("posted initial db success!!!")
-                        router.push('/auth/signin')
+                        router.push({
+                            pathname: '/auth/signin',
+                            query: {
+                                email : email,
+                            }}
+                            )
                     }).catch((error) => {
                         alert('posted inital DB fail')
                         throw new Error(error)
@@ -248,6 +253,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                 // dispatch(hideLoadingAction())
                 alert('アカウント登録に失敗しました。もう１度お試しください。')
                 throw new Error(error)
+                return false
             })
     }
 }

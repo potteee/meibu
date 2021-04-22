@@ -17,7 +17,6 @@ try {
 
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         console.log(firebaseConfigPrm.apiKey+"-firebase-index-noexist-after");
-
     }
 
 } catch (error) {

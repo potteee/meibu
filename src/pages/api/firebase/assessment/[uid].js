@@ -1,13 +1,13 @@
 import React from 'react' 
 import firebase from 'firebase/app';
 
-const handler = async({ query: { id } }, res) => {
+const handlerAssessmeent = async({ query: { uid } }, res) => {
   console.log("apiStart");
   var admin = require("firebase-admin");
-  console.log(id+"+id api");
+  console.log(uid+"+uid api");
 
   //// admin SDK
-  const serviceAccount = require('../../../../meibu-86430-firebase-adminsdk-n1251-724c587f22.json')
+  const serviceAccount = require('../../../../../meibu-86430-firebase-adminsdk-n1251-724c587f22.json')
 
   const initialized = admin.apps.some(app => app.name === "adminSDK");
   
@@ -25,24 +25,17 @@ const handler = async({ query: { id } }, res) => {
   // DB access
   // collectionGroupを使ったsubCollectionの検索はadminSDKにしかできない。
   await FirestoreSDK
-  .collectionGroup('postedWorksId')
+  .collectionGroup('assessment')
   // .where('workId','!=','99')
-  .where('workId','!=','99')
-  .where('uid','==',id)
+  // .where('workId','!=','99')
+  // .where('uid','==',id)
   .get()
   .then(snapshot => {
-    console.log(JSON.stringify(snapshot)+"snapshot")
+    // console.log(JSON.stringify(snapshot)+"snapshot")
 
-    const workIdMap = snapshot.docs.map(map => map.data()["workName"])
+    const assessmentData = snapshot.docs.map(map => map.data())
 
-    // FirestoreSDK
-    // .collection('works')
-    // .where('workId','==','99')
-
-    const apiWorksName = { names: workIdMap, id: id }
-
-    console.log(JSON.stringify(apiWorksName)+"+apiWorksName")
-    res.status(200).json(apiWorksName)
+    res.status(200).json(assessmentData)
   // Redux access => cannot
   })
   .catch((error) => {
@@ -51,5 +44,5 @@ const handler = async({ query: { id } }, res) => {
   })
 } 
 
-export default handler 
+export default handlerAssessmeent
 // export const FirestoreSDK = admin.app('adminSDK').firestore();
