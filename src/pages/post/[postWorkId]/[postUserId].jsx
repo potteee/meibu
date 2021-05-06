@@ -1,0 +1,160 @@
+// この位置に人ごとの作品採点情報をおく
+// [postUserId].js
+import React, {useState, useEffect, useCallback} from 'react'
+import { useRouter } from 'next/router'
+import Header from '../../../components/header'
+import Footer from '../../../components/footer'
+
+import {useDispatch, useSelector} from "react-redux";
+import {getUserId, getUserName, getRole} from '../../../reducks/users/selectors'
+
+import useSWR,{ mutate } from 'swr'
+
+//ユーザごとの作品ページを検索
+const fetcher = async (url) => {
+  // const res = await fetch(url,{
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   },
+  //   body : JSON.stringify(postWorkId)
+  // })
+  const res = await fetch(url)
+  const data = await res.json()
+  console.log(data+"+data of fetcher")
+
+  if (res.status !== 200) {
+    throw new Error(data.message)
+  }
+  return data
+}
+
+const handlerPostUserId = () => {
+  const selector = useSelector((state) => state)
+  const router = useRouter()
+  const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
+  console.log(query+"+query at postUserId")
+  const postWorkId = /^\/post\//.test(query) ? query.split('\/')[2] : "no data query"
+  const postUserId = /^\/post\//.test(query) ? query.split('\/')[3] : "no data query"
+  console.log(postUserId+"+postUserId")
+  console.log(postWorkId+"+postWorkId")
+
+  const [userName, setUserName] = useState("")
+  const [workName, setWorkName] = useState("")
+  const [workMedia, setWorkMedia] = useState("")
+  const [workScore, setWorkScore] = useState("")
+  const [workCategory, setWorkCategory] = useState([])
+  const [workTag, setWorkTag] = useState([])
+  const [workComment ,setWorkComment] = useState("")
+  const [workUpdateTime, setWorkUpdateTime] = useState("")
+  const [assessmentComment, setAssessmentComment] = useState([""])
+  const [assessmentLike, setAssessmentLike] = useState(0)
+
+  const postIdCheck = () => {
+    console.log("postIdCheck start")
+    if(!postWorkId){
+      return false 
+    } else {
+      if(!postUserId){
+        return false
+      } else {
+        if(postWorkId == "[postWorkId]"){
+          console.log(postWorkId+"false postWorkId")
+          return false
+          } else {
+            if (postUserId == "[postUserId]"){
+              console.log(postUserId+"false postUserId")
+              return false
+            } else {
+              console.log("return true")
+              return true
+          }
+        }
+      }
+    }
+  } 
+  
+  const { data , error } = useSWR(
+      // `../../api/firebase/assessmentSearchUser/${postUserId}_${postWorkId}`, fetcher,
+      () => postIdCheck() ? `../../api/firebase/assessmentSearchUser/${postWorkId}_${postUserId}`:null, fetcher,
+      // () => postUserId && [`../../api/firebase/assessmentSearchUser/${postUserId}`,postWorkId.json()], fetcher,
+      
+      // postUserId ? [`../../api/firebase/assessmentSearchUser/${postUserId}`,postWorkId] 
+      // : null ,(url, postWorkId) => query(url,{postWorkId})) , 
+      
+      // [`../../api/firebase/assessmentSearchUser/${postUserId}`,postWorkId],
+      // (url, postWorkId) => fetcher(url, {postWorkId}),
+      {
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false
+      }
+  )
+  console.log(error+"+api error")
+  console.log(JSON.stringify(data)+"+api assessmentSearchUser")
+
+  useEffect(() => {
+    (async() => {
+      console.log("useEffect Out")
+      //Redux
+
+      if(postWorkId != "no data query" && postUserId != "no data query") {
+        console.log("useEffect Done")
+        if(data) {
+          // if(data.userName != undefined || data.userName != "") {
+          if(data.length != 0) {
+            console.log(JSON.stringify(data)+"+data[0]@JSON")
+            setUserName(data.userName)
+            setWorkName(data.workName)
+            setWorkMedia(data.winfoMedia)
+            setWorkScore(data.winfoScore)
+            setWorkCategory(data.winfoCategory)
+            setWorkTag(data.workTag)
+            setWorkComment(data.workComment)
+            setWorkUpdateTime(new Date(data.updateTime._seconds * 1000).toLocaleString("ja"))
+            setAssessmentComment(data.assessmentComment)
+            setAssessmentLike(data.worksLikedCount)
+
+          } else {
+            console.log("data.userName no exist")
+          }
+        } else {
+          console.log("data no exist")
+        }
+      }
+    })()
+  },[data])
+
+
+  return (
+    <>
+      <Header />
+
+      <h2>ユーザごとの作品評価ページ</h2>
+      <h3>評価者(Link)：{userName}</h3>
+      <h3>作品名(L)：{workName}</h3>
+      <h4>メディア：{workMedia}</h4>
+      <h3>採点：{workScore}</h3>
+      <h3>カテゴリ：{
+        workCategory.map(mapWorkCategory => (
+          <a> {mapWorkCategory} </a>
+        ))
+        }
+      </h3>
+      <h3>タグ：{
+        workTag.map(mapWorkTag => (
+        <a>{mapWorkTag} </a>
+        ))
+      }
+            
+      </h3>
+      <h3>作品に対するコメント：{workComment}</h3>
+      <h3>投稿日時：{workUpdateTime}</h3>
+      <br/>
+      <h3>評価に対するコメント：{assessmentComment}</h3>
+      <h3>いいね：{assessmentLike}</h3>
+
+      <Footer />
+    </>
+  )
+}
+
+export default handlerPostUserId

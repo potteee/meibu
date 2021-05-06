@@ -24,33 +24,33 @@ const News = () => {
       // 全ドキュメントを取得
       await db.collection('wInfo').get()
       // db.collection('works').doc(workId).get()
-        .then(snapshot => {
-          snapshot.forEach((doc) => {
-            worksData.push(
-              Object.assign({
-                id: doc.id
-              }, doc.data())
-            );
-          });
-          console.log(JSON.stringify(worksData)+"+worksData");
-          // const workDataTmp = worksData.map((oneWorkData) => 
-          // <li key={oneWorkData.id}>
-          //     {oneWorkData.workName}
-          //   </li>
-          // )
-          // console.log(JSON.stringify(workDataTmp)+"+workDataTmp")
-      
-          setWorkData(worksData);
-          
-          // setWorkName(worksData[0].workName)
-          // setWorkScore(worksData[0].workScore)
-          // setWorkComment(worksData[0].workComment)
-          // console.log(JSON.stringify(workData)+"+workData")
-        })
-        .catch((error) => {
-          alert('works DB get fail')
-          throw new Error(error)
-        })
+      .then(snapshot => {
+        snapshot.forEach((doc) => {
+          worksData.push(
+            Object.assign({
+              id: doc.id
+            }, doc.data())
+          );
+        });
+        console.log(JSON.stringify(worksData)+"+worksData");
+        // const workDataTmp = worksData.map((oneWorkData) => 
+        // <li key={oneWorkData.id}>
+        //     {oneWorkData.workName}
+        //   </li>
+        // )
+        // console.log(JSON.stringify(workDataTmp)+"+workDataTmp")
+    
+        setWorkData(worksData);
+        
+        // setWorkName(worksData[0].workName)
+        // setWorkScore(worksData[0].workScore)
+        // setWorkComment(worksData[0].workComment)
+        // console.log(JSON.stringify(workData)+"+workData")
+      })
+      .catch((error) => {
+        alert('works DB get fail')
+        throw new Error(error)
+      })
     })();
   },[]);
 

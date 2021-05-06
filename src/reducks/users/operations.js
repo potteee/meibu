@@ -258,7 +258,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
     }
 }
 
-export const addPostedWork = ( uid , workId ,workName) => {
+export const addPostedWork = ( uid , workId ,workName,isPublic,isSpoiler) => {
     return async (dispatch) => {
         //updateは連想配列に代入して変数をupdate()内に指定しないとエラーになる・・・。
         // 配列のアップデート記法はこれ。
@@ -275,8 +275,8 @@ export const addPostedWork = ( uid , workId ,workName) => {
             uid : uid,
             created_at: timestamp,
             updated_at:timestamp,
-            isPublic: false,
-            isSpoiler: false,
+            isPublic: isPublic,
+            isSpoiler: isSpoiler,
         }
 
         await privateUserRef.doc(uid)

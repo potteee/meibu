@@ -22,6 +22,7 @@ import useSWR,{ mutate } from 'swr'
 const fetcher = async (url) => {
   const res = await fetch(url)
   const data = await res.json()
+  console.log(data+"+data of fetcher")
 
   if (res.status !== 200) {
     throw new Error(data.message)
@@ -52,8 +53,7 @@ const Post = () => {
   const [workFinish, setWorkFinish] = useState("")
   const [workImage, setWorkImage] = useState("")
 
-  const [assessmentUserName ,setAssessmentUserName] = useState([])
-
+  const [assessmentData ,setAssessmentData] = useState([{userName : "ini" , uid: "ini"}])
 
     // let data = undefined
 
@@ -63,9 +63,24 @@ const Post = () => {
 
   console.log(workId+"=workId")
 
+  const workIdCheck = () => {
+    console.log("workIdCheck start")
+    if(!workId){
+      return false 
+    } else {
+      if(workId == "[postWorkId]"){
+         console.log(workId+"false postWorkId")
+         return false
+      } else {
+        console.log("return true")
+        return true
+      }
+    }
+  }
+
 
   const { data , error } = useSWR(
-    () => workId && `../api/firebase/assessment/${workId}`, fetcher,
+    () => workIdCheck() ? `../api/firebase/assessment/${workId}` : null , fetcher,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false
@@ -111,23 +126,31 @@ const Post = () => {
               //assessment内データなのでAPIからとってくる必要ある・・・？
               // setWorkComment(data.workComment)
               // setWorkComment(data.assessment.)
-              let tmpAssessmentUserName = []
+              let tmpAssessmentData = []
 
+              //投稿者情報を取得（isPublic==true以外は除外) 
               if(data) {
                 // if(data.userName != undefined || data.userName != "") {
-                if(data.length != 0) {
-                  console.log(data.userName+"+data.uid")
+                // if(data.length != 0) {
+                  console.log(JSON.stringify(data[0])+"+data[0]@JSON")
+                  console.log(data.length+"+data.length")
+                  console.log(JSON.stringify(data)+"+data")
                   data.forEach((doc) => {
-                    tmpAssessmentUserName.push(doc.userName+" ")
+                    tmpAssessmentData.push(doc)
                   })
-                  setAssessmentUserName(tmpAssessmentUserName)
-                } else {
-                  console.log("data.userName no exist")
-                }
+                // } else {
+                //   tmpAssessmentData.push({userName : "非公開"})
+                //   console.log("data.userName no exist")
+                // }
+                setAssessmentData(tmpAssessmentData)
+                console.log(JSON.stringify(tmpAssessmentData)+"tmpAssessmentData@J")
+                console.log(JSON.stringify(assessmentData[0]) +"+assessmentData@J");
+                console.log(JSON.stringify(assessmentData[1]) +"+assessmentData@J1");
+                console.log(JSON.stringify(assessmentData)[0] +"+assessmentData@J");
+                console.log(assessmentData[0]+"+assessmentData");
               } else {
                 console.log("data no exist")
               }
-
             }
           })
           .catch((error) => {
@@ -142,7 +165,9 @@ const Post = () => {
     <>
       <Header />
       <h2>作品ページ</h2>
-        {workId != undefined && (
+{/*       {workId != undefined && ( */}
+       {( workId != undefined) && (
+//        {( workId != undefined && assessmentData.length != 0) && (
         <div>
           <h2>作品名: {workName}</h2>
           {/* {console.log(workData)} */}
@@ -158,7 +183,7 @@ const Post = () => {
           
           <h2>情報:{workInfo}</h2>
           <h2>category:{checkBoxState.map(cate => (
-            <span>{cate}/</span>
+            <span>{cate} </span>
           ))}</h2>
           <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2>
 
@@ -171,9 +196,25 @@ const Post = () => {
           <p>完結：{workFinish}</p>
           <p>画：{workImage}</p>
 
-          <h2>この作品を評価した人：{assessmentUserName}(評価ページにリンク（未））</h2>
-          
-            {/*    
+
+          <h2>この作品を評価した人</h2>
+          {(assessmentData[0].uid != "非公開") ? (
+            <ul>
+              {assessmentData.map(mapAssessmentData => (
+                <a>
+                  <li>
+                    <Link href="/post/[id]/[postUserId]" 
+                      as={`/post/${workId}/${mapAssessmentData.uid}`}>
+                      <h2>{mapAssessmentData.userName}</h2>
+                    </Link>
+                  </li>
+                </a>
+              ))}
+            </ul>
+          ) : (<a> 非公開iii </a>)
+          }
+
+          {/*    
             step2 
             <h2>ーこの作品が読めるアプリー</h2> 
             <h2>同じジャンルの人気作</h2>

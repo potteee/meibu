@@ -4,7 +4,17 @@ import { db, FirebaseTimestamp } from "../../firebase/index";
 /// Redux no だからここに書いている
 
 
-const  postWInfoCreate = (workName,workScore,uid,userName,checkBoxState) => {
+const  postWInfoCreate = (
+    workName,
+    workMedia,
+    workScore,
+    uid,
+    userName,
+    checkBoxState,
+    tagCheckBox,
+    workComment,
+    isPublic,
+    isSpoiler) => {
     return async (dispatch) => {
         const wInfoRef = db.collection('wInfo').doc()
 
@@ -26,9 +36,9 @@ const  postWInfoCreate = (workName,workScore,uid,userName,checkBoxState) => {
             winfoCategory : checkBoxState,
             winfoCreator : "no data at Creator",
             winfoSeries : [],
-            winfoMedia : [],
+            winfoMedia : workMedia,
             winfoPublisher : [],
-            // winfoCampany : [],
+            winfoCountry : "no data at country",
             winfoStart : [],
             winfoFinish : [],
             winfoImage : "",
@@ -44,13 +54,16 @@ const  postWInfoCreate = (workName,workScore,uid,userName,checkBoxState) => {
             assessmentCategory : checkBoxState,
             updateTime : {},
             workScore : workScore ? workScore : -1, // -1は初期値
+            workComment : workComment,
+            workTag : tagCheckBox,
+            isPublic : isPublic,
+            isSpoiler : isSpoiler,
             worksLikedCount : 0,
-            assessmentComment : {},
-            worksComment : {},
+            assessmentComment : [],
         }
 
         // wInfoData.editor[uid] = new Date()
-        assessment.updateTime[uid] = new Date()
+        assessment.updateTime = new Date()
 
         // var histories = {
             
