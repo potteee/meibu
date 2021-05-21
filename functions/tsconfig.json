@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "allowJs" : true,
+    "declaration" : false,
     "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -10,6 +12,6 @@
   },
   "compileOnSave": true,
   "include": [
-    "src"
+    "src/pages/api/firebase/allStringSearch/*"
   ]
 }

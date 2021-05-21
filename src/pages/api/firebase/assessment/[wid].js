@@ -42,28 +42,25 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
 
   .get()
   .then(snapshot => {
-    // console.log(JSON.stringify(snapshot)+"snapshot")
+    console.log(JSON.stringify(snapshot.docs)+"snapshot.docs@J")
+    let workData = []
+    let isEmpty = true
 
-  // コレクショングループ使用時
-  //  const assessmentData = snapshot.docs.map(map => map.data())
+    // if(JSON.stringify(snapshot.docs[0]._fieldsProto) != "{}"){
+    if(snapshot.docs.length != 0){
+      snapshot.docs.map(map => {
+        if(map.data()["uid"]){
+          workData.push({userName : map.data()["userName"], uid: map.data()["uid"]})
+          isEmpty = false
+        }
+      })
+    }
+    // }
+    
+    if(isEmpty){
+      workData.push({userName : "非公開" , uid: "非公開"})
+    }
 
-    console.log(JSON.stringify(snapshot.docs[0].data())+"+++++snapshot")
-    // console.log(JSON.stringify(snapshot[0].docs)+"+++++snapshot")
-    // console.log((s/napshot[0])+"+++++snapshot")
-    // console.log((snapshot.docs.data()["userName"])+"+++++snapshot")
-    // console.log((snapshot.docs["userName"])+"+++++snapshot")
-    // console.log(JSON.stringify(snapshot.docs.id)+"+++++snapshot")
-    // console.log(JSON.stringify(snapshot.docs.data()["userName"])+"+++++snapshot")
-    // console.log(snapshot.data()+"snapshot.data()")
-    let workData = [];
-
-    snapshot.docs.map(map => {
-      if(map.data()["isPublic"]){
-        workData.push({userName : map.data()["userName"], uid: map.data()["uid"]})
-      } else {
-        workData.push({userName : "非公開" , uid: "非公開"})
-      }
-    })
     console.log(workData+"++++workData")
     console.log(JSON.stringify(workData)+"++++workData")
 

@@ -35,33 +35,37 @@ const handlerAssessmeentSearchUser = async(req, res) => {
   
   const FirestoreSDK = admin.app('adminSDK').firestore();
 
+  console.log("start FirestoreSDK")
+
   //検索　Userごとの作品(wInfo->assessment)評価情報
   await FirestoreSDK
-  .collection('wInfo').doc(workId)
-  .collection('assessment').doc(userId)
+  .collection('users').doc(userId)
   .get()
   .then(snapshot => {
     console.log(JSON.stringify(snapshot)+"+snapshot@J")
-    // console.log(JSON.stringify(snapshot)+"+snapshot@JSON")
-    // console.log(snapshot.data().workName+"+snapshot.data().workName")
     FirestoreSDK
     .collection('wInfo').doc(workId)
     .get()
     .then(snapshot2 => {
       console.log(JSON.stringify(snapshot2)+"+snapshot2@J")
+      FirestoreSDK
+      .collection('privateUsers').doc(userId)
+      .collection('postedWorksId').doc(workId)
+      .get()
+      .then(snapshot3 => {
+        const result = {...(snapshot.data()),...(snapshot2.data()),...(snapshot3.data())}
 
-      const result = {...(snapshot.data()),...(snapshot2.data())}
-
-      console.log(result+"+++result")
-      console.log(JSON.stringify(result)+"+++result@JSON")
-      res.status(200).json(result)
-      // res.status(200).json({workName : snapshot.data().workName})
-        
+        console.log(result+"+++result")
+        console.log(JSON.stringify(result)+"+++result@JSON")
+        res.status(200).json(result)
+      }).catch((error) => {
+      throw new Error(error)
+      res.json({ error });
+      })  
     }).catch((error) => {
       throw new Error(error)
       res.json({ error });
     })
-
   }).catch((error) => {
       throw new Error(error)
       res.json({ error });

@@ -54,6 +54,8 @@ const News = () => {
     })();
   },[]);
 
+  console.log((((10 * 1 ) + 20 ) / 2 )+"+CC")
+
   return (
   <>
     <Header />

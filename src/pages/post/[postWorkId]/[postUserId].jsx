@@ -8,6 +8,8 @@ import Footer from '../../../components/footer'
 import {useDispatch, useSelector} from "react-redux";
 import {getUserId, getUserName, getRole} from '../../../reducks/users/selectors'
 
+import Link from 'next/link'
+
 import useSWR,{ mutate } from 'swr'
 
 //ユーザごとの作品ページを検索
@@ -39,6 +41,7 @@ const handlerPostUserId = () => {
   console.log(postWorkId+"+postWorkId")
 
   const [userName, setUserName] = useState("")
+  // const [loginUserId, setLoginUserId] = useState("")
   const [workName, setWorkName] = useState("")
   const [workMedia, setWorkMedia] = useState("")
   const [workScore, setWorkScore] = useState("")
@@ -48,6 +51,7 @@ const handlerPostUserId = () => {
   const [workUpdateTime, setWorkUpdateTime] = useState("")
   const [assessmentComment, setAssessmentComment] = useState([""])
   const [assessmentLike, setAssessmentLike] = useState(0)
+  const [isPublic, setIsPublic] = useState(false)
 
   const postIdCheck = () => {
     console.log("postIdCheck start")
@@ -105,13 +109,16 @@ const handlerPostUserId = () => {
             setUserName(data.userName)
             setWorkName(data.workName)
             setWorkMedia(data.winfoMedia)
-            setWorkScore(data.winfoScore)
-            setWorkCategory(data.winfoCategory)
-            setWorkTag(data.workTag)
+            setWorkScore(data.workScore)
+            setWorkCategory(data.assessmentCategory)
+            setWorkTag(data.assessmentWorkTag)
             setWorkComment(data.workComment)
-            setWorkUpdateTime(new Date(data.updateTime._seconds * 1000).toLocaleString("ja"))
+            setWorkUpdateTime(new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
+            // setWorkUpdateTime(new Date(data.updateTime._seconds * 1000).toLocaleString("ja"))
             setAssessmentComment(data.assessmentComment)
             setAssessmentLike(data.worksLikedCount)
+
+            setIsPublic(data.isPublic)
 
           } else {
             console.log("data.userName no exist")
@@ -123,14 +130,23 @@ const handlerPostUserId = () => {
     })()
   },[data])
 
-
   return (
     <>
       <Header />
-
       <h2>ユーザごとの作品評価ページ</h2>
-      <h3>評価者(Link)：{userName}</h3>
-      <h3>作品名(L)：{workName}</h3>
+      
+      {!isPublic && (<a>※このページは他のユーザには公開されません</a>)}
+      
+      <Link href="/user/[uid]" 
+        as={`/user/${postUserId}/`}>
+        <h3>評価者(L)：{userName}</h3>
+      </Link>
+
+      <Link href="/post/[postWorkId]" 
+        as={`/post/${postWorkId}`}>
+        <h3>作品名(L)：{workName}</h3>
+      </Link>
+      {/* <h3>作品名(L)：{workName}</h3> */}
       <h4>メディア：{workMedia}</h4>
       <h3>採点：{workScore}</h3>
       <h3>カテゴリ：{
@@ -148,6 +164,21 @@ const handlerPostUserId = () => {
       </h3>
       <h3>作品に対するコメント：{workComment}</h3>
       <h3>投稿日時：{workUpdateTime}</h3>
+
+      {/* リダックスのユーザ情報と作品のユーザ情報が同一の場合 */}
+      {(postUserId == selector.users.uid) && (
+        <Link href={{
+          pathname: "/post/posting",
+          query: { 
+            searchWord : workName,
+            workId : postWorkId,
+            infoMedia : workMedia,
+            firstPostFlag : 2, // 自分の作品を編集
+            },
+        }}>
+          <a>編集する</a>
+        </Link>
+      )}
       <br/>
       <h3>評価に対するコメント：{assessmentComment}</h3>
       <h3>いいね：{assessmentLike}</h3>

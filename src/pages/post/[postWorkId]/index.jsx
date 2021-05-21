@@ -55,6 +55,14 @@ const Post = () => {
 
   const [assessmentData ,setAssessmentData] = useState([{userName : "ini" , uid: "ini"}])
 
+  const [isAssessmenter, setIsAssessmenter] = useState(0)
+  const [isNonPublicAssessment, setIsNonPublicAssessment] = useState(0)
+
+  const [userId, setUserId] = useState("")
+  const [userName, setUserName] = useState("")
+
+  const [winfoTag, setWinfoTag] = useState([])
+
     // let data = undefined
 
   const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
@@ -92,139 +100,221 @@ const Post = () => {
   useEffect(() => {
     (async() => {
       console.log("useEffect Out")
+
+      setUserId(selector.users.uid)
+      setUserName(selector.users.userName)
+
       if(workId != undefined) {
         console.log("useEffect Done")
         console.log(workId+"+workId effect")
         await db.collection('wInfo').doc(workId).get()
-          .then(doc => {
-            let wInfoData = doc.data()
-            if (wInfoData){
-              console.log(JSON.stringify(wInfoData)+"+wInfoData JSONstr")
-              // setWorkwInfoData(wInfoData)
-              setWorkName(wInfoData.workName)
-              setInfoCount(wInfoData.winfoCount)
+        .then(doc => {
+          let wInfoData = doc.data()
+          if (wInfoData){
+            console.log(JSON.stringify(wInfoData)+"+wInfoData JSONstr")
+            // setWorkwInfoData(wInfoData)
+            setWorkName(wInfoData.workName)
+            setInfoCount(wInfoData.winfoCount)
 
-              setWorkScore(wInfoData.winfoScore)
-              // setWorkScore(sum/wInfoData.workScore.length)
-              setWorkInfo(wInfoData.winfoInfomation)
+            setWorkScore(wInfoData.winfoScore)
+            // setWorkScore(sum/wInfoData.workScore.length)
+            setWorkInfo(wInfoData.winfoInfomation)
 
-              setCheckBoxState(wInfoData.winfoCategory)
+            setCheckBoxState(wInfoData.winfoCategory)
+            setWinfoTag(wInfoData.winfoTag)
 
-              setWorkCreator(wInfoData.winfoCreator)
+            setWorkCreator(wInfoData.winfoCreator)
 
-              setWorkSeries(wInfoData.winfoSeries)
-              setWorkMedia(wInfoData.winfoMedia)
-              setWorkPublisher(wInfoData.winfoPublisher)
-              setWorkStart(wInfoData.winfoStart)
-              setWorkFinish(wInfoData.winfoFinish)
-              setWorkImage(wInfoData.winfoImage)
+            setWorkSeries(wInfoData.winfoSeries)
+            setWorkMedia(wInfoData.winfoMedia)
+            setWorkPublisher(wInfoData.winfoPublisher)
+            setWorkStart(wInfoData.winfoStart)
+            setWorkFinish(wInfoData.winfoFinish)
+            setWorkImage(wInfoData.winfoImage)
 
-              console.log(JSON.stringify(wInfoData)+"+works wInfoData")
-              console.log(JSON.stringify(checkBoxState)+"+works checkBoxState")
-              // console.log(JSON.stringify(workData)+"+workData")
+            console.log(JSON.stringify(wInfoData)+"+works wInfoData")
+            console.log(JSON.stringify(checkBoxState)+"+works checkBoxState")
+            // console.log(JSON.stringify(workData)+"+workData")
 
-              //assessment内データなのでAPIからとってくる必要ある・・・？
-              // setWorkComment(data.workComment)
-              // setWorkComment(data.assessment.)
-              let tmpAssessmentData = []
+            //assessment内データなのでAPIからとってくる必要ある・・・？
+            // setWorkComment(data.workComment)
+            // setWorkComment(data.assessment.)
+            let tmpAssessmentData = []
 
-              //投稿者情報を取得（isPublic==true以外は除外) 
-              if(data) {
-                // if(data.userName != undefined || data.userName != "") {
-                // if(data.length != 0) {
-                  console.log(JSON.stringify(data[0])+"+data[0]@JSON")
-                  console.log(data.length+"+data.length")
-                  console.log(JSON.stringify(data)+"+data")
-                  data.forEach((doc) => {
-                    tmpAssessmentData.push(doc)
-                  })
-                // } else {
-                //   tmpAssessmentData.push({userName : "非公開"})
-                //   console.log("data.userName no exist")
-                // }
-                setAssessmentData(tmpAssessmentData)
-                console.log(JSON.stringify(tmpAssessmentData)+"tmpAssessmentData@J")
-                console.log(JSON.stringify(assessmentData[0]) +"+assessmentData@J");
-                console.log(JSON.stringify(assessmentData[1]) +"+assessmentData@J1");
-                console.log(JSON.stringify(assessmentData)[0] +"+assessmentData@J");
-                console.log(assessmentData[0]+"+assessmentData");
-              } else {
-                console.log("data no exist")
-              }
+            //投稿者情報を取得（isPublic==true以外は除外) 
+            if(data) {
+              // if(data.userName != undefined || data.userName != "") {
+              // if(data.length != 0) {
+                console.log(JSON.stringify(data[0])+"+data[0]@JSON")
+                console.log(data.length+"+data.length")
+                console.log(JSON.stringify(data)+"+data")
+                data.forEach((doc) => {
+                  tmpAssessmentData.push(doc)
+
+                  //一つでも非公開以外があればフラグを立てる
+                  //(「公開可能情報なし」と表示しない)
+                  if(doc.uid != "非公開") {
+                    setIsAssessmenter(1)
+                  }
+                })
+              // } else {
+              //   tmpAssessmentData.push({userName : "非公開"})
+              //   console.log("data.userName no exist")
+              // }
+              setAssessmentData(tmpAssessmentData)
+              console.log(JSON.stringify(tmpAssessmentData)+"tmpAssessmentData@J")
+              console.log(JSON.stringify(assessmentData[0]) +"+assessmentData@J");
+              console.log(JSON.stringify(assessmentData[1]) +"+assessmentData@J1");
+              console.log(JSON.stringify(assessmentData)[0] +"+assessmentData@J");
+              console.log(assessmentData[0]+"+assessmentData");
+            } else {
+              console.log("data no exist")
             }
-          })
-          .catch((error) => {
-            alert('works DB get fail')
-            throw new Error(error)
-          })
+          }
+        })
+        .catch((error) => {
+          alert('works DB get fail')
+          throw new Error(error)
+        })
+        await db.collection('privateUsers').doc(selector.users.uid)
+        .collection('postedWorksId').doc(workId)
+        .get()
+        .then((snapshot) => {
+          console.log(snapshot+"+snapshot")
+          // console.log(JSON.stringify(snapshot)+"+snapshot@J")
+          console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
+          if(snapshot.data()){
+            setIsNonPublicAssessment(1)
+          }
+        })
+        .catch((error) => {
+          alert('privateUsers DB get fail')
+          throw new Error(error)
+        })
       }
     })()
-  },[workId,data])
+  },[workId,data,selector.users.uid])
 
-  return (
-    <>
-      <Header />
-      <h2>作品ページ</h2>
-{/*       {workId != undefined && ( */}
-       {( workId != undefined) && (
-//        {( workId != undefined && assessmentData.length != 0) && (
-        <div>
-          <h2>作品名: {workName}</h2>
-          {/* {console.log(workData)} */}
-          {workScore != [""] && (
-          　　　<h2>score: {workScore}</h2>
-          )}
+  if(workId != undefined){
 
-          <h2>評価数：{infoCount}</h2>
+    let isLoginUserAssessment = false
 
-          {workScore == [""] && (
-            <h2>score: 未評価 </h2>
-          )}
-          
-          <h2>情報:{workInfo}</h2>
-          <h2>category:{checkBoxState.map(cate => (
-            <span>{cate} </span>
-          ))}</h2>
-          <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2>
+    return (
+      <>
+        <Header />
+        <p>作品ページ</p>
+        <h2>作品名: {workName}</h2>
+        {/* {console.log(workData)} */}
+        {workScore != [""] && (
+        　　　<h2>score: {workScore}</h2>
+        )}
+
+        <h2>評価数：{infoCount}</h2>
+
+        {workScore == [""] && (
+          <h2>score: 未評価 </h2>
+        )}
+        
+        <h2>情報:{workInfo}</h2>
+        <h2>category:{checkBoxState.map(cate => (
+          <span>{cate} </span>
+        ))}</h2>
+
+        <h3>tag:{Object.keys(winfoTag).map(tokens => (
+          <span>{tokens}:{winfoTag[tokens]} </span>
+        ))}</h3>
+
+        {/* return内でfor使えない？ */}
+        {/* <h3>tag:{Object.keys(winfoTag).forEach((tokens) => (
+          <span>{tokens}:{winfoTag[tokens]} </span>
+        ))}</h3> */}
+
+        <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2>
 
 
-          <p>シリーズ：{workSeries ? workSeries : "no data at workSeries"}</p>
+        <p>シリーズ：{workSeries ? workSeries : "no data at workSeries"}</p>
 
-          <p>メディア：{workMedia}</p>
-          <p>出版社：{workPublisher}</p>
-          <p>発表：{workStart}</p>
-          <p>完結：{workFinish}</p>
-          <p>画：{workImage}</p>
+        <p>メディア：{workMedia}</p>
+        <p>出版社：{workPublisher}</p>
+        <p>発表：{workStart}</p>
+        <p>完結：{workFinish}</p>
+        <p>画：{workImage}</p>
 
-
-          <h2>この作品を評価した人</h2>
-          {(assessmentData[0].uid != "非公開") ? (
+        <h3>この作品を評価した人</h3>
+        {(assessmentData.length != 0 && isAssessmenter == 1) && (
+          <>
             <ul>
-              {assessmentData.map(mapAssessmentData => (
-                <a>
-                  <li>
-                    <Link href="/post/[id]/[postUserId]" 
-                      as={`/post/${workId}/${mapAssessmentData.uid}`}>
-                      <h2>{mapAssessmentData.userName}</h2>
-                    </Link>
-                  </li>
-                </a>
+              {assessmentData.map(mapAssessmentData => ( 
+                <>
+                  {mapAssessmentData.uid != "非公開" && (
+                    <>
+                      <li>
+                        <Link href="/post/[id]/[postUserId]" 
+                          as={`/post/${workId}/${mapAssessmentData.uid}`}>
+                          <a>{mapAssessmentData.userName}</a>
+                        </Link>
+                      </li>
+                      {mapAssessmentData.uid == userId && (
+                        isLoginUserAssessment = true
+                      )}
+                    </>
+                  )}
+                </>
               ))}
             </ul>
-          ) : (<a> 非公開iii </a>)
-          }
+          </>
+        )}
+        {isAssessmenter == 0 && (<p> 公開可能情報なし </p>) }
 
-          {/*    
-            step2 
-            <h2>ーこの作品が読めるアプリー</h2> 
-            <h2>同じジャンルの人気作</h2>
-          */}
+        {/* <h3>あなたの評価</h3> */}
+        {/* <a>userId:::: {userId}</a> */}
+        {isLoginUserAssessment == true && (
+          <Link href="/post/[id]/[postUserId]" 
+            as={`/post/${workId}/${userId}`}>
+            <a>{userName}の評価</a>
+          </Link>
+        )}
 
-        </div>
-      )}
-      <Footer />
-    </>
-  )
+        {(isLoginUserAssessment != true && isNonPublicAssessment == 0)&& (
+          <Link href={{
+            pathname: "/post/posting",
+            query: {
+              searchWord: workName,
+              infoMedia : workMedia,
+              workId : workId,
+              firstPostFlag : 0,
+            }
+          }}>
+            <a>[{workName}]を評価する。</a>
+          </Link>
+        )}
+
+        {(isLoginUserAssessment != true && isNonPublicAssessment == 1)&& (
+          <Link href={{
+            pathname: "/post/posting",
+            query: {
+              searchWord: workName,
+              infoMedia : workMedia,
+              workId : workId,
+              firstPostFlag : 2,
+            }
+          }}>
+            <a>[{workName}]の評価を編集する。</a>
+          </Link>
+        )}
+        {/*    
+          step2 
+          <h2>ーこの作品が読めるアプリー</h2> 
+          <h2>同じジャンルの人気作</h2>
+        */}
+        <Footer />
+      </>
+    )
+  } else {
+        <>
+        <p>...loading...</p>
+        </>
+  }
 }
 
 export default Post

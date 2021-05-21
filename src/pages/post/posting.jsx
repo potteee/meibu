@@ -22,6 +22,10 @@ import { postWorkCreate } from '../../reducks/works/operations'
 import { addPostedWork } from '../../reducks/users/operations'
 
 import postWInfoCreate from '../../foundations/wInfo'
+import checkSameWork from '../../foundations/wInfo/checkSameWork'
+import { tokenize } from '../api/firebase/allStringSearch/text-processor';
+
+import { db, FirebaseTimestamp } from "../../firebase/index";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -36,14 +40,40 @@ const useStyles = makeStyles((theme) => ({
 
 // 作品投稿ページ
 const Posting = () => {
+
   const router = useRouter()
   // const { id } = router.query
   const dispatch = useDispatch()
   const selector = useSelector((state) => state)
 
-  // const query = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
-  const query = router.query.searchWord // pathNameだとURL部のみ（/post/posting)だけ取得
-  // const querysWorkName = /^\?searchWord=/.test(query) ? query.split('?searchWord=')[1] : ""
+  const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
+  // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
+  console.log(asPath+"+asPath first")
+  const oriQuery = /^\/post\/posting\?searchWord=/.test(asPath) ? asPath.split('\/post\/posting')[1] : ""
+  console.log(oriQuery+"+oriQuery")
+  // const qInfoMedia = router.query.infoMedia 
+
+  let query = ""
+  let qInfoMedia = ""
+  let preWorkId = ""
+  let firstPostFlag = ""
+
+  if(oriQuery){
+    query = decodeURIComponent(/\&/.test(oriQuery.split('?searchWord=')[1]) ? (oriQuery.split('?searchWord=')[1]).split('&')[0] : oriQuery.split('?searchWord=')[1])
+    console.log(query+"+query first")
+
+    qInfoMedia = decodeURIComponent(/\&/.test(oriQuery.split('&infoMedia=')[1]) ? (oriQuery.split('&infoMedia=')[1]).split('&')[0] : oriQuery.split('&infoMedia=')[1])
+    console.log(qInfoMedia+"+qInfoMedia first")
+
+    // const preWorkId = router.query.workId //既に存在する作品の場合定義される。
+    preWorkId = decodeURIComponent(/\&/.test(oriQuery.split('&workId=')[1]) ? (oriQuery.split('&workId=')[1]).split('&')[0] : oriQuery.split('&workId=')[1])
+    console.log(preWorkId+"+preWorkId first")
+
+    // const firstPostFlag = router.query.firstPostFlag
+    firstPostFlag = decodeURIComponent(/\&/.test(oriQuery.split('&firstPostFlag=')[1]) ? (oriQuery.split('&firstPostFlag=')[1]).split('&')[0] : oriQuery.split('&firstPostFlag=')[1])
+    console.log(firstPostFlag+"+firstPostFlag first")
+  } else {
+  }
 
   // const uid = selector.users.uid
   //上記よりこっちの方が処理漏れ少ない？
@@ -55,13 +85,13 @@ const Posting = () => {
   // console.log(querysWorkName+"+querysWorkName")
   const [workName, setWorkName] = useState(query)
 
-  const [workMedia, setWorkMedia] = useState("");
+  const [workMedia, setWorkMedia] = useState(qInfoMedia);
   const [open, setOpen] = useState(false);
 
   const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
   const [checkBoxState, setCheckBoxState] = useState({
-    SF: true,  
+    SF: false,  
     Love: false,
     Fantasy: false
   })
@@ -69,7 +99,7 @@ const Posting = () => {
   const [tagCheckBox, setTagCheckBox] = useState({
     SyujinMiryo : false,
     KanjohInyuu : false,
-    IsekaiTense : false,
+    Sekaikan : false,
   })
   const [isPublic,setIsPublic] = useState(true)
   const [isSpoiler,setIsSpoiler] = useState(false)
@@ -85,7 +115,6 @@ const Posting = () => {
     setWorkScore(event.target.value)
   }, [])
   
-  
   const checkBoxHandleChange = useCallback((event) => {
     setCheckBoxState({ ...checkBoxState,[event.target.name]: event.target.checked })
     // },[checkBoxState])
@@ -95,8 +124,9 @@ const Posting = () => {
     setTagCheckBox({...tagCheckBox,[event.target.name]: event.target.checked})
   },[tagCheckBox])
   
-  console.log(JSON.stringify(checkBoxState)+"+checkcBoxState")
-  console.log(JSON.stringify(tagCheckBox)+"+tagCheckBox")
+  console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J")
+  console.log(checkBoxState+"+checkBoxState")
+  console.log(JSON.stringify(tagCheckBox)+"+tagCheckBox@J")
   
   const inputWorkComment = useCallback((event) => {
     setWorkComment(event.target.value)
@@ -127,34 +157,140 @@ const Posting = () => {
   const handleOpen = () => {
     setOpen(true);
   };
-    
+
+  //検索用トークンマップ作成用関数
+  const buildTokenMap = (word) => {
+    const tokenMap = {}
+    tokenize(word).forEach(token => {
+      tokenMap[token] = true
+    })
+    return tokenMap
+  }
+
+  //Catgory
+  //絶対的なもの
+  const categoryMap = {
+    SF : "SF",
+    Love : "ラブストーリー",
+    Fantasy : "ファンタジー",
+  }
+
+  //Tag
+  //主観によるもの
+  const tagMap = {
+    SyujinMiryo : "主人公が魅力的",
+    KanjohInyuu : "感情移入できる",
+    Sekaikan : "世界観が良い",
+  }
+
+  //useEffect
   useEffect(() => {
-    if(query){
+  (async() => {
+    if(query && qInfoMedia){
       setWorkName(query)
+      setWorkMedia(qInfoMedia)
     }
     console.log(workName+"+workName")
     console.log(tagCheckBox+"+tagCheckBox")
-  },[query])
-    
+
+    console.log(firstPostFlag+"+firstPostFlag")
+
+    //既に評価済みの評価を編集する場合
+    if(firstPostFlag == 2){
+      console.log("firstPostFlag = 2 effect start")
+      await db.collection('privateUsers').doc(uid)
+      .collection('postedWorksId').doc(preWorkId)
+      .get()
+      .then((snapshot) => {
+        // console.log(JSON.stringify(snapshot)+"+snapshot@J")
+        console.log(snapshot+"+snapshot")
+        console.log(snapshot.data()+"+snapshot.data()")
+        console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
+        console.log(snapshot.data().assessmentCategory+"+snapshot.data().assessmentCategory") 
+        console.log(snapshot.data().assessmentWorkTag+"+snapshot.data().assessmentWorkTag") 
+        setWorkScore(snapshot.data().workScore)
+        setWorkComment(snapshot.data().workComment)
+        snapshot.data().assessmentCategory.map((cate) => {
+          console.log(cate+"+cates")
+          Object.keys(categoryMap).map((map) => {
+            if(categoryMap[map] == cate){
+              setCheckBoxState(checkBoxState => ({...checkBoxState, [map]:true}))
+            }
+          })
+        })
+        snapshot.data().assessmentWorkTag.map((tag) => {
+          console.log(tag+"+tag")
+          Object.keys(tagMap).map((map) => {
+            if(tagMap[map] == tag){
+              setTagCheckBox(tagCheckBox => ({...tagCheckBox, [map]:true}))
+            }
+          })
+        })
+        setIsPublic(snapshot.data().isPublic)
+        setIsSpoiler(snapshot.data().isSpoiler)
+      })
+      .catch((error) => {
+        alert('failed fistPostFlag 2 get postedWorksId')
+        throw new Error(error)
+      })
+    }
+
+    //未評価の既に登録されている作品
+    if(firstPostFlag == 0){
+      console.log("firstPostFlag = 0 effect start")
+      await db.collection('wInfo').doc(preWorkId)
+      .get()
+      .then((snapshot) => {
+        console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
+        snapshot.data().winfoCategory.map((cate) => {
+          console.log(cate+"+cates")
+          Object.keys(categoryMap).map((map) => {
+            if(categoryMap[map] == cate){
+              setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
+            }
+          })
+        })
+      })
+      .catch((error) => {
+        alert('failed fistPostFlag 0 get wInfo')
+        throw new Error(error)
+      })
+    }
+
+  })()
+  // },[query,qInfoMedia,firstPostFlag])
+  },[])
+  console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J chuu")
+  console.log(checkBoxState+"+checkBoxState chuu")
+
   const postButtonClicked = async() => {
-    
     //バリデーション
     if(workMedia == "" || workName == ""){
       alert("作品名、分類を入力してください！")
       return false
     }
 
+    //新規登録するつもりがある時だけチェックして注意する
+    if(firstPostFlag == 1){
+      const same = await checkSameWork(workName,workMedia)
+      console.log(same+"+sameeeee")
+      if(same){
+        alert("同じ作品名の作品があります。作品名、分類を変更するか、既存の作品を評価してください")
+        return false
+      }
+    }
+
     //チェックされた項目だけを配列として抽出する
     let goCheckBoxState = []
     if(checkBoxState.Love == true){
-      goCheckBoxState.push("Love")
+      goCheckBoxState.push("ラブストーリー")
     }
     if(checkBoxState.SF == true){
       goCheckBoxState.push("SF")
     }
     if(checkBoxState.Fantasy == true){
 
-      goCheckBoxState.push("Fantasy")
+      goCheckBoxState.push("ファンタジー")
     }
     if(goCheckBoxState == ""){
       goCheckBoxState.push("None")
@@ -167,9 +303,14 @@ const Posting = () => {
     if(tagCheckBox.KanjohInyuu){
       goTagCheckBoxState.push("感情移入できる")
     }
-    if(tagCheckBox.IsekaiTense){
-      goTagCheckBoxState.push("異世界転生もの")
+    if(tagCheckBox.Sekaikan){
+      goTagCheckBoxState.push("世界観が良い")
     }
+
+    //検索用トークンマップ作成
+    const tokenMap = buildTokenMap(
+      workName,
+    )
 
     // ユーザに紐づく作品データをDBに登録(redux/works(db))
     // const workId = await dispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,uid))
@@ -186,15 +327,47 @@ const Posting = () => {
       goTagCheckBoxState,
       workComment,
       isPublic,
-      isSpoiler
+      isSpoiler,
+      tokenMap,
+      firstPostFlag,
+      preWorkId,
     ))
 
     console.log(workId+"+workId posting m")
     // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
-    await dispatch(addPostedWork(uid,workId,workName,isPublic,isSpoiler))
+    // if(firstPostFlag == 1 || firstPostFlag == 0){
+    await dispatch(addPostedWork(
+      uid,
+      workId,
+      workName,
+      isPublic,
+      isSpoiler,
+      workScore,
+      goCheckBoxState,
+      goTagCheckBoxState,
+      workComment,
+      firstPostFlag,
+    ))
+    // }
+
+    //過去に評価した作品の編集
+    // if(firstPostFlag == 2){
+    //   //postedWorksIdを編集する
+    //   await dispatch(ediPostedWork(
+    //     uid,
+    //     workId,
+    //     workName,
+    //     isPublic,
+    //     isSpoiler,
+    //     workScore,
+    //     goCheckBoxState,
+    //     goTagCheckBoxState,
+    //     workComment,
+    //   ))
+    // }
     
     router.push({
-      pathname: '/post/'+workId,
+      pathname: '/post/'+workId+'/'+uid,
       // pathname: '/post/'+id+'/works/'+workName,
       // query: {workId: workId}
     })
@@ -205,79 +378,113 @@ const Posting = () => {
       <Header />
 
       <div className="c-section-container">
-        <h1>新規 作品記録フォーム</h1>
         <div className="module-spacer--medium" />
 
+        {/* // 新規登録 */}
+        {firstPostFlag == 1 && (
+          <>
+            <h2>新規 作品記録フォーム</h2>
+            <TextInput
+            fullWidth={true} label={"作品名(必須)"} multiline={false} required={true}
+            rows={1}  value={workName} type={"text"} onChange={inputWorkName}
+            />
+            <FormControl className={classes.formControl}>
+              <InputLabel id="demo-controlled-open-select-label">分類(必須)</InputLabel>
+              <Select
+                labelId="demo-controlled-open-select-label"
+                id="demo-controlled-open-select"
+                open={open}
+                onClose={handleClose}
+                onOpen={handleOpen}
+                value={workMedia}
+                onChange={handleChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={"映画"}>映画</MenuItem>
+                <MenuItem value={"ドラマ"}>ドラマ</MenuItem>
+                <MenuItem value={"アニメ"}>アニメ</MenuItem>
+                <MenuItem value={"動画(その他)"}>動画(その他)</MenuItem>
+                <MenuItem value={"小説"}>小説</MenuItem>
+                <MenuItem value={"マンガ"}>マンガ</MenuItem>
+                <MenuItem value={"本(その他)"}>本(その他)</MenuItem>
+                <MenuItem value={"ゲーム"}>ゲーム</MenuItem>
+                <MenuItem value={"音楽"}>音楽</MenuItem>
+                <MenuItem value={"絵"}>絵</MenuItem>
+                <MenuItem value={"自転車"}>自転車</MenuItem>
+                {/* <MenuItem value={}></MenuItem> */}
+              </Select>
+            </FormControl>
+                    {/* (任意)3つまで選べるチェックボックスにしないとジャンル(恋愛・SF・ファンタジー) */}
+            <div> カテゴリ　</div> 
+            {/* <FormGroup root> */}
+            <FormGroup row>
+            <FormControlLabel
+                control={
+                  <CheckIconBox
+                  checked={checkBoxState.SF} onChange={checkBoxHandleChange} 
+                  name={"SF"} color={"secondary"}
+                  />
+                } label = {"SF"}
+            />
+            <FormControlLabel
+                control={
+                  <CheckIconBox
+                  checked={checkBoxState.Love} onChange={checkBoxHandleChange} 
+                  name={"Love"} color={"primary"}
+                  />
+                } label={"ラブストーリー"}
+            />
+            <FormControlLabel
+                control={
+                  <CheckIconBox
+                  checked={checkBoxState.Fantasy} onChange={checkBoxHandleChange} 
+                  name={"Fantasy"} color={"primary"}
+                  />
+                } label={"ファンタジー"}
+            />
+            </FormGroup>
+          </>
+        )}
+
+        {/* // 他人が登録した作品を評価 */}
+        {firstPostFlag == 0 && (
+          <>
+          <h2>作品 評価登録フォーム(新規評価)</h2>
+          <h3>作品名：{workName}</h3>
+          <h3>分類　：{workMedia}</h3>
+          <h3>カテゴリ：
+          {Object.keys(checkBoxState).map((map) => (
+            <a>{checkBoxState[map] == true && (
+              <a>{categoryMap[map]} </a>
+            )}</a>
+          ))}
+          </h3>
+          </>
+        )}
         {/* <p>作品名：テキストボックス※既存チェック</p> */}
 
-        <TextInput
-        fullWidth={true} label={"作品名(必須)"} multiline={false} required={true}
-        rows={1}  value={workName} type={"text"} onChange={inputWorkName}
-        />
-
-        <FormControl className={classes.formControl}>
-          <InputLabel id="demo-controlled-open-select-label">分類(必須)</InputLabel>
-          <Select
-            labelId="demo-controlled-open-select-label"
-            id="demo-controlled-open-select"
-            open={open}
-            onClose={handleClose}
-            onOpen={handleOpen}
-            value={workMedia}
-            onChange={handleChange}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={"映画"}>映画</MenuItem>
-            <MenuItem value={"ドラマ"}>ドラマ</MenuItem>
-            <MenuItem value={"アニメ"}>アニメ</MenuItem>
-            <MenuItem value={"動画(その他)"}>動画(その他)</MenuItem>
-            <MenuItem value={"小説"}>小説</MenuItem>
-            <MenuItem value={"マンガ"}>マンガ</MenuItem>
-            <MenuItem value={"本(その他)"}>本(その他)</MenuItem>
-            <MenuItem value={"ゲーム"}>ゲーム</MenuItem>
-            <MenuItem value={"音楽"}>音楽</MenuItem>
-            <MenuItem value={"絵"}>絵</MenuItem>
-            <MenuItem value={"自転車"}>自転車</MenuItem>
-            {/* <MenuItem value={}></MenuItem> */}
-          </Select>
-        </FormControl>
+        {/* //　既に評価している作品を登録 */}
+        {firstPostFlag == 2 && (
+          <>
+          <h2>作品 評価登録フォーム(評価編集)</h2>
+          <h3>作品名：{workName}</h3>
+          <h3>分類　：{workMedia}</h3>
+          <h3>カテゴリ：
+          {Object.keys(checkBoxState).map((map) => (
+            <a>{checkBoxState[map] == true && (
+              <a>{categoryMap[map]} </a>
+            )}</a>
+          ))}
+          </h3>
+          </>
+        )}
 
         <TextInput
         fullWidth={true} label={"(任意)点数(0-100)"} multiline={false} required={true}
         rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
         />
-
-        {/* (任意)3つまで選べるチェックボックスにしないとジャンル(恋愛・SF・ファンタジー) */}
-        <div> カテゴリ　</div> 
-        {/* <FormGroup root> */}
-        <FormGroup row>
-        <FormControlLabel
-            control={
-              <CheckIconBox
-              checked={checkBoxState.SF} onChange={checkBoxHandleChange} 
-              name={"SF"} color={"secondary"}
-              />
-            } label = {"SF"}
-        />
-        <FormControlLabel
-            control={
-              <CheckIconBox
-              checked={checkBoxState.Love} onChange={checkBoxHandleChange} 
-              name={"Love"} color={"primary"}
-              />
-            } label={"Love"}
-        />
-        <FormControlLabel
-            control={
-              <CheckIconBox
-              checked={checkBoxState.Fantasy} onChange={checkBoxHandleChange} 
-              name={"Fantasy"} color={"primary"}
-              />
-            } label={"Fantasy"}
-        />
-        </FormGroup>
 
         <div>タグ/属性</div> 
         {/* <FormGroup root> */}
@@ -301,10 +508,10 @@ const Posting = () => {
         <FormControlLabel
             control={
               <CheckIconBox
-              checked={tagCheckBox.IsekaiTense} onChange={tagCheckBoxHandleChange} 
-              name={"IsekaiTense"} color={"primary"}
+              checked={tagCheckBox.Sekaikan} onChange={tagCheckBoxHandleChange} 
+              name={"Sekaikan"} color={"primary"}
               />
-            } label={"異世界転生もの"}
+            } label={"世界観が良い"}
         />
 
         </FormGroup>

@@ -258,7 +258,17 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
     }
 }
 
-export const addPostedWork = ( uid , workId ,workName,isPublic,isSpoiler) => {
+export const addPostedWork = (
+    uid,
+    workId,
+    workName,
+    isPublic,
+    isSpoiler,
+    workScore,
+    goCheckBoxState,
+    goTagCheckBoxState,
+    workComment,
+    firstPostFlag) => {
     return async (dispatch) => {
         //updateは連想配列に代入して変数をupdate()内に指定しないとエラーになる・・・。
         // 配列のアップデート記法はこれ。
@@ -269,14 +279,44 @@ export const addPostedWork = ( uid , workId ,workName,isPublic,isSpoiler) => {
         // .update(workIdObject)
         const timestamp = FirebaseTimestamp.now()
 
-        const postedWorksId = {
+        let postedWorksId = {}
+        
+        if(firstPostFlag == 1 || firstPostFlag == 0){
+            postedWorksId = {
+                workId : workId,
+                workName : workName,
+                uid : uid,
+                created_at: timestamp,
+                updated_at:timestamp,
+                isPublic: isPublic,
+                isSpoiler: isSpoiler,
+                workScore: workScore,
+                assessmentCategory: goCheckBoxState,
+                assessmentWorkTag : goTagCheckBoxState,
+                workComment: workComment
+            }
+        } else {
+            postedWorksId = {
+                workId : workId,
+                workName : workName,
+                uid : uid,
+                // created_at: timestamp,
+                updated_at:timestamp,
+                isPublic: isPublic,
+                isSpoiler: isSpoiler,
+                workScore: workScore,
+                assessmentCategory: goCheckBoxState,
+                assessmentWorkTag : goTagCheckBoxState,
+                workComment: workComment
+            }
+        }
+ 
+        const pubPostedWorksId = {
             workId : workId,
             workName : workName,
             uid : uid,
-            created_at: timestamp,
-            updated_at:timestamp,
-            isPublic: isPublic,
             isSpoiler: isSpoiler,
+            workScore: workScore,
         }
 
         await privateUserRef.doc(uid)
@@ -288,14 +328,20 @@ export const addPostedWork = ( uid , workId ,workName,isPublic,isSpoiler) => {
         }).catch((error) => {
             alert('posted inital DB fail')
             throw new Error(error)
-        })
+        })   
 
-        .then(() => {
-            console.log("add Posted Work to db success!!!")
-        }).catch((error) => {
-            alert('DB fail')
+        if(isPublic){
+            usersRef.doc(uid)
+            .collection('pubPostedWorksId')
+            .doc(workId)
+            .set(pubPostedWorksId)
+            .then(() => {
+                console.log("PublicPost success!!")
+            }).catch((error) => {
+            alert('PubPosted inital DB fail')
             throw new Error(error)
-        })    
+        })
+        }
     }
 }
 

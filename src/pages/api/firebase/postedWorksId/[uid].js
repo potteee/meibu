@@ -35,13 +35,17 @@ const handler = async({ query: { uid } }, res) => { //{}内はファイルの[]�
   .then(snapshot => {
     // console.log(JSON.stringify(snapshot)+"snapshot")
 
-    const workNameMap = snapshot.docs.map(map => map.data()["workName"])
+    const worksData = snapshot.docs.map(map => ({
+       workName : map.data()["workName"], workId :map.data()["workId"] 
+    }))
+
+    console.log(worksData+"+worksData")
 
     // FirestoreSDK
     // .collection('works')
     // .where('workId','==','99')
 
-    const apiWorksName = { names: workNameMap, id: uid }
+    const apiWorksName = { worksData: worksData, id: uid }
 
     console.log(JSON.stringify(apiWorksName)+"+apiWorksName")
     res.status(200).json(apiWorksName)

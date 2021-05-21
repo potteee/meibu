@@ -63,7 +63,9 @@ const MyPage = () => {
   const [workIds ,setWorkIds] = useState([])
 
   /// display worksName
-  const [worksName ,setWorksName] = useState("initialWorksName")
+  const [worksName ,setWorksName] = useState([])
+
+  let uid2 = "uid initial"
 
   // const users = getUserId(selector)
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
@@ -80,7 +82,8 @@ const MyPage = () => {
   //　ここにapiで作品名を検索する機能を入れたい。→入れた
   //  ★初期ログイン直後に読み込んでくれるようにしないと。
   const { data , error } = useSWR(
-    () => query.id && `../api/firebase/postedWorksId/${query.id}`, fetcher
+    // () => query.id ? `../api/firebase/postedWorksId/${query.id}` : null, fetcher
+    () => uid ? `../api/firebase/postedWorksId/${uid}` : null, fetcher
     // const {data, error } = useSWR(['../api/firebase',22], (url,id) => fetcher(url, {id}),
     // イニシャル値を設定してしまうと、レンダリング直後に読みに行ってくれない。
     // ,{ initialData: {names: 'SWRinitialWorksName',id: '99'}},
@@ -109,7 +112,8 @@ const MyPage = () => {
       setRole(getRole(selector))
       setUid(getUserId(selector))
       
-      let uid2 = getUserId(selector)  
+      uid2 = getUserId(selector)  
+      // let uid2 = getUserId(selector)  
       
       console.log(JSON.stringify(selector)+"+selector2@mypage")
       console.log(uid+"+uid useEffect out")
@@ -153,14 +157,15 @@ const MyPage = () => {
 
         if(data) {
           // if(data.names != undefined || data.names != "" || data.names.length != 0){
-          if(data.names.length != 0){
+          if(data.worksData.length != 0){
             dataFlag = true
-            console.log(data.names+"+data.names")
-            data.names.forEach((doc) => {
-              tmpWorksId.push(doc+" ")
-            })
-            setWorksName(tmpWorksId)
-            console.log("投稿した作品は "+tmpWorksId+" です");
+            // console.log(data.worksData+"+data.workData")
+            // data.worksData.forEach((doc) => {
+            //   tmpWorksId.push(doc+" ")
+            // })
+            // setWorksName(tmpWorksId)
+            // console.log("投稿した作品は "+tmpWorksId+" です");
+            setWorksName(data.worksData)
           } 
         } 
         if(dataFlag == false){
@@ -215,7 +220,11 @@ const MyPage = () => {
 
       {/* Redux部 */}
       <h3>公開ユーザ情報</h3>
-      <p>お名前 : {userName}</p>
+      <Link href="/user/[uid]" 
+        as={`/user/${uid}`}>
+        <h3>お名前(L)：{userName}</h3>
+      </Link>
+      {/* <p>お名前 : {userName}</p> */}
       <p>性別：
         {userSex == 0 && ("未登録")}
         {userSex == 1 && ("男性")}
@@ -232,7 +241,28 @@ const MyPage = () => {
       <p>誕生日 : {userBirthday}</p>
       
       {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
-      <p>投稿した作品 : {worksName}</p>
+      
+      <p>投稿した作品：</p>
+      {worksName.length != 0 && (
+        <>
+        {worksName.map((map) => (
+          <>
+          <Link
+            href="/post/[postWorkId]/[postUserId]"
+            as={`/post/${map.workId}/${uid}/`}
+          >
+            <a>{map.workName}</a>
+          </Link>
+          <br/>
+          </>
+        ))}
+        </>
+      )}
+      
+      
+      
+      {/* <p>投稿した作品 : {worksName}</p> */}
+
 
       <h3>非公開情報</h3>
       <p>role : {role}</p>

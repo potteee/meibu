@@ -9,6 +9,7 @@ import Link from 'next/link'
 import {useDispatch, useSelector} from "react-redux"
 import { useRouter } from 'next/router'
 
+
 const Search = () => {
   const selector = useSelector((state) => state)
 
@@ -19,12 +20,18 @@ const Search = () => {
 
   const inputSearchWord = useCallback((e) => {
     setSearchWord(e.target.value)
-},[]);
+  },[]);
 
   const searchButtonClicked = () => {
+
+    console.log(searchWord+"+searchWord 1")
+
     router.push({
       pathname: '/menu/searchResult',
-      query: {searchWord: searchWord}
+      query: {
+        searchWord : searchWord,
+        // jres : JSON.stringify(jres),
+      } 
     })
   }
 
