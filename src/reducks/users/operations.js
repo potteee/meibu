@@ -80,6 +80,7 @@ export const signIn = (email,password,router) => {
                 }
                 const userID = userState.uid
                 console.log(userID+'+userID@signin')
+                console.log(email+'+email')
 
                 await db.collection('users').doc(userID).get()
                     .then(async (snapshot) => {
@@ -118,7 +119,8 @@ export const signIn = (email,password,router) => {
                             query: { name: 'Someone' }
                         })
                     })
-            }).catch(() => {
+            }).catch((error) => {
+                throw new Error(error)
                 alert('アカウントもしくはパスワードに誤りがあります。')
                 // throw new Error(error)
             })
@@ -290,7 +292,7 @@ export const addPostedWork = (
                 updated_at:timestamp,
                 isPublic: isPublic,
                 isSpoiler: isSpoiler,
-                workScore: workScore,
+                workScore: workScore ? workScore : -1,
                 assessmentCategory: goCheckBoxState,
                 assessmentWorkTag : goTagCheckBoxState,
                 workComment: workComment
@@ -304,7 +306,7 @@ export const addPostedWork = (
                 updated_at:timestamp,
                 isPublic: isPublic,
                 isSpoiler: isSpoiler,
-                workScore: workScore,
+                workScore: workScore ? workScore : -1,
                 assessmentCategory: goCheckBoxState,
                 assessmentWorkTag : goTagCheckBoxState,
                 workComment: workComment
@@ -322,13 +324,16 @@ export const addPostedWork = (
         await privateUserRef.doc(uid)
         .collection('postedWorksId')
         .doc(workId)
-        .set(postedWorksId)
+        .set(
+            postedWorksId,
+            {merge : true}
+        )
         .then(() => {
             console.log("posted initial db success!!!")
         }).catch((error) => {
             alert('posted inital DB fail')
             throw new Error(error)
-        })   
+        })
 
         if(isPublic){
             usersRef.doc(uid)
@@ -340,7 +345,18 @@ export const addPostedWork = (
             }).catch((error) => {
             alert('PubPosted inital DB fail')
             throw new Error(error)
-        })
+            })
+        } else {
+            usersRef.doc(uid)
+            .collection('pubPostedWorksId')
+            .doc(workId)
+            .delete()
+            .then(() => {
+                console.log("PublicPost delete success!!")
+            }).catch((error) => {
+            alert('PubPosted delete DB fail')
+            throw new Error(error)
+            })
         }
     }
 }

@@ -70,7 +70,7 @@ const News = () => {
               as={`/post/${oneWorkData.workId}`}>
                 <h2>作品名：{oneWorkData.workName}</h2>
               </Link>
-              <p>　スコア　　：{oneWorkData.winfoScore}</p>
+              <p>　スコア　　：{oneWorkData.winfoScore != -1 ? oneWorkData.winfoScore : "採点なし"}</p>
               <p>　ジャンル　：{oneWorkData.winfoCategory.map(cate => ( 
               <span>{cate} </span>
               ))}

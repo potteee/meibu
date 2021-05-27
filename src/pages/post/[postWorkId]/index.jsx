@@ -204,10 +204,7 @@ const Post = () => {
         <Header />
         <p>作品ページ</p>
         <h2>作品名: {workName}</h2>
-        {/* {console.log(workData)} */}
-        {workScore != [""] && (
-        　　　<h2>score: {workScore}</h2>
-        )}
+        <h2>score: {workScore != -1 ? workScore : "評価なし"}</h2>
 
         <h2>評価数：{infoCount}</h2>
 
@@ -221,7 +218,19 @@ const Post = () => {
         ))}</h2>
 
         <h3>tag:{Object.keys(winfoTag).map(tokens => (
-          <span>{tokens}:{winfoTag[tokens]} </span>
+          <>
+          {/* {(1) && ( */}
+          {winfoTag[tokens] 
+           ? (
+              <span>
+              {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
+              {tokens+":"+winfoTag[tokens]+" "}
+              </span>
+            )
+          :(
+            ''
+          )}
+          </>
         ))}</h3>
 
         {/* return内でfor使えない？ */}

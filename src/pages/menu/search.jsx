@@ -26,6 +26,15 @@ const Search = () => {
 
     console.log(searchWord+"+searchWord 1")
 
+    //Validation
+    if (searchWord === ""){
+        alert("必須項目が未入力です");
+        return false;
+    }
+
+    //& tranceform
+    // searchWord.replace('&','＆')
+
     router.push({
       pathname: '/menu/searchResult',
       query: {

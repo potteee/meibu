@@ -22,10 +22,13 @@ const postWInfoCreate = (
         const timestamp = FirebaseTimestamp.now()
         // var workIdObject = {}
         // workIdObject['editor.' + workId] = new Date()
-        let assessmentRef = ""
+
+
         const wInfoRef = db.collection('wInfo').doc()
         //自動生成されたIDを取得
         let workId = wInfoRef.id
+
+        let assessmentRef = ""
 
         console.log(firstPostFlag+"+firstPostFlag")
 
@@ -50,8 +53,9 @@ const postWInfoCreate = (
             var wInfoData = { 
                 workId : workId,
                 workName : workName,
+                winfoScore : workScore ? workScore : -1, //workScore 0は0とし登録したいができているか？
+                winfoScoreCount : workScore ? 1 : 0, //作成時の初期値なので1
                 winfoCount : 1, //作成時の初期値なので1
-                winfoScore : workScore,
                 winfoTag : tmpWorkTag, ///////////新規　5/17 {xxxx : 3},{yyyy : 2} 
                 winfoInfomation : "no data at infomation",
                 winfoCategory : checkBoxState,
@@ -87,38 +91,54 @@ const postWInfoCreate = (
         } else if(firstPostFlag == 0) {
             workId = preWorkId
 
-            //
-            if(isPublic){
-                assessmentRef = db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
-                console.log(assessmentRef+"++++assessmentRef")
-                console.log(workId+"+workId")
-                console.log(uid+"+uid")
-            }
+            // if(isPublic){
+            assessmentRef = db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
+            console.log(assessmentRef+"++++assessmentRef")
+            console.log(workId+"+workId")
+            console.log(uid+"+uid")
+            // }
+
             await db.collection('wInfo').doc(workId).get()
             .then((snapshot) => {
 
                 //ユーザとしては新規登録
                 //// 評価点
-                const befWinfoCount = snapshot.data()["winfoCount"]
-                const befWinfoScore = snapshot.data()["winfoScore"]
-                const ediWinfoCount = befWinfoCount + 1
-                const ediWinfoScore = ((befWinfoScore * befWinfoCount) + Number(workScore) ) / ediWinfoCount
-                // console.log((((befWinfoScore * befWinfoCount ) + workScore ) / ediWinfoCount )+"+CC 実数")
-                // console.log((((10 * 1 ) + 20 ) / 2 )+"+CC")
+                const befWinfoScoreCount = snapshot.data()["winfoScoreCount"]
+                const ediWinfoScoreCount = befWinfoScoreCount + 1
+                let ediWinfoScore = snapshot.data()["winfoScore"] //現状の点数を代入。評価がなければこのまま
+                if(workScore){
+                    console.log(workScore+"+workScore in")
 
-                console.log(ediWinfoCount+"+ediWinfoCount")
-                console.log(ediWinfoScore+"+ediWinfoScore")
+                    let befWinfoScore = 0
+                    if(snapshot.data()["winfoScore"] != -1){
+                        befWinfoScore = snapshot.data()["winfoScore"]
+                    } else {
+                        befWinfoScore = 0
+                    }
+                    
+                    ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) + Number(workScore) ) / ediWinfoScoreCount
+                    // console.log((((befWinfoScore * befWinfoScoreCount ) + workScore ) / ediWinfoScoreCount )+"+CC 実数")
+                    // console.log((((10 * 1 ) + 20 ) / 2 )+"+CC")
+
+                    console.log(ediWinfoScoreCount+"+ediWinfoScoreCount")
+                    console.log(ediWinfoScore+"+ediWinfoScore")
+                } else {
+                    console.log(workScore+"+workScore out")
+
+                }
 
                 //// 評価タグ
                 let tmpWorkTag = {}
                 const befTag = snapshot.data()["winfoTag"]
                 // console.log(befTag.data()+"+befTag.data()")
                 console.log(JSON.stringify(befTag)+"+befTag@J")
+                tmpWorkTag = befTag
 
                 tagCheckBox.map(token => {
                     console.log(befTag[token]+"+befTag[token]")
-                    if(befTag[token]){
-                        tmpWorkTag[token] = befTag[token] + 1
+
+                    if(tmpWorkTag[token]){
+                        tmpWorkTag[token]++
                     } else {
                         tmpWorkTag[token] = 1
                     }
@@ -127,14 +147,21 @@ const postWInfoCreate = (
                 console.log(tagCheckBox+"+tagCheckBox")
                 console.log(JSON.stringify(tmpWorkTag)+"tmpWorkTag@J")
                 console.log(tmpWorkTag+"tmpWorkTag")
+
+                const ediWinfoCount = snapshot.data()["winfoCount"] + 1
+
+
                 // ****************************
 
                 db.collection('wInfo').doc(workId).update({
+                    winfoScoreCount : ediWinfoScoreCount,
                     winfoCount : ediWinfoCount,
                     winfoScore : ediWinfoScore,
                     winfoTag : tmpWorkTag,
                 }).then(() => {
                     console.log("successed to update Count & Score")
+                    return workId
+
                 }).catch((error) => {
                     alert('failed to update Count & Score')
                     throw new Error(error)
@@ -147,48 +174,90 @@ const postWInfoCreate = (
         } else if(firstPostFlag == 2){
             workId = preWorkId
 
-            //
-            if(isPublic){
-                assessmentRef = db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
-                console.log(assessmentRef+"++++assessmentRef")
-                console.log(workId+"+workId")
-                console.log(uid+"+uid")
-            }
+            // if(isPublic){
+            // ここにもawaitを入れないと呼び出しもとの処理が進んでしまう。
+            assessmentRef = await db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
+            console.log(assessmentRef+"++++assessmentRef")
+            console.log(workId+"+workId")
+            console.log(uid+"+uid")
+            // }
             
             await db.collection('wInfo').doc(workId).get()
-            .then((snapshot) => {
-                db.collection('privateUsers').doc(uid)
+            .then(async(snapshot) => {
+                await db.collection('privateUsers').doc(uid)
                 .collection('postedWorksId').doc(workId).get()
                 .then((snapshotPrivate) => {
                     console.log(snapshotPrivate.data()["workScore"]+"++++snapshotPrivate.data()[workScore]")
 
+                    const befWinfoScore = snapshot.data()["winfoScore"] != -1 ? snapshot.data()["winfoScore"] : 0
+                    let ediWinfoScoreCount = -1
+                    let ediWinfoScore = -1
                     //////ユーザとしては新規登録
                     //// 評価点
-                    const befWinfoCount = snapshot.data()["winfoCount"]
-                    const befWinfoScore = snapshot.data()["winfoScore"]
-                    const befWorkScore = snapshotPrivate.data()["workScore"]
-                    // const ediWinfoScore = ((befWinfoScore * befWinfoCount) + Number(workScore) ) / ediWinfoCount
+                    if(workScore){
+                        console.log(workScore+"+workScore in")
+                        const befWinfoScoreCount = snapshot.data()["winfoScoreCount"]
+                        
+                        const befWorkScore = snapshotPrivate.data()["workScore"]
+                        //前回評価で採点していた場合
+                        if(befWorkScore != -1) {
+                            console.log("exist assessmentScore")
+                            console.log(befWorkScore+"+befWorkScore")
+                            ediWinfoScoreCount = befWinfoScoreCount //カウント数に変化はなし
+                            ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) + Number(workScore) ) /ediWinfoScoreCount
+                            console.log(((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) + Number(workScore) )+"1")
+                            console.log(((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) + Number(workScore) )/ediWinfoScoreCount+"2")
 
-                    let ediWinfoCount = -1
-                    let ediWinfoScore = -1
+                        } else {
+                            console.log("no exist assessmentScore")
+                            ediWinfoScoreCount = befWinfoScoreCount + 1 //カウント数は＋１となる
+                            ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) + Number(workScore) ) / ediWinfoScoreCount //新規登録と同じ式
+                        }
 
-                    //前回評価で採点していた場合
-                    if(befWorkScore) {
-                        console.log("exist assessmentScore")
-                        ediWinfoCount = befWinfoCount //カウント数に変化はなし
-                        ediWinfoScore = ((befWinfoScore * befWinfoCount) - Number(befWorkScore) + Number(workScore) ) /ediWinfoCount
-                    } else {
-                        console.log("no exist assessmentScore")
-                        ediWinfoCount = befWinfoCount + 1 //カウント数は＋１となる
-                        ediWinfoScore = ((befWinfoScore * befWinfoCount) + Number(workScore) ) / ediWinfoCount //新規登録と同じ式
+                        console.log(befWinfoScoreCount+"+befWinfoScoreCount")
+                        console.log(befWinfoScore+"+befWinfoScore")
+                        console.log(ediWinfoScoreCount+"+ediWinfoScoreCount")
+                        console.log(ediWinfoScore+"+ediWinfoScore")
+                        console.log(workScore+"+workScore")
+                    } else { //今回、評価しておらず、前回評価している場合、消す必要がある。
+                        console.log(workScore+"+workScore out")
+                        const befWinfoScoreCount = snapshot.data()["winfoScoreCount"]
+                        const befWorkScore = snapshotPrivate.data()["workScore"]
+
+                        ediWinfoScoreCount = Number(befWinfoScoreCount) - 1
+                        ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) ) /ediWinfoScoreCount
+                        //前回 ログインユーザが評価していた場合
+                        if(befWorkScore != -1){
+                            console.log(befWorkScore+"snapshotPrivate.data()[workScore]")
+                            if(befWinfoScoreCount != 0){
+                                //評価しているはずなので、wInfoが0ということはありえないのでエラー
+                                console.log('ERROR')
+                                return false;
+                            } else {
+                                // 前回評価ー今回未評価
+                                // let ediWinfoScoreCount = -1
+                                // let ediWinfoScore = -1
+
+                                //前回評価で採点していた場合 
+                                console.log("exist assessmentScore")
+                                // ediWinfoScoreCount = Number(befWinfoScoreCount) - 1
+                                // ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) ) /ediWinfoScoreCount
+                                console.log((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore)+"1")
+                                console.log(((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) )/ediWinfoScoreCount+"2")
+
+                                console.log(befWinfoScoreCount+"+befWinfoScoreCount")
+                                console.log(befWinfoScore+"+befWinfoScore")
+                                console.log(ediWinfoScoreCount+"+ediWinfoScoreCount")
+                                console.log(ediWinfoScore+"+ediWinfoScore")
+                                console.log(workScore+"+workScore")        
+                            }
+                        //前回　ログインユーザが評価していなかった場合
+                        } else { 
+                            console.log("前回も未評価")
+                            // 何も実行しない。
+                            // wInfoも更新なし。
+                        }
                     }
-
-                    console.log(befWinfoCount+"+befWinfoCount")
-                    console.log(befWinfoScore+"+befWinfoScore")
-                    console.log(ediWinfoCount+"+ediWinfoCount")
-                    console.log(ediWinfoScore+"+ediWinfoScore")
-                    console.log(workScore+"+workScore")
-
                     //// 評価タグ
                     let tmpWorkTag = {}
                     const befTag = snapshot.data()["winfoTag"]
@@ -197,11 +266,13 @@ const postWInfoCreate = (
                     console.log(JSON.stringify(befTag)+"+befTag@J")
                     console.log(JSON.stringify(befUserTag)+"+befUserTag@J")
 
-                    //ぷらす分
+                    //既存評価を適用
+                    tmpWorkTag = befTag
+
+                    //ぷらす分                    
                     tagCheckBox.map(token => {
-                        // console.log(befTag[token]+"+befTag[token]")
-                        if(befTag[token]){
-                            tmpWorkTag[token] = befTag[token] + 1
+                        if(tmpWorkTag[token]){
+                            tmpWorkTag[token]++
                         } else {
                             tmpWorkTag[token] = 1
                         }
@@ -217,14 +288,20 @@ const postWInfoCreate = (
                     console.log(tagCheckBox+"+tagCheckBox")
                     console.log(JSON.stringify(tmpWorkTag)+"tmpWorkTag@J")
                     console.log(tmpWorkTag+"tmpWorkTag")
+
+                    const ediWinfoCount = snapshot.data()["winfoCount"]
+
                     // ****************************
 
                     db.collection('wInfo').doc(workId).update({
                         winfoCount : ediWinfoCount,
+                        winfoScoreCount : ediWinfoScoreCount,
                         winfoScore : ediWinfoScore,
                         winfoTag : tmpWorkTag,
                     }).then(() => {
                         console.log("successed to update Count & Score")
+                        // return workId
+
                     }).catch((error) => {
                         alert('failed to update Count & Score')
                         throw new Error(error)
@@ -260,7 +337,7 @@ const postWInfoCreate = (
             return assessmentRef
             // await assessmentRef
             .set(assessment,
-                // { merge : true } // 有効　→　上書きしなくなる
+                 {merge : true } // 有効　→　指定しないフィールドを消さない
             ).then(() => {
                 console.log("assessmentRef updating or chreating")
                 return workId
@@ -277,7 +354,9 @@ const postWInfoCreate = (
                 console.log("Document successfully deleted!")
                 return workId
             }).catch((error) => {
-                console.error("Error removing document: ", error)
+                // console.error("Error removing document: ", error)
+                alert('assessment delete DB fail')
+                throw new Error(error)
             })
 
             // var assessment = {}

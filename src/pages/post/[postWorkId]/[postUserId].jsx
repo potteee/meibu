@@ -148,7 +148,7 @@ const handlerPostUserId = () => {
       </Link>
       {/* <h3>作品名(L)：{workName}</h3> */}
       <h4>メディア：{workMedia}</h4>
-      <h3>採点：{workScore}</h3>
+      <h3>採点：{workScore != -1 ? workScore : "採点なし"}</h3>
       <h3>カテゴリ：{
         workCategory.map(mapWorkCategory => (
           <a> {mapWorkCategory} </a>

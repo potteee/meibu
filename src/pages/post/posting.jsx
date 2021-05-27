@@ -195,71 +195,79 @@ const Posting = () => {
 
     console.log(firstPostFlag+"+firstPostFlag")
 
-    //既に評価済みの評価を編集する場合
-    if(firstPostFlag == 2){
-      console.log("firstPostFlag = 2 effect start")
-      await db.collection('privateUsers').doc(uid)
-      .collection('postedWorksId').doc(preWorkId)
-      .get()
-      .then((snapshot) => {
-        // console.log(JSON.stringify(snapshot)+"+snapshot@J")
-        console.log(snapshot+"+snapshot")
-        console.log(snapshot.data()+"+snapshot.data()")
-        console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-        console.log(snapshot.data().assessmentCategory+"+snapshot.data().assessmentCategory") 
-        console.log(snapshot.data().assessmentWorkTag+"+snapshot.data().assessmentWorkTag") 
-        setWorkScore(snapshot.data().workScore)
-        setWorkComment(snapshot.data().workComment)
-        snapshot.data().assessmentCategory.map((cate) => {
-          console.log(cate+"+cates")
-          Object.keys(categoryMap).map((map) => {
-            if(categoryMap[map] == cate){
-              setCheckBoxState(checkBoxState => ({...checkBoxState, [map]:true}))
-            }
-          })
-        })
-        snapshot.data().assessmentWorkTag.map((tag) => {
-          console.log(tag+"+tag")
-          Object.keys(tagMap).map((map) => {
-            if(tagMap[map] == tag){
-              setTagCheckBox(tagCheckBox => ({...tagCheckBox, [map]:true}))
-            }
-          })
-        })
-        setIsPublic(snapshot.data().isPublic)
-        setIsSpoiler(snapshot.data().isSpoiler)
-      })
-      .catch((error) => {
-        alert('failed fistPostFlag 2 get postedWorksId')
-        throw new Error(error)
-      })
-    }
+    if(uid != "uid initial"){
 
-    //未評価の既に登録されている作品
-    if(firstPostFlag == 0){
-      console.log("firstPostFlag = 0 effect start")
-      await db.collection('wInfo').doc(preWorkId)
-      .get()
-      .then((snapshot) => {
-        console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-        snapshot.data().winfoCategory.map((cate) => {
-          console.log(cate+"+cates")
-          Object.keys(categoryMap).map((map) => {
-            if(categoryMap[map] == cate){
-              setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
-            }
+      //既に評価済みの評価を編集する場合
+      if(firstPostFlag == 2){
+        console.log("firstPostFlag = 2 effect start")
+        console.log(uid+"+uid +++")
+        console.log(preWorkId+"preWorkId +++")
+        await db.collection('privateUsers').doc(uid)
+        .collection('postedWorksId').doc(preWorkId)
+        .get()
+        .then((snapshot) => {
+          // console.log(JSON.stringify(snapshot)+"+snapshot@J")
+          console.log(snapshot+"+snapshot")
+          console.log(snapshot.data()+"+snapshot.data()")
+          console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
+          console.log(snapshot.data().assessmentCategory+"+snapshot.data().assessmentCategory") 
+          console.log(snapshot.data().assessmentWorkTag+"+snapshot.data().assessmentWorkTag") 
+          setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
+          setWorkComment(snapshot.data().workComment)
+          snapshot.data().assessmentCategory.map((cate) => {
+            console.log(cate+"+cates")
+            Object.keys(categoryMap).map((map) => {
+              if(categoryMap[map] == cate){
+                setCheckBoxState(checkBoxState => ({...checkBoxState, [map]:true}))
+              }
+            })
+          })
+          snapshot.data().assessmentWorkTag.map((tag) => {
+            console.log(tag+"+tag")
+            Object.keys(tagMap).map((map) => {
+              if(tagMap[map] == tag){
+                setTagCheckBox(tagCheckBox => ({...tagCheckBox, [map]:true}))
+              }
+            })
+          })
+          setIsPublic(snapshot.data().isPublic)
+          setIsSpoiler(snapshot.data().isSpoiler)
+        })
+        .catch((error) => {
+          alert('failed fistPostFlag 2 get postedWorksId')
+          throw new Error(error)
+        })
+      }
+
+      //未評価の既に登録されている作品
+      if(firstPostFlag == 0){
+        console.log("firstPostFlag = 0 effect start")
+        await db.collection('wInfo').doc(preWorkId)
+        .get()
+        .then((snapshot) => {
+          console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
+          snapshot.data().winfoCategory.map((cate) => {
+            console.log(cate+"+cates")
+            Object.keys(categoryMap).map((map) => {
+              if(categoryMap[map] == cate){
+                setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
+              }
+            })
           })
         })
-      })
-      .catch((error) => {
-        alert('failed fistPostFlag 0 get wInfo')
-        throw new Error(error)
-      })
+        .catch((error) => {
+          alert('failed fistPostFlag 0 get wInfo')
+          throw new Error(error)
+        })
+      }
+    } else {
+      console.log(uid+"+uid")
     }
 
   })()
   // },[query,qInfoMedia,firstPostFlag])
-  },[])
+  },[selector])
+  
   console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J chuu")
   console.log(checkBoxState+"+checkBoxState chuu")
 
@@ -269,6 +277,10 @@ const Posting = () => {
       alert("作品名、分類を入力してください！")
       return false
     }
+
+    //& tranceform
+    // setSearchWord(searchWord =>(searchWord.replace(/&/g,'＆'))
+    // setWorkName(workName =>(workName.replace('&','＆')))
 
     //新規登録するつもりがある時だけチェックして注意する
     if(firstPostFlag == 1){
@@ -317,7 +329,7 @@ const Posting = () => {
 
     // 作品の固有データをDBに登録
     // 新規登録なのでScoreは入力値のまま　*-*- (wInfo)
-    const workId = await dispatch(postWInfoCreate(
+    await dispatch(postWInfoCreate(
       workName,
       workMedia,
       workScore,
@@ -331,46 +343,48 @@ const Posting = () => {
       tokenMap,
       firstPostFlag,
       preWorkId,
-    ))
+    )).then( async(workId) => {
+      console.log(workId+"+workId posting m")
+      // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
+      await dispatch(addPostedWork(
+        uid,
+        workId,
+        workName,
+        isPublic,
+        isSpoiler,
+        workScore,
+        goCheckBoxState,
+        goTagCheckBoxState,
+        workComment,
+        firstPostFlag,
+      ))
 
-    console.log(workId+"+workId posting m")
-    // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
-    // if(firstPostFlag == 1 || firstPostFlag == 0){
-    await dispatch(addPostedWork(
-      uid,
-      workId,
-      workName,
-      isPublic,
-      isSpoiler,
-      workScore,
-      goCheckBoxState,
-      goTagCheckBoxState,
-      workComment,
-      firstPostFlag,
-    ))
-    // }
-
-    //過去に評価した作品の編集
-    // if(firstPostFlag == 2){
-    //   //postedWorksIdを編集する
-    //   await dispatch(ediPostedWork(
-    //     uid,
-    //     workId,
-    //     workName,
-    //     isPublic,
-    //     isSpoiler,
-    //     workScore,
-    //     goCheckBoxState,
-    //     goTagCheckBoxState,
-    //     workComment,
-    //   ))
-    // }
-    
-    router.push({
-      pathname: '/post/'+workId+'/'+uid,
-      // pathname: '/post/'+id+'/works/'+workName,
-      // query: {workId: workId}
+      router.push({
+        pathname: '/post/'+workId+'/'+uid,
+      })
+    }).catch((error) => {
+      alert('failed get workId')
+      throw new Error(error)
     })
+
+    // console.log(workId+"+workId posting m")
+    // // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
+    // await dispatch(addPostedWork(
+    //   uid,
+    //   workId,
+    //   workName,
+    //   isPublic,
+    //   isSpoiler,
+    //   workScore,
+    //   goCheckBoxState,
+    //   goTagCheckBoxState,
+    //   workComment,
+    //   firstPostFlag,
+    // ))
+    
+    // router.push({
+    //   pathname: '/post/'+workId+'/'+uid,
+    // })
   }
 
   return (
@@ -452,7 +466,15 @@ const Posting = () => {
         {firstPostFlag == 0 && (
           <>
           <h2>作品 評価登録フォーム(新規評価)</h2>
-          <h3>作品名：{workName}</h3>
+          {/* <h3>作品名：{workName}</h3> */}
+          <h3>作品名：
+            <Link
+              href="/post/[postWorkId]/"
+              as={`/post/${preWorkId}/`}
+            >
+              {workName}
+            </Link>
+          </h3>
           <h3>分類　：{workMedia}</h3>
           <h3>カテゴリ：
           {Object.keys(checkBoxState).map((map) => (

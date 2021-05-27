@@ -36,6 +36,7 @@ const SignIn = () => {
 
   const loginButtonClicked = async() => {
   // const loginButtonClicked = () => {
+    console.log(email+"+email,"+password+"+password,"+router+"+router")
     await dispatch(signIn(email, password, router))
 
     // console.log(uid+"+uid@SignIn@pages")

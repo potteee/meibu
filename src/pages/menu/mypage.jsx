@@ -45,7 +45,7 @@ const MyPage = () => {
   const [userName, setUserName] = useState("")
   const [role, setRole] = useState("")
   /// both
-  const [uid, setUid] = useState("")
+  const [uid, setUid] = useState(selector.users.uid)
 
   //// from DataBase
   /// users
@@ -62,10 +62,14 @@ const MyPage = () => {
   /// postedWorkId
   const [workIds ,setWorkIds] = useState([])
 
-  /// display worksName
-  const [worksName ,setWorksName] = useState([])
+  /// display worksData
+  // const [worksData ,setWorksData] = useState([])
+  let worksData
 
-  let uid2 = "uid initial"
+
+  let noWorkFlag = true
+
+  // let uid = "uid initial"
 
   // const users = getUserId(selector)
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
@@ -108,23 +112,26 @@ const MyPage = () => {
   useEffect(() => {
     (async() => {
       //Redux
+
+      // ここで読むと、useSWR時に読み込まれていないので、
+      // 再読み込み時（数秒後）でしか表示されない。
       setUserName(getUserName(selector))
       setRole(getRole(selector))
-      setUid(getUserId(selector))
+      // setUid(getUserId(selector))
       
-      uid2 = getUserId(selector)  
-      // let uid2 = getUserId(selector)  
+      setUid(getUserId(selector))  
+      // let uid = getUserId(selector)  
       
       console.log(JSON.stringify(selector)+"+selector2@mypage")
       console.log(uid+"+uid useEffect out")
-      console.log(uid2+"+uid2 useEffect out")
+      // console.log(uid+"+uid useEffect out")
       
       //DB
-      if(uid2 && uid2 != "uid initial"){
+      if(uid && uid != "uid initial"){
         // await setUid(await getUserId(selector))
-        console.log(uid2+"+uid useEffect in")
+        console.log(uid+"+uid useEffect in")
         
-        await db.collection('users').doc(uid2).get()
+        await db.collection('users').doc(uid).get()
         .then(snapshot => {
           let dbData = snapshot.data()
           console.log(dbData+"+data collection email")
@@ -137,7 +144,7 @@ const MyPage = () => {
           throw new Error(error)
         })
         
-        await db.collection('privateUsers').doc(uid2).get()
+        await db.collection('privateUsers').doc(uid).get()
         .then(snapshot => {
           let dbData = snapshot.data()
           console.log(dbData+"+data collection email")
@@ -150,42 +157,33 @@ const MyPage = () => {
           alert('Get privateUsers DB fail')
           throw new Error(error)
         })
-    
-        // if (error) return <div>Failed to load</div>
-        let tmpWorksId = []
-        let dataFlag = false
-
-        if(data) {
-          // if(data.names != undefined || data.names != "" || data.names.length != 0){
-          if(data.worksData.length != 0){
-            dataFlag = true
-            // console.log(data.worksData+"+data.workData")
-            // data.worksData.forEach((doc) => {
-            //   tmpWorksId.push(doc+" ")
-            // })
-            // setWorksName(tmpWorksId)
-            // console.log("投稿した作品は "+tmpWorksId+" です");
-            setWorksName(data.worksData)
-          } 
-        } 
-        if(dataFlag == false){
-            tmpWorksId.push("投稿した作品はありません")
-            setWorksName(tmpWorksId)
-            // setWorksName("投稿した作品はまだありません！")
-            console.log("投稿した作品はありません！")
-        }
-
       }
-        // setWorksName(data.names)
-
-        // console.log(error+"+api error")
-        // console.log(JSON.stringify(data)+"+api tmpWorkName")
     })()
   // },[selector])
-  },[selector,data,fetcher])
+  // },[selector,data,fetcher,worksData])
+  // },[selector,data,fetcher])
+  },[selector,fetcher])
 
   if (error) return <div>Failed to load</div>
   // if (!data) return <div>Loading...</div>
+
+  // let tmpWorksId = []
+  let dataFlag = false
+
+  if(data) {
+    if(data.worksData.length != 0){
+      dataFlag = true
+      console.log(JSON.stringify(data.worksData)+"+data.worksData@J")
+      noWorkFlag = false // 一度trueになってしまっているのでfalseに戻す。
+      worksData = data.worksData
+      console.log("登録した作品がありました。")
+    } 
+  } 
+  if(dataFlag == false){
+    worksData = ["投稿したデータはありませんんん"]
+    noWorkFlag = true
+    console.log("投稿した作品はありません！")
+  }
 
   if(selector.users.isSignedIn === false){
     //ブラウザ更新時orログインから飛んできたときに'/'に行かないように。
@@ -207,7 +205,11 @@ const MyPage = () => {
         {dispatch(noLoginState)}
         </>
       )
+    } else {
+      console.log("else patern")
     }
+  } else {
+    console.log("selector.users.inSignedIn true")
   }
 
   return (
@@ -243,26 +245,26 @@ const MyPage = () => {
       {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
       
       <p>投稿した作品：</p>
-      {worksName.length != 0 && (
-        <>
-        {worksName.map((map) => (
-          <>
-          <Link
-            href="/post/[postWorkId]/[postUserId]"
-            as={`/post/${map.workId}/${uid}/`}
-          >
-            <a>{map.workName}</a>
-          </Link>
-          <br/>
+      {worksData.length != 0 
+        ? <>{!noWorkFlag 
+          ? <>
+            {worksData.map((map) => (
+              <>
+              <Link
+                href="/post/[postWorkId]/[postUserId]"
+                as={`/post/${map.workId}/${uid}/`}
+              >
+                {map.workName}
+              </Link>
+              <br/>
+              </>
+            ))}
           </>
-        ))}
-        </>
-      )}
+          : <>"投稿した作品はありません"</>
+        }</> 
+        : <>"読み込み中・・・"</>
+      }
       
-      
-      
-      {/* <p>投稿した作品 : {worksName}</p> */}
-
 
       <h3>非公開情報</h3>
       <p>role : {role}</p>
