@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dynamic Routing example
 
 This example shows how to do [dynamic routing](https://nextjs.org/docs/routing/dynamic-routes) in Next.js. It contains two dynamic routes:
@@ -27,3 +28,7 @@ yarn create next-app --example dynamic-routing dynamic-routing-app
 ```
 
 Deploy it to the cloud with [Vercel](https://vercel.com/import?filter=next.js&utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+=======
+# meibu
+meibu first
+>>>>>>> ac20ec6e0254b8ed82e7ff4001119b5a935697c6
