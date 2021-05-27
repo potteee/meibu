@@ -1,9 +1,9 @@
 const initialState = {
-    works: {
-        workId: "initialworkId",
-        workName: ["initialworksName1","initialworksName2"],
-        workScore: ["initialworksScore","initialworksScore2"]
-    },
+    // works: {
+    //     workId: "initialworkId",
+    //     workName: ["initialworksName1","initialworksName2"],
+    //     workScore: ["initialworksScore","initialworksScore2"]
+    // },
     users: {
         isSignedIn: false,
         role: "initialRole",

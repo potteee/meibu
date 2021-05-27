@@ -9,7 +9,7 @@ import Footer from '../../components/footer'
 import {db} from '../../firebase/index'
 import {useDispatch,useSelector} from 'react-redux'
 
-import { getWorkData } from '../../reducks/works/operations'
+// import { getWorkData } from '../../reducks/works/operations'
 import { DiscFull } from '@material-ui/icons'
 
 import { tokenize } from '../api/firebase/allStringSearch/text-processor'

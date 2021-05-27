@@ -2,7 +2,7 @@ import { compose, createStore, applyMiddleware, combineReducers } from 'redux'
 import { HYDRATE, createWrapper } from 'next-redux-wrapper'
 import thunkMiddleware from 'redux-thunk'
 import {UsersReducer} from '../users/reducers'
-import {WorksReducer} from '../works/reducers'
+// import {WorksReducer} from '../works/reducers'
 //　リロード（更新）時データ保持機構
 // import persistState from "redux-localstorage";
 // import {WorksReducer} from '../works/reducers'//未作成
@@ -18,7 +18,7 @@ const bindMiddleware = (middleware) => {
 
 const combinedReducer = combineReducers({
     users: UsersReducer,
-    works: WorksReducer,
+    // works: WorksReducer,
 })
 
 //HYDRETE SSR時にサーバサイドで生成された任意の State をクライアント側に移譲する処理

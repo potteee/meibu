@@ -17,8 +17,8 @@ import { parseCookies } from 'nookies'
 import { set } from 'immutable'
 import {useDispatch,useSelector} from 'react-redux'
 
-import {getUserId, getWorkId, getUserName} from "../../reducks/users/selectors";
-import { postWorkCreate } from '../../reducks/works/operations'
+import {getUserId,getUserName} from "../../reducks/users/selectors";
+// import { postWorkCreate } from '../../reducks/works/operations'
 import { addPostedWork } from '../../reducks/users/operations'
 
 import postWInfoCreate from '../../foundations/wInfo'
