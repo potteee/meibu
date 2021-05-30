@@ -293,7 +293,7 @@ export const addPostedWork = (
                 isPublic: isPublic,
                 isSpoiler: isSpoiler,
                 workScore: workScore ? workScore : -1,
-                assessmentCategory: goCheckBoxState,
+                // assessmentCategory: goCheckBoxState,
                 assessmentWorkTag : goTagCheckBoxState,
                 workComment: workComment
             }
@@ -307,7 +307,7 @@ export const addPostedWork = (
                 isPublic: isPublic,
                 isSpoiler: isSpoiler,
                 workScore: workScore ? workScore : -1,
-                assessmentCategory: goCheckBoxState,
+                // assessmentCategory: goCheckBoxState,
                 assessmentWorkTag : goTagCheckBoxState,
                 workComment: workComment
             }

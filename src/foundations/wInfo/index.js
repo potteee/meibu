@@ -321,7 +321,7 @@ const postWInfoCreate = (
             var assessment = {
                 uid　: uid,
                 userName : userName,
-                assessmentCategory : checkBoxState,
+                // assessmentCategory : checkBoxState,
                 updateTime : {},
                 workScore : workScore ? workScore : -1, // -1は初期値
                 workComment : workComment,

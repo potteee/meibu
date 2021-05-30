@@ -11,11 +11,11 @@ import Footer from '../components/footer'
 const News = () => {
   const dispatch = useDispatch()
 
-  const [workName, setWorkName] = useState("")
-  const [workScore, setWorkScore] = useState({})
-  const [workComment, setWorkComment] = useState({})
-  const [checkBoxState, setCheckBoxState] = useState({})
-  const [workInfo, setWorkInfo] = useState({})
+  // const [workName, setWorkName] = useState("")
+  // const [workScore, setWorkScore] = useState({})
+  // const [workComment, setWorkComment] = useState({})
+  // const [checkBoxState, setCheckBoxState] = useState({})
+  // const [workInfo, setWorkInfo] = useState({})
   const [workData, setWorkData] = useState([]);
   let worksData = [];
 
@@ -62,33 +62,20 @@ const News = () => {
     <h1>news</h1>
     <p>worksのデータを一覧表示。</p>
     <ul>
-      {workData.map(oneWorkData => (
-        <a>
-            <li>
-                {/* {oneWorkData.id} */}
-              <Link href="/post/[id]" 
-              as={`/post/${oneWorkData.workId}`}>
-                <h2>作品名：{oneWorkData.workName}</h2>
-              </Link>
-              <p>　スコア　　：{oneWorkData.winfoScore != -1 ? oneWorkData.winfoScore : "採点なし"}</p>
-              <p>　ジャンル　：{oneWorkData.winfoCategory.map(cate => ( 
-              <span>{cate} </span>
-              ))}
-              </p>
-            </li>
+    {workData.map(oneWorkData => (
+      <li>
+        <Link href="/post/[id]" 
+        as={`/post/${oneWorkData.workId}`}>
+          {"作品名："+oneWorkData.workName+"("+oneWorkData.winfoCount+")"}
+        </Link>
+        <a>：{oneWorkData.winfoScore != -1 ? oneWorkData.winfoScore : "採点なし"}</a>
+        <a>：{oneWorkData.winfoCategory.map(cate => ( 
+        <>{cate+" "}</>
+        ))}
         </a>
-      ))}
+      </li>
+    ))}
     </ul>
-
-    {/* {workData} */}
-    {/* <div>
-      <h2>score: {workScore[0]}</h2>
-      <h2>category:</h2>
-      <h2>info:</h2>
-      <p>-----</p>
-      <h2>comment:{workComment[0]}</h2>
-      <h2>ーこの作品が読めるアプリー</h2>
-    </div> */}
     検索機能へのリンクを目立つように
     <Footer />
   </>

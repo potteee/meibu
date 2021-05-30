@@ -64,7 +64,12 @@ const handlerSearchWork = async({ query: { wname }, body: dBody}, res) => {
     let workData = [];
 
     snapshot.docs.map(map => {
-      workData.push({workName : map.data()["workName"], workId : map.data()["workId"], winfoMedia : map.data()["winfoMedia"]})
+      workData.push({workName : 
+        map.data()["workName"], 
+        workId : map.data()["workId"], 
+        winfoMedia : map.data()["winfoMedia"],
+        winfoCount : map.data()["winfoCount"] //作品が評価された数
+      })
       // console.log(workData[0]+"++++workData in map")
     })
     // console.log(workData+"++++workData")

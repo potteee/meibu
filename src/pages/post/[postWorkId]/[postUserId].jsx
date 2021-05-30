@@ -78,15 +78,10 @@ const handlerPostUserId = () => {
   } 
   
   const { data , error } = useSWR(
-      // `../../api/firebase/assessmentSearchUser/${postUserId}_${postWorkId}`, fetcher,
-      () => postIdCheck() ? `../../api/firebase/assessmentSearchUser/${postWorkId}_${postUserId}`:null, fetcher,
-      // () => postUserId && [`../../api/firebase/assessmentSearchUser/${postUserId}`,postWorkId.json()], fetcher,
-      
-      // postUserId ? [`../../api/firebase/assessmentSearchUser/${postUserId}`,postWorkId] 
-      // : null ,(url, postWorkId) => query(url,{postWorkId})) , 
-      
-      // [`../../api/firebase/assessmentSearchUser/${postUserId}`,postWorkId],
-      // (url, postWorkId) => fetcher(url, {postWorkId}),
+      () => postIdCheck() 
+        ? `../../api/firebase/assessmentSearchUser/${postWorkId}_${postUserId}`
+        : null,
+        fetcher,
       {
         revalidateOnFocus: false,
         revalidateOnReconnect: false
@@ -110,7 +105,7 @@ const handlerPostUserId = () => {
             setWorkName(data.workName)
             setWorkMedia(data.winfoMedia)
             setWorkScore(data.workScore)
-            setWorkCategory(data.assessmentCategory)
+            setWorkCategory(data.winfoCategory)
             setWorkTag(data.assessmentWorkTag)
             setWorkComment(data.workComment)
             setWorkUpdateTime(new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
@@ -130,62 +125,67 @@ const handlerPostUserId = () => {
     })()
   },[data])
 
-  return (
-    <>
-      <Header />
-      <h2>ユーザごとの作品評価ページ</h2>
-      
-      {!isPublic && (<a>※このページは他のユーザには公開されません</a>)}
-      
-      <Link href="/user/[uid]" 
-        as={`/user/${postUserId}/`}>
-        <h3>評価者(L)：{userName}</h3>
-      </Link>
 
-      <Link href="/post/[postWorkId]" 
-        as={`/post/${postWorkId}`}>
-        <h3>作品名(L)：{workName}</h3>
-      </Link>
-      {/* <h3>作品名(L)：{workName}</h3> */}
-      <h4>メディア：{workMedia}</h4>
-      <h3>採点：{workScore != -1 ? workScore : "採点なし"}</h3>
-      <h3>カテゴリ：{
-        workCategory.map(mapWorkCategory => (
-          <a> {mapWorkCategory} </a>
-        ))
-        }
-      </h3>
-      <h3>タグ：{
-        workTag.map(mapWorkTag => (
-        <a>{mapWorkTag} </a>
-        ))
-      }
-            
-      </h3>
-      <h3>作品に対するコメント：{workComment}</h3>
-      <h3>投稿日時：{workUpdateTime}</h3>
-
-      {/* リダックスのユーザ情報と作品のユーザ情報が同一の場合 */}
-      {(postUserId == selector.users.uid) && (
-        <Link href={{
-          pathname: "/post/posting",
-          query: { 
-            searchWord : workName,
-            workId : postWorkId,
-            infoMedia : workMedia,
-            firstPostFlag : 2, // 自分の作品を編集
-            },
-        }}>
-          <a>編集する</a>
+  if(data && selector.users.uid != "initial uid"){
+    return (
+      <>
+        <Header />
+        <h2>ユーザごとの作品評価ページ</h2>
+        
+        {!isPublic && (<a>※このページは他のユーザには公開されません</a>)}
+        
+        <Link href="/user/[uid]" 
+          as={`/user/${postUserId}/`}>
+          <h3>評価者(L)：{userName}</h3>
         </Link>
-      )}
-      <br/>
-      <h3>評価に対するコメント：{assessmentComment}</h3>
-      <h3>いいね：{assessmentLike}</h3>
 
-      <Footer />
-    </>
-  )
+        <Link href="/post/[postWorkId]" 
+          as={`/post/${postWorkId}`}>
+          <h3>作品名(L)：{workName}</h3>
+        </Link>
+        {/* <h3>作品名(L)：{workName}</h3> */}
+        <h4>メディア：{workMedia}</h4>
+        <h3>採点：{workScore != -1 ? workScore : "採点なし"}</h3>
+        <h3>カテゴリ：{
+          workCategory.map(mapWorkCategory => (
+            <a> {mapWorkCategory} </a>
+          ))
+          }
+        </h3>
+        <h3>タグ：{
+          workTag.map(mapWorkTag => (
+          <a>{mapWorkTag} </a>
+          ))
+        }
+              
+        </h3>
+        <h3>作品に対するコメント：{workComment}</h3>
+        <h3>投稿日時：{workUpdateTime}</h3>
+
+        {/* リダックスのユーザ情報と作品のユーザ情報が同一の場合 */}
+        {(postUserId == selector.users.uid) && (
+          <Link href={{
+            pathname: "/post/posting",
+            query: { 
+              searchWord : workName,
+              workId : postWorkId,
+              infoMedia : workMedia,
+              firstPostFlag : 2, // 自分の作品を編集
+              },
+          }}>
+            <a>編集する</a>
+          </Link>
+        )}
+        <br/>
+        <h3>評価に対するコメント：{assessmentComment}</h3>
+        <h3>いいね：{assessmentLike}</h3>
+
+        <Footer />
+      </>
+    )
+  } else {
+    return <>loading...</>
+  }
 }
 
 export default handlerPostUserId

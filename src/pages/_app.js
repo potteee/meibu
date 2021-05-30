@@ -47,26 +47,6 @@ const WrappedApp = ({Component, pageProps}) => {
     })()
   },[])
 
-  // if(selector.users.isSignedIn == false && userID){
-  //   console.log(userID+"+userID@_app")
-  //   db.collection('users').doc(userID).get()
-  //   .then(snapshot => {
-  //       const data =snapshot.data()
-  //       console.log(JSON.stringify(data)+"+data")
-  //       if (!data) {
-  //           throw new Error('ユーザーデータが存在しません');
-  //       }
-  //       dispatch(signInAction({
-  //           isSignedIn: true,
-  //           role: data.role,
-  //           uid:userID,
-  //           // userEmail: data.email,
-  //           userName: data.userName,
-  //           userImage: data.userImage
-  //       }))
-  //   })
-  // }
-
   console.log("start _app");
   console.log("end _app");
   return <Component {...pageProps} />

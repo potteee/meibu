@@ -41,11 +41,15 @@ const MyPage = () => {
   // const location = useLocation();
 
   //// from Redux
-  /// users
-  const [userName, setUserName] = useState("")
-  const [role, setRole] = useState("")
-  /// both
-  const [uid, setUid] = useState(selector.users.uid)
+  const userName = getUserName(selector)
+  const role = getRole(selector)
+  const uid = getUserId(selector)  
+
+  // /// users
+  // const [userName, setUserName] = useState("")
+  // const [role, setRole] = useState("")
+  // /// both
+  // const [uid, setUid] = useState(selector.users.uid)
 
   //// from DataBase
   /// users
@@ -110,18 +114,7 @@ const MyPage = () => {
   // if使わないとapp呼び出されたときにレンダリングされてuidがないからエラーになる。
   // 手前でreturnsしてもダメ
   useEffect(() => {
-    (async() => {
-      //Redux
-
-      // ここで読むと、useSWR時に読み込まれていないので、
-      // 再読み込み時（数秒後）でしか表示されない。
-      setUserName(getUserName(selector))
-      setRole(getRole(selector))
-      // setUid(getUserId(selector))
-      
-      setUid(getUserId(selector))  
-      // let uid = getUserId(selector)  
-      
+    (async() => {    
       console.log(JSON.stringify(selector)+"+selector2@mypage")
       console.log(uid+"+uid useEffect out")
       // console.log(uid+"+uid useEffect out")
@@ -159,10 +152,7 @@ const MyPage = () => {
         })
       }
     })()
-  // },[selector])
-  // },[selector,data,fetcher,worksData])
-  // },[selector,data,fetcher])
-  },[selector,fetcher])
+  },[data])
 
   if (error) return <div>Failed to load</div>
   // if (!data) return <div>Loading...</div>
@@ -212,81 +202,88 @@ const MyPage = () => {
     console.log("selector.users.inSignedIn true")
   }
 
-  return (
-    <>
-    {/* {myInfo} */}
-      <Header />
-      <h2>MyPage</h2>
-      {/* Reduxからのデータを表示する部分と
-      DBからのデータを表示する部分を分けて高速化。 */}
+  // if(data && userSex != ""){
 
-      {/* Redux部 */}
-      <h3>公開ユーザ情報</h3>
-      <Link href="/user/[uid]" 
-        as={`/user/${uid}`}>
-        <h3>お名前(L)：{userName}</h3>
-      </Link>
-      {/* <p>お名前 : {userName}</p> */}
-      <p>性別：
-        {userSex == 0 && ("未登録")}
-        {userSex == 1 && ("男性")}
-        {userSex == 2 && ("女性")}
-      </p>
-      <p>プロフィール : {userProfile}</p>
-      <p>プロフ画 : {userImage}</p>
-      {/* <p>userEmail : {emailFunc}</p> */}
+    // 最後にsetしているuseBirthdayをチェック
+  if(data && userBirthday != ""){
+    return (
+      <>
+      {/* {myInfo} */}
+        <Header />
+        <h2>MyPage</h2>
+        {/* Reduxからのデータを表示する部分と
+        DBからのデータを表示する部分を分けて高速化。 */}
 
-      <h3>プライベート情報</h3>
-      <p>メール : {userEmail}</p>
-      <p>お住まい : {userLiveIn}</p>
-      <p>Web/SNS : {userWebsite}</p>
-      <p>誕生日 : {userBirthday}</p>
-      
-      {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
-      
-      <p>投稿した作品：</p>
-      {worksData.length != 0 
-        ? <>{!noWorkFlag 
-          ? <>
-            {worksData.map((map) => (
-              <>
-              <Link
-                href="/post/[postWorkId]/[postUserId]"
-                as={`/post/${map.workId}/${uid}/`}
-              >
-                {map.workName}
-              </Link>
-              <br/>
-              </>
-            ))}
-          </>
-          : <>"投稿した作品はありません"</>
-        }</> 
-        : <>"読み込み中・・・"</>
-      }
-      
+        {/* Redux部 */}
+        <h3>公開ユーザ情報</h3>
+        <Link href="/user/[uid]" 
+          as={`/user/${uid}`}>
+          <h3>お名前(L)：{userName}</h3>
+        </Link>
+        {/* <p>お名前 : {userName}</p> */}
+        <p>性別：
+          {userSex == 0 && ("未登録")}
+          {userSex == 1 && ("男性")}
+          {userSex == 2 && ("女性")}
+        </p>
+        <p>プロフィール : {userProfile}</p>
+        <p>プロフ画 : {userImage}</p>
+        {/* <p>userEmail : {emailFunc}</p> */}
 
-      <h3>非公開情報</h3>
-      <p>role : {role}</p>
-      <p>uid : {uid}</p>
-      
-      <Link 
-        href={{
-          pathname: "/menu/mypageEdit",
-          query: { hist : "mypage" },
-        }} 
-      >
-        <a>mypageを編集する</a>
-      </Link>
+        <h3>プライベート情報</h3>
+        <p>メール : {userEmail}</p>
+        <p>お住まい : {userLiveIn}</p>
+        <p>Web/SNS : {userWebsite}</p>
+        <p>誕生日 : {userBirthday}</p>
+        
+        {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
+        
+        <p>投稿した作品：</p>
+        {worksData.length != 0 
+          ? <>{!noWorkFlag 
+            ? <>
+              {worksData.map((map) => (
+                <>
+                <Link
+                  href="/post/[postWorkId]/[postUserId]"
+                  as={`/post/${map.workId}/${uid}/`}
+                >
+                  {map.workName}
+                </Link>
+                <br/>
+                </>
+              ))}
+            </>
+            : <>"投稿した作品はありません"</>
+          }</> 
+          : <>"読み込み中・・・"</>
+        }
+        
 
-      {/* <PrimaryButton
-        label={"mypageを編集する"}
-        onClick={ () => router.push('/menu/mypageEdit')}
-      /> */}
+        <h3>非公開情報</h3>
+        <p>role : {role}</p>
+        <p>uid : {uid}</p>
+        
+        <Link 
+          href={{
+            pathname: "/menu/mypageEdit",
+            query: { hist : "mypage" },
+          }} 
+        >
+          <a>mypageを編集する</a>
+        </Link>
 
-      <Footer />
-    </>
-  )
+        {/* <PrimaryButton
+          label={"mypageを編集する"}
+          onClick={ () => router.push('/menu/mypageEdit')}
+        /> */}
+
+        <Footer />
+      </>
+    )
+  } else {
+    return <>loading...</>
+  }
 }
 
 export default MyPage

@@ -8,6 +8,7 @@ import Header from '../../components/header'
 import Footer from '../../components/footer'
 import {db} from '../../firebase/index'
 import {useDispatch,useSelector} from 'react-redux'
+import {getUserId,getUserName} from "../../reducks/users/selectors";
 
 // import { getWorkData } from '../../reducks/works/operations'
 import { DiscFull } from '@material-ui/icons'
@@ -29,6 +30,13 @@ const fetcher = async (url,searchTokenMap) => {
     body: JSON.stringify(searchTokenMap) 
     // JSON形式のデータ  })
   })
+ 
+  //data = {
+  //   workName : map.data()["workName"], 
+  //   workId : map.data()["workId"], 
+  //   winfoMedia : map.data()["winfoMedia"]
+  //   winfoCount : map.data()["winfoCount"] //作品が評価された数
+  // }
   const data = await res.json()
 
   if (res.status !== 200) {
@@ -42,6 +50,9 @@ const searchResult = () => {
   const dispatch = useDispatch()
   const selector = useSelector((state) => state)
   // const { searchWord } = router.query.searchWord
+
+  const uid = getUserId(selector);
+  const userName = getUserName(selector);
 
   let searchWord = router.asPath; //URL取得。pathnameだと[id](str)で取得してしまう
   // console.log(query+"+query at postUserId")
@@ -90,35 +101,12 @@ const searchResult = () => {
   console.log(error+"+api error")
   console.log(JSON.stringify(data)+"++data@J")
 
-  // console.log(JSON.stringify(jres)+"+jres@J")
-  // console.log(jres+"+jres")
-  // console.log(typeof(jres)+"+jres.typeof")
-  // console.log(jres.length+"+jres.length")
-
   useEffect(() => {
     (async() => {
       console.log("useEffect Out")
       if(searchWord != undefined) {
         console.log("useEffect Done")
 
-
-        // if(data){
-        //   if(data.length != 0){
-        //     setJres(data) 
-        //     console.log(JSON.stringify(data[0].workName)+"+data@J")
-        //     console.log((data[0].workName)+"+data")
-        //     console.log(JSON.stringify(jres)+"+jres@J")
-        //     console.log(jres[0]+"+jres")
-        //   }
-        // }
-
-        // getUserAssessmentWorks()
-        // .then(token => {
-        //   // assessmentWorksId = token
-        //   setAssessmentWorksId(token)
-        //   console.log(assessmentWorksId+"+assessmentWorksId")
-        //   console.log(JSON.stringify(assessmentWorksId)+"+assessmentWorksId@J")
-        // })
         getUserAssessmentWorks()
           .then(token => {//asyncの関数はthenで受け取る
             //setが実行されると関数全体が副作用で呼ばれるっぽいからuseEffectないに堆肥させている。
@@ -155,10 +143,10 @@ const searchResult = () => {
 
   const getUserAssessmentWorks = async() => {
     try{
-      console.log(selector.users.uid+"selector.users.uid searchR")
-      if(selector.users.uid != "uid initial"){
-        console.log(selector.users.uid+"+selector.users.uid")
-        const snapshot = await db.collection('privateUsers').doc(selector.users.uid)
+      console.log(uid+"uid searchR")
+      if(uid != "uid initial"){
+        console.log(uid+"+uid")
+        const snapshot = await db.collection('privateUsers').doc(uid)
         .collection('postedWorksId')
         .get()
         
@@ -178,29 +166,6 @@ const searchResult = () => {
     }
   }
 
-
-  const dummy = () => {
-    console.log("dummy done")
-  }
-
-  dummy()
-
-
-  // getUserAssessmentWorks()
-  // .then(token => {
-  //   // assessmentWorksId = token
-  //   setAssessmentWorksId(token)
-  //   console.log(assessmentWorksId+"+assessmentWorksId")
-  //   console.log(JSON.stringify(assessmentWorksId)+"+assessmentWorksId@J")
-  // }).catch((error) => {
-  //     // dispatch(hideLoadingAction())
-  //     alert('ユーザ情報取得失敗')
-  //     throw new Error(error)
-  //     return false
-  // })
-
-  // assessmentWorksId = getUserAssessmentWorks()
-
   const createNewWork = () => {
     router.push({
       pathname: '/post/posting',
@@ -217,9 +182,10 @@ const searchResult = () => {
   console.log(JSON.stringify(jres)+"+jres@J")
   console.log(jres[0]+"+jres")
 
-  // if(data && Array.isArray(assessmentWorksId)) {
-  if(data && assessmentWorksId[0] != undefined) {
-  // if(data && selector.users.uid != "uid initial") {
+  //前半の条件：データ取得後且つ、ユーザが評価した作品を取得後（何も評価したことがないユーザでもデフォルト値99が入っている
+  //後半の条件：ログインしていなユーザが検索した場合assessmentWorksIdの条件は要らなくなるので、uid未定義をフラグとした。
+  if((data && assessmentWorksId[0] != undefined) || (data && uid === "uid initial")) {
+  // if(data && uid != "uid initial") {
     if(jres.length != 0){
       return (
         <>
@@ -244,8 +210,8 @@ const searchResult = () => {
                       },
                   }}>
                     {assessmentWorksId.includes(map.workId) 
-                      ? (map.workName+" : "+map.winfoMedia+"(評価済み)")
-                      : (map.workName+" : "+map.winfoMedia)
+                      ? (map.workName+" : "+map.winfoMedia+"(評価済み)"+"("+map.winfoCount+")")
+                      : (map.workName+" : "+map.winfoMedia+"("+map.winfoCount+")")
                     }
                   </Link>
                 </li>

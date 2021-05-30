@@ -45,6 +45,11 @@ const Posting = () => {
   // const { id } = router.query
   const dispatch = useDispatch()
   const selector = useSelector((state) => state)
+  // const uid = selector.users.uid
+  //上記よりこっちの方が処理漏れ少ない？
+  const uid = getUserId(selector);
+  const userName = getUserName(selector);
+  const classes = useStyles();
 
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
   // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
@@ -75,11 +80,6 @@ const Posting = () => {
   } else {
   }
 
-  // const uid = selector.users.uid
-  //上記よりこっちの方が処理漏れ少ない？
-  const uid = getUserId(selector);
-  const userName = getUserName(selector);
-  const classes = useStyles();
 
   console.log(query+"++query")
   // console.log(querysWorkName+"+querysWorkName")
@@ -185,61 +185,72 @@ const Posting = () => {
 
   //useEffect
   useEffect(() => {
-  (async() => {
-    if(query && qInfoMedia){
-      setWorkName(query)
-      setWorkMedia(qInfoMedia)
-    }
-    console.log(workName+"+workName")
-    console.log(tagCheckBox+"+tagCheckBox")
-
-    console.log(firstPostFlag+"+firstPostFlag")
-
-    if(uid != "uid initial"){
+    (async() => {
+      if(query && qInfoMedia){
+        setWorkName(query)
+        setWorkMedia(qInfoMedia)
+      }
+      console.log(workName+"+workName")
+      console.log(tagCheckBox+"+tagCheckBox")
+      console.log(firstPostFlag+"+firstPostFlag")
 
       //既に評価済みの評価を編集する場合
       if(firstPostFlag == 2){
-        console.log("firstPostFlag = 2 effect start")
-        console.log(uid+"+uid +++")
-        console.log(preWorkId+"preWorkId +++")
-        await db.collection('privateUsers').doc(uid)
-        .collection('postedWorksId').doc(preWorkId)
+        if(uid != "uid initial"){
+          console.log("firstPostFlag = 2 effect start")
+          console.log(uid+"+uid +++")
+          console.log(preWorkId+"preWorkId +++")
+          await db.collection('privateUsers').doc(uid)
+          .collection('postedWorksId').doc(preWorkId)
+          .get()
+          .then((snapshot) => {
+            // console.log(JSON.stringify(snapshot)+"+snapshot@J")
+            console.log("+snapshot")
+            console.log(snapshot)
+            console.log(snapshot.data()+"+snapshot.data()")
+            console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
+            // console.log(snapshot.data().assessmentCategory+"+snapshot.data().assessmentCategory") 
+            console.log(snapshot.data().assessmentWorkTag+"+snapshot.data().assessmentWorkTag") 
+          
+            snapshot.data().assessmentWorkTag.map((tag) => {
+              console.log(tag+"+tags")
+              Object.keys(tagMap).map((map) => {
+                if(tagMap[map] == tag){
+                  setTagCheckBox(tagCheckBox => ({...tagCheckBox , [map]:true}))
+                }
+              })
+            })            
+            setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
+            setWorkComment(snapshot.data().workComment)
+            setIsPublic(snapshot.data().isPublic)
+            setIsSpoiler(snapshot.data().isSpoiler)
+          })
+          .catch((error) => {
+            alert('failed fistPostFlag 2 get postedWorksId')
+            throw new Error(error)
+          })
+        } else {
+          console.log(uid+"+uid")
+        }
+        await db.collection('wInfo').doc(preWorkId)
         .get()
         .then((snapshot) => {
-          // console.log(JSON.stringify(snapshot)+"+snapshot@J")
-          console.log(snapshot+"+snapshot")
-          console.log(snapshot.data()+"+snapshot.data()")
           console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-          console.log(snapshot.data().assessmentCategory+"+snapshot.data().assessmentCategory") 
-          console.log(snapshot.data().assessmentWorkTag+"+snapshot.data().assessmentWorkTag") 
-          setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
-          setWorkComment(snapshot.data().workComment)
-          snapshot.data().assessmentCategory.map((cate) => {
+          snapshot.data().winfoCategory.map((cate) => {
             console.log(cate+"+cates")
             Object.keys(categoryMap).map((map) => {
               if(categoryMap[map] == cate){
-                setCheckBoxState(checkBoxState => ({...checkBoxState, [map]:true}))
+                setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
               }
             })
           })
-          snapshot.data().assessmentWorkTag.map((tag) => {
-            console.log(tag+"+tag")
-            Object.keys(tagMap).map((map) => {
-              if(tagMap[map] == tag){
-                setTagCheckBox(tagCheckBox => ({...tagCheckBox, [map]:true}))
-              }
-            })
-          })
-          setIsPublic(snapshot.data().isPublic)
-          setIsSpoiler(snapshot.data().isSpoiler)
         })
         .catch((error) => {
-          alert('failed fistPostFlag 2 get postedWorksId')
+          alert('failed fistPostFlag 0 get wInfo')
           throw new Error(error)
         })
       }
-
-      //未評価の既に登録されている作品
+        //未評価の既に登録されている作品
       if(firstPostFlag == 0){
         console.log("firstPostFlag = 0 effect start")
         await db.collection('wInfo').doc(preWorkId)
@@ -260,12 +271,7 @@ const Posting = () => {
           throw new Error(error)
         })
       }
-    } else {
-      console.log(uid+"+uid")
-    }
-
-  })()
-  // },[query,qInfoMedia,firstPostFlag])
+    })()
   },[selector])
   
   console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J chuu")
@@ -282,15 +288,16 @@ const Posting = () => {
     // setSearchWord(searchWord =>(searchWord.replace(/&/g,'＆'))
     // setWorkName(workName =>(workName.replace('&','＆')))
 
+    //同じ作品名の作品を登録できるようにした　→　評価数と？？？で見分ける
     //新規登録するつもりがある時だけチェックして注意する
-    if(firstPostFlag == 1){
-      const same = await checkSameWork(workName,workMedia)
-      console.log(same+"+sameeeee")
-      if(same){
-        alert("同じ作品名の作品があります。作品名、分類を変更するか、既存の作品を評価してください")
-        return false
-      }
-    }
+    // if(firstPostFlag == 1){
+    //   const same = await checkSameWork(workName,workMedia)
+    //   console.log(same+"+sameeeee")
+    //   if(same){
+    //     alert("同じ作品名の作品があります。作品名、分類を変更するか、既存の作品を評価してください")
+    //     return false
+    //   }
+    // }
 
     //チェックされた項目だけを配列として抽出する
     let goCheckBoxState = []
@@ -366,25 +373,6 @@ const Posting = () => {
       alert('failed get workId')
       throw new Error(error)
     })
-
-    // console.log(workId+"+workId posting m")
-    // // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
-    // await dispatch(addPostedWork(
-    //   uid,
-    //   workId,
-    //   workName,
-    //   isPublic,
-    //   isSpoiler,
-    //   workScore,
-    //   goCheckBoxState,
-    //   goTagCheckBoxState,
-    //   workComment,
-    //   firstPostFlag,
-    // ))
-    
-    // router.push({
-    //   pathname: '/post/'+workId+'/'+uid,
-    // })
   }
 
   return (
@@ -491,7 +479,14 @@ const Posting = () => {
         {firstPostFlag == 2 && (
           <>
           <h2>作品 評価登録フォーム(評価編集)</h2>
-          <h3>作品名：{workName}</h3>
+          <h3>作品名：            
+            <Link
+              href="/post/[postWorkId]/"
+              as={`/post/${preWorkId}/`}
+            >
+              {workName}
+            </Link>
+          </h3>
           <h3>分類　：{workMedia}</h3>
           <h3>カテゴリ：
           {Object.keys(checkBoxState).map((map) => (
@@ -502,74 +497,108 @@ const Posting = () => {
           </h3>
           </>
         )}
-
-        <TextInput
-        fullWidth={true} label={"(任意)点数(0-100)"} multiline={false} required={true}
-        rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
-        />
-
-        <div>タグ/属性</div> 
-        {/* <FormGroup root> */}
-        <FormGroup row2>
-        <FormControlLabel
-            control={
-              <CheckIconBox
-              checked={tagCheckBox.SyujinMiryo} onChange={tagCheckBoxHandleChange} 
-              name={"SyujinMiryo"} color={"secondary"}
-              />
-            } label = {"主人公が魅力的"}
-        />
-        <FormControlLabel
-            control={
-              <CheckIconBox
-              checked={tagCheckBox.KanjohInyuu} onChange={tagCheckBoxHandleChange} 
-              name={"KanjohInyuu"} color={"primary"}
-              />
-            } label={"感情移入できる"}
-        />
-        <FormControlLabel
-            control={
-              <CheckIconBox
-              checked={tagCheckBox.Sekaikan} onChange={tagCheckBoxHandleChange} 
-              name={"Sekaikan"} color={"primary"}
-              />
-            } label={"世界観が良い"}
-        />
-
-        </FormGroup>
-        <TextInput
-            fullWidth={true} label={"コメント(5000字以内)"} multiline={true} required={true}
-            rows={1} value={workComment} type={"text"} onChange={inputWorkComment}
-        />
-
-        <FormGroup row>
-        <FormControlLabel
-        control={
-          <CheckIconBox
-          checked={isSpoiler} onChange={isSpoilerHandleChange} 
-          name={"ネタバレコメント"} color={"primary"}
-          />
-        } label = {"ネタバレコメント"}
-        />
-        </FormGroup>
-
-        <FormGroup row>
-        <FormControlLabel
-        control={
-          <CheckIconBox
-          checked={isPublic} onChange={isPublicHandleChange} 
-          name={"一般公開"} color={"primary"}
-          />
-        } label = {"投稿内容を一般公開する"}
-        />
-        </FormGroup>
       </div>
 
-      <PrimaryButton label={"投稿"} onClick={postButtonClicked} />
+        {/* ログインしていないと以下は表示されない */}
 
-      <h2>作品情報を入力(オプション)</h2>
-      <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
+        {uid !== "uid initial" 
+        ? (
+            <div className="c-section-container">
+              <TextInput
+              fullWidth={true} label={"(任意)点数(0-100)"} multiline={false} required={true}
+              rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
+              />
 
+              <div>タグ/属性</div> 
+              {/* <FormGroup root> */}
+              <FormGroup row2>
+              <FormControlLabel
+                  control={
+                    <CheckIconBox
+                    checked={tagCheckBox.SyujinMiryo} onChange={tagCheckBoxHandleChange} 
+                    name={"SyujinMiryo"} color={"secondary"}
+                    />
+                  } label = {"主人公が魅力的"}
+              />
+              <FormControlLabel
+                  control={
+                    <CheckIconBox
+                    checked={tagCheckBox.KanjohInyuu} onChange={tagCheckBoxHandleChange} 
+                    name={"KanjohInyuu"} color={"primary"}
+                    />
+                  } label={"感情移入できる"}
+              />
+              <FormControlLabel
+                  control={
+                    <CheckIconBox
+                    checked={tagCheckBox.Sekaikan} onChange={tagCheckBoxHandleChange} 
+                    name={"Sekaikan"} color={"primary"}
+                    />
+                  } label={"世界観が良い"}
+              />
+
+              </FormGroup>
+              <TextInput
+                  fullWidth={true} label={"コメント(5000字以内)"} multiline={true} required={true}
+                  rows={1} value={workComment} type={"text"} onChange={inputWorkComment}
+              />
+
+              <FormGroup row>
+              <FormControlLabel
+              control={
+                <CheckIconBox
+                checked={isSpoiler} onChange={isSpoilerHandleChange} 
+                name={"ネタバレコメント"} color={"primary"}
+                />
+              } label = {"ネタバレコメント"}
+              />
+              </FormGroup>
+
+              <FormGroup row>
+              <FormControlLabel
+              control={
+                <CheckIconBox
+                checked={isPublic} onChange={isPublicHandleChange} 
+                name={"一般公開"} color={"primary"}
+                />
+              } label = {"投稿内容を一般公開する"}
+              />
+              </FormGroup>
+
+            <PrimaryButton label={"投稿"} onClick={postButtonClicked} />
+
+            <h2>作品情報を入力(オプション)</h2>
+            <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
+          </div>
+        )
+        : (
+          // <div className="c-section-container">
+          // </div>
+          <>
+          アカウントがある方はログイン、ない方はアカウント作成をしてください。
+            <ul>
+              <li>
+                <Link
+                  href={{
+                  pathname: "/auth/signup",
+                  query: { hist : "Signup" },
+                }}>
+                  <a>SignUp</a>
+                </Link>
+              </li>
+              <li>
+                {/* //ログインしているときにはsignout画面に遷移 */}
+                <Link
+                  href={{
+                  pathname: "/auth/signin",
+                  query: { hist : "Signin" },
+                }}>
+                  <a>SignIn</a>
+                </Link>
+              </li>
+            </ul>
+          </>
+        )}
       <Footer />
     </>
   )
