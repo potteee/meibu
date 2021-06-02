@@ -39,6 +39,7 @@ const Search = () => {
       pathname: '/menu/searchResult',
       query: {
         searchWord : searchWord,
+        hist : hist
         // jres : JSON.stringify(jres),
       } 
     })
@@ -51,6 +52,9 @@ const Search = () => {
     <h2>作品検索画面</h2>
     {hist == "Posting" && (
         <p>記録する作品を検索しましょう！</p>
+    )}
+    {hist == "Search" && (
+        <p>お探しの作品を検索！（あいまい検索可能）</p>
     )}
     <TextInput
         fullWidth={true} label={"作品名"} multiline={false} required={true}

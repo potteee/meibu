@@ -9,14 +9,14 @@ import firebaseConfigPrm from './next.config'
 try {
     if (firebase.apps.length){
     // if (firebase.apps){
-        console.log(firebaseConfigPrm.apiKey+"-firebase-indexx-exist");
+        console.log(firebaseConfigPrm.apiKey+"+firebase-indexx-exist");
     } else {
-        console.log(firebaseConfigPrm.apiKey+"-firebase-index-noexist-before");
-        console.log(process.env.NEXT_PUBLIC_FIREBASE_API_KEY+"-firebase-index-noexist-apikey");
+        console.log(firebaseConfigPrm.apiKey+"+firebase-index-noexist-before");
+        console.log(process.env.NEXT_PUBLIC_FIREBASE_API_KEY+"+firebase-index-noexist-apikey");
         firebase.initializeApp(firebaseConfigPrm)
 
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        console.log(firebaseConfigPrm.apiKey+"-firebase-index-noexist-after");
+        console.log(firebaseConfigPrm.apiKey+"+firebase-index-noexist-after");
     }
 
 } catch (error) {

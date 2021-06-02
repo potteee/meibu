@@ -46,13 +46,17 @@ const fetcher = async (url,searchTokenMap) => {
 }
 
 const searchResult = () => {
-  const router = useRouter()
+  console.log("start searchResult() ")
   const dispatch = useDispatch()
   const selector = useSelector((state) => state)
   // const { searchWord } = router.query.searchWord
 
   const uid = getUserId(selector);
-  const userName = getUserName(selector);
+  // const userName = getUserName(selector);
+  const router = useRouter()
+
+  let hist = ""
+  // const {hist} = router.query
 
   let searchWord = router.asPath; //URL取得。pathnameだと[id](str)で取得してしまう
   // console.log(query+"+query at postUserId")
@@ -61,11 +65,17 @@ const searchResult = () => {
 
   console.log(searchWord+"+searchWord 1")
 
-  searchWord = decodeURIComponent(/\&/.test(searchWord.split('searchWord=')[1]) ? (searchWord.split('searchWord=')[1]).split('&')[0] : searchWord.split('searchWord=')[1])
-
+  hist = /\&/.test(searchWord.split('hist=')[1]) 
+          ? (searchWord.split('hist=')[1]).split('&')[0] 
+          : searchWord.split('hist=')[1]
+ 
+  searchWord = decodeURIComponent(/\&/.test(searchWord.split('searchWord=')[1]) 
+                            ? (searchWord.split('searchWord=')[1]).split('&')[0] 
+                            : searchWord.split('searchWord=')[1]
+                          )
+  
   console.log(searchWord+"+searchWord 2")
-
-
+  console.log(hist+"+hist")
 
   // const searchWord = router.query.searchWord
   // const [jres ,setJres] = useState([])
@@ -74,7 +84,7 @@ const searchResult = () => {
   const [workName, setWorkName] = useState("")
   const [checkBoxState, setCheckBoxState] = useState([])
   const [media, setMedia] = useState([])
-  const [assessmentWorksId ,setAssessmentWorksId] = useState("")
+  const [assessmentWorksId ,setAssessmentWorksId] = useState([])
   // const [assessmentWorksId ,setAssessmentWorksId] = useState([])
   // let assessmentWorksId = []
 
@@ -120,10 +130,11 @@ const searchResult = () => {
               throw new Error(error)
               return false
           })
-          console.log(Array.isArray(assessmentWorksId)+"Array.isArray(assessmentWorksId)")
+          console.log(Array.isArray(assessmentWorksId)+"+Array.isArray(assessmentWorksId)")
       }
     })()
-  },[selector,data]) 
+  // },[selector,data]) 
+  },[data,uid]) 
   //selector->最初のレンダリングではselectorが読み込まれないので。
   //data->最初のレンダリング後にdataが書き換わった後に再度レンダリングされるがその際にassessmentWroksIdが
   //書き換わらないとloading...のままになってしまう。
@@ -149,6 +160,9 @@ const searchResult = () => {
         const snapshot = await db.collection('privateUsers').doc(uid)
         .collection('postedWorksId')
         .get()
+
+        console.log("getUserAsessmentWorks snapshot")
+        console.log(snapshot)
         
         let tmpWorkId = []
         snapshot.docs.map((map,index) => {
@@ -156,13 +170,15 @@ const searchResult = () => {
           tmpWorkId.push(map.data().workId)
           console.log(tmpWorkId+"+tmpWorkId+"+index)
         })
+
+        console.log("return getUserAssessmentWorks")
         return tmpWorkId
           // setAssessmentWorksId(tmpWorkId)
       } else {
         return []
       }
     } catch (error) {
-    throw error.response.status
+      throw error.response.status
     }
   }
 
@@ -193,31 +209,56 @@ const searchResult = () => {
           <h2>検索結果ページ</h2>
           {/* render時にworkDataGetが読み込まれるうようにしたい */}
           <a>お探しの作品はありますか？</a>
-          {/* <a>{assessmentWorksId.map(map => (
-            <>{map}</>
-          ))}</a> */}
           <ul>
-            {jres.map(map => (
-              <>
-                <li>
-                  <Link href={{
-                    pathname: "/post/posting",
-                    query: { 
-                      searchWord : map.workName,
-                      workId : map.workId,
-                      infoMedia : map.winfoMedia,
-                      firstPostFlag : assessmentWorksId.includes(map.workId) ? 2 : 0,
-                      },
-                  }}>
-                    {assessmentWorksId.includes(map.workId) 
-                      ? (map.workName+" : "+map.winfoMedia+"(評価済み)"+"("+map.winfoCount+")")
-                      : (map.workName+" : "+map.winfoMedia+"("+map.winfoCount+")")
-                    }
-                  </Link>
-                </li>
-              </>
-            ))}
-          </ul>
+            {hist == "Posting" && ( 
+            <> 
+              {jres.map(map => (
+                <>
+                  <li>
+                    <Link href={{
+                      pathname: "/post/posting",
+                      query: { 
+                        searchWord : map.workName,
+                        workId : map.workId,
+                        infoMedia : map.winfoMedia,
+                        firstPostFlag : assessmentWorksId.includes(map.workId) ? 2 : 0,
+                        },
+                    }}>
+                      {assessmentWorksId.includes(map.workId) 
+                        ? (map.workName+" : "+map.winfoMedia+"(評価済み)"+"("+map.winfoCount+")")
+                        : (map.workName+" : "+map.winfoMedia+"("+map.winfoCount+")")
+                      }
+                    </Link>
+                  </li>
+                </>
+              ))}
+            </>
+            )}
+            {hist == "Search" && (
+            <>
+              {jres.map(map => (
+                <>
+                  <li>
+                    <Link href={{
+                      pathname: "/post/posting",
+                      query: { 
+                        searchWord : map.workName,
+                        workId : map.workId,
+                        infoMedia : map.winfoMedia,
+                        firstPostFlag : assessmentWorksId.includes(map.workId) ? 2 : 0,
+                        },
+                    }}>
+                      {assessmentWorksId.includes(map.workId) 
+                        ? (map.workName+" : "+map.winfoMedia+"(評価済み)"+"("+map.winfoCount+")")
+                        : (map.workName+" : "+map.winfoMedia+"("+map.winfoCount+")")
+                      }
+                    </Link>
+                  </li>
+                </>
+              ))}
+            </>
+            )}
+            </ul>
           <PrimaryButton label={"候補にないので新しい作品として登録する"} onClick={createNewWork} />
           <Footer />
         </>

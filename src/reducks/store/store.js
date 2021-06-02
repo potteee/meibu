@@ -9,6 +9,7 @@ import {UsersReducer} from '../users/reducers'
 
 //developper tool
 const bindMiddleware = (middleware) => {
+    console.log("bindMiddleware")
     if (process.env.NODE_ENV !== 'production') {
       const { composeWithDevTools } = require('redux-devtools-extension')
       return composeWithDevTools(applyMiddleware(...middleware))
@@ -31,7 +32,8 @@ const reducer = (state, action) => {
         } 
         //reducerがクライアント側で引き継ぐべき値であったら・・・今のところない。
         // if (state.count.count) nextState.count.count = state.count.count // preserve count value on client side navigation
-        console.log("reducer if")
+        // console.log("reducer if")
+        console.log(action.type+"+action.type@reducer true")
         return nextStage
     } else {
         console.log(action.type+"+action.type@reducer else")
@@ -45,6 +47,7 @@ const reducer = (state, action) => {
 
 const initStore = () => {
     // return compose(persistState())(createStore(reducer, bindMiddleware([thunkMiddleware])))
+    console.log("initStore")
     return createStore(reducer, bindMiddleware([thunkMiddleware]))
 }
 

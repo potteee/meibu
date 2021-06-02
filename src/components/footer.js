@@ -51,7 +51,10 @@ const Footer = () => {
         </Link>
       </li>
       <li>
-        <Link href="/menu/search">
+        <Link href={{
+          pathname: "/menu/search",
+          query: {hist : "Search"},
+        }}>
           <a>search</a>
         </Link>
       </li>
