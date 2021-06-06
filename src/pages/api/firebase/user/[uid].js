@@ -56,7 +56,8 @@ const userPageHandler = async({ query: { uid } }, res) => { //{}内はファイ�
 
       snapshot2.docs.map(ss2 => {
         console.log(JSON.stringify(ss2.data())+"++ss2.data()")
-        pubPostedWorksId.push(ss2.data())
+        pubPostedWorksId = [...pubPostedWorksId, ss2.data()]
+        // pubPostedWorksId.push(ss2.data())
       })
       console.log(pubPostedWorksId+"++++++pubPostedWorksId")
         // console.log(JSON.stringify(snapshot2.docs)+"+snapshot2.docs")

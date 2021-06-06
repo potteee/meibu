@@ -141,7 +141,8 @@ const mypageEdit = () => {
             }else{
               let tmpWorkIds = []
               snapshot.forEach((doc) => {
-                tmpWorkIds.push(doc.id)
+                tmpWorkIds = [...tmpWorkIds, doc.id]
+                // tmpWorkIds.push(doc.id)
                 // list.push(snapshot.data())
   
               })

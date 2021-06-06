@@ -158,8 +158,10 @@ export const tokenize = (...words: string[]) => {
     .forEach(val => {
       if (val.match(/^[0-9a-z+]+$/)) {
         if (val.length > 3 && val.match(/[sS]$/)) {
+          // resultArr = [...resultArr,(val.substring(0, val.length - 1))];
           resultArr.push(val.substring(0, val.length - 1));
         } else {
+          // resultArr = [...resultArr,val];
           resultArr.push(val);
         }
         preVal = '';

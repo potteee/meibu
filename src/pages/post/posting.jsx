@@ -90,17 +90,46 @@ const Posting = () => {
 
   const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
-  const [checkBoxState, setCheckBoxState] = useState({
-    SF: false,  
-    Love: false,
-    Fantasy: false
-  })
+  //Catgory
+  //絶対的なもの
+  const categoryMap = {
+    SF : "SF",
+    Love : "ラブストーリー",
+    Fantasy : "ファンタジー",
+    Comedy : "コメディ",
+  }
 
-  const [tagCheckBox, setTagCheckBox] = useState({
-    SyujinMiryo : false,
-    KanjohInyuu : false,
-    Sekaikan : false,
-  })
+  //Tag
+  //主観によるもの
+  const tagMap = {
+    SyujinMiryo : "主人公が魅力的",
+    KanjohInyuu : "感情移入できる",
+    Sekaikan : "世界観が良い",
+    HardBoild : "ハードボイルド",
+  }
+
+  let tagResult = {}
+
+  Object.keys(tagMap).map((map) => 
+    tagResult = {...tagResult, [map] : false}
+  )
+
+  const [tagCheckBox, setTagCheckBox] = useState(tagResult)
+  
+  let cateResult = {}
+
+  Object.keys(categoryMap).map((map) => 
+    cateResult = {...cateResult, [map] : false}
+  )
+
+  const [checkBoxState, setCheckBoxState] = useState(tagResult)
+  
+  // {
+  //   SF: false,  
+  //   Love: false,
+  //   Fantasy: false
+  // })
+
   const [isPublic,setIsPublic] = useState(true)
   const [isSpoiler,setIsSpoiler] = useState(false)
   // const [workInfo, setWorkInfo] = useState("")
@@ -116,8 +145,7 @@ const Posting = () => {
   }, [])
   
   const checkBoxHandleChange = useCallback((event) => {
-    setCheckBoxState({ ...checkBoxState,[event.target.name]: event.target.checked })
-    // },[checkBoxState])
+    setCheckBoxState({...checkBoxState,[event.target.name]: event.target.checked})
   },[checkBoxState])
 
   const tagCheckBoxHandleChange = useCallback((event) => {
@@ -167,21 +195,6 @@ const Posting = () => {
     return tokenMap
   }
 
-  //Catgory
-  //絶対的なもの
-  const categoryMap = {
-    SF : "SF",
-    Love : "ラブストーリー",
-    Fantasy : "ファンタジー",
-  }
-
-  //Tag
-  //主観によるもの
-  const tagMap = {
-    SyujinMiryo : "主人公が魅力的",
-    KanjohInyuu : "感情移入できる",
-    Sekaikan : "世界観が良い",
-  }
 
   //useEffect
   useEffect(() => {
@@ -301,30 +314,38 @@ const Posting = () => {
 
     //チェックされた項目だけを配列として抽出する
     let goCheckBoxState = []
-    if(checkBoxState.Love == true){
-      goCheckBoxState.push("ラブストーリー")
-    }
-    if(checkBoxState.SF == true){
-      goCheckBoxState.push("SF")
-    }
-    if(checkBoxState.Fantasy == true){
+    Object.keys(checkBoxState).map((map,index) => {
+      if(checkBoxState[map] == true){
+        console.log(map+"+map+"+index)
+        console.log(categoryMap[map]+"+CategoryMap")
+        // goCheckBoxState.push(categoryMap[map])
+        goCheckBoxState =  [...goCheckBoxState,categoryMap[map]]
+      }
+    })
 
-      goCheckBoxState.push("ファンタジー")
-    }
-    if(goCheckBoxState == ""){
-      goCheckBoxState.push("None")
-    }
+    //この条件そもそも入らなくない？？
+    // if(goCheckBoxState == ""){
+    //   goCheckBoxState =  [...goCheckBoxState,categoryMap[map]]
+    //   // goCheckBoxState.push("None")
+    // }
 
     let goTagCheckBoxState = []
-    if(tagCheckBox.SyujinMiryo){
-      goTagCheckBoxState.push("主人公が魅力的")
-    }
-    if(tagCheckBox.KanjohInyuu){
-      goTagCheckBoxState.push("感情移入できる")
-    }
-    if(tagCheckBox.Sekaikan){
-      goTagCheckBoxState.push("世界観が良い")
-    }
+    Object.keys(tagCheckBox).map((map,index) => {
+      if(tagCheckBox[map] == true){
+        console.log(map+"+map+"+index)
+        console.log(tagMap[map]+"+tagMap")
+        goTagCheckBoxState = [...goTagCheckBoxState,tagMap[map]]
+      }
+    })
+    // if(tagCheckBox.SyujinMiryo){
+    //   goTagCheckBoxState.push("主人公が魅力的")
+    // }
+    // if(tagCheckBox.KanjohInyuu){
+    //   goTagCheckBoxState.push("感情移入できる")
+    // }
+    // if(tagCheckBox.Sekaikan){
+    //   goTagCheckBoxState.push("世界観が良い")
+    // }
 
     //検索用トークンマップ作成
     const tokenMap = buildTokenMap(
@@ -378,7 +399,6 @@ const Posting = () => {
   return (
     <>
       <Header />
-
       <div className="c-section-container">
         <div className="module-spacer--medium" />
 
@@ -422,30 +442,16 @@ const Posting = () => {
             <div> カテゴリ　</div> 
             {/* <FormGroup root> */}
             <FormGroup row>
-            <FormControlLabel
-                control={
-                  <CheckIconBox
-                  checked={checkBoxState.SF} onChange={checkBoxHandleChange} 
-                  name={"SF"} color={"secondary"}
-                  />
-                } label = {"SF"}
-            />
-            <FormControlLabel
-                control={
-                  <CheckIconBox
-                  checked={checkBoxState.Love} onChange={checkBoxHandleChange} 
-                  name={"Love"} color={"primary"}
-                  />
-                } label={"ラブストーリー"}
-            />
-            <FormControlLabel
-                control={
-                  <CheckIconBox
-                  checked={checkBoxState.Fantasy} onChange={checkBoxHandleChange} 
-                  name={"Fantasy"} color={"primary"}
-                  />
-                } label={"ファンタジー"}
-            />
+              {Object.keys(categoryMap).map((map)=> (
+                <FormControlLabel
+                    control={
+                      <CheckIconBox
+                      checked={checkBoxState[map]} onChange={checkBoxHandleChange} 
+                      name={map} color={"primary"}
+                      />
+                    } label = {categoryMap[map]}
+                />
+              ))}
             </FormGroup>
           </>
         )}
@@ -508,35 +514,19 @@ const Posting = () => {
               fullWidth={true} label={"(任意)点数(0-100)"} multiline={false} required={true}
               rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
               />
-
               <div>タグ/属性</div> 
               {/* <FormGroup root> */}
               <FormGroup row2>
-              <FormControlLabel
-                  control={
-                    <CheckIconBox
-                    checked={tagCheckBox.SyujinMiryo} onChange={tagCheckBoxHandleChange} 
-                    name={"SyujinMiryo"} color={"secondary"}
-                    />
-                  } label = {"主人公が魅力的"}
-              />
-              <FormControlLabel
-                  control={
-                    <CheckIconBox
-                    checked={tagCheckBox.KanjohInyuu} onChange={tagCheckBoxHandleChange} 
-                    name={"KanjohInyuu"} color={"primary"}
-                    />
-                  } label={"感情移入できる"}
-              />
-              <FormControlLabel
-                  control={
-                    <CheckIconBox
-                    checked={tagCheckBox.Sekaikan} onChange={tagCheckBoxHandleChange} 
-                    name={"Sekaikan"} color={"primary"}
-                    />
-                  } label={"世界観が良い"}
-              />
-
+                {Object.keys(tagMap).map((map) => (
+                  <FormControlLabel
+                    control={
+                      <CheckIconBox
+                      checked={tagCheckBox[map]} onChange={tagCheckBoxHandleChange} 
+                      name={map} color={"secondary"}
+                      />
+                    } label = {tagMap[map]}
+                  />
+                ))}
               </FormGroup>
               <TextInput
                   fullWidth={true} label={"コメント(5000字以内)"} multiline={true} required={true}

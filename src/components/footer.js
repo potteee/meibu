@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import styles from '../styles/components.module.css'
-
+import {getIsSignedIn,getUserId} from '../reducks/users/selectors'
 import {useDispatch, useSelector} from "react-redux";
 
 
@@ -9,36 +9,21 @@ const Footer = () => {
   
   console.log("Footer Start")
   
-  console.log(selector.users.uid+"+selector.users.uid")
-  console.log(selector.users.isSignedIn+"+selector.users.isSignedIn")
-
+  const loginStatus = getIsSignedIn(selector)
+  const userId = getUserId(selector)
 
   console.log("Footer End")
   return(
   <footer>
     <ul className={styles.undermenu}>
       <li>
-        {/* <Link href="/menu/mypage">
-          <a>mypage</a>
-        </Link> */}
-        {selector.users.isSignedIn && (
-          <Link
-            href={{
-            pathname: "/menu/mypage",
-            query: { id : selector.users.uid},
-          }}>
-              <a>mypage</a>
-          </Link> 
-        )}
-        {!selector.users.isSignedIn && (
-          <Link
+        <Link
           href={{
-            pathname: "/auth/signin",
-            query: { hist : "Posting" },
-          }}>
-              <a>mypage</a>
-          </Link>
-        )}
+          pathname: loginStatus ? "/menu/mypage" : "/auth/signin" ,
+          query: loginStatus ? { id : userId} : {hist : "Mypage"} ,
+        }}>
+            <a>mypage</a>
+        </Link> 
       </li>
       <li>
         <Link href="/menu/notification">

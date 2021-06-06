@@ -69,8 +69,30 @@ export const signIn = (email,password,router) => {
         if (email=== "" || password === ""){
             alert("必須項目が未入力です");
             return false;
-        }
-        
+        } 
+
+        //userNameでのログイン
+        if(/@/.test(email)){
+            console.log(email+" is email")
+        } else {
+            console.log(email+" is not email")
+            await db.collection('users')
+            .where('userName' ,'==', email).get()
+            .then(async (snapshot) => {
+                console.log("snapshot login user")
+                console.log(snapshot)
+                const gotUserId =snapshot.docs[0].data().uid
+                await db.collection('privateUsers')
+                .where('uid' ,'==' ,gotUserId).get()
+                .then((snapshot2) => {
+                    console.log("snapshot2 login user")
+                    console.log(snapshot2)
+                    email = snapshot2.docs[0].data().email
+                    console.log(email+"is got email")
+                })
+            })
+        }      
+
         return auth.signInWithEmailAndPassword(email, password)
             .then(async (result) => {
                 const userState = result.user
@@ -120,8 +142,8 @@ export const signIn = (email,password,router) => {
                         })
                     })
             }).catch((error) => {
-                throw new Error(error)
                 alert('アカウントもしくはパスワードに誤りがあります。')
+                throw new Error(error)
                 // throw new Error(error)
             })
         
@@ -132,8 +154,10 @@ export const signIn = (email,password,router) => {
 export const signOut = () => {
     // return async (dispatch, getState) => {
     return async (dispatch) => {
+        // auth.signOut()
         await auth.signOut()
         .then(async() => {
+            // dispatch(signOutAction())
             await dispatch(signOutAction())
             //push
             console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@operations@logout")

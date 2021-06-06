@@ -63,7 +63,8 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
     if(snapshot.docs.length != 0){
       snapshot.docs.map(map => {
         if(map.data()["uid"]){
-          workData.push({userName : map.data()["userName"], uid: map.data()["uid"]})
+          workData = [...workData,({userName : map.data()["userName"], uid: map.data()["uid"]})]
+          // workData.push({userName : map.data()["userName"], uid: map.data()["uid"]})
           isEmpty = false
         }
       })
@@ -71,7 +72,8 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
     // }
     
     if(isEmpty){
-      workData.push({userName : "非公開" , uid: "非公開"})
+      workData = [...workData,({userName : "非公開" , uid: "非公開"})]
+      // workData.push({userName : "非公開" , uid: "非公開"})
     }
 
     console.log(workData+"++++workData")

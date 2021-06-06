@@ -1,3 +1,4 @@
+import React,{useState} from "react"
 import Header from '../../components/header'
 import Footer from '../../components/footer'
 import {signOut} from "../../reducks/users/operations";
@@ -10,48 +11,64 @@ const SignOut = () => {
   const dispatch = useDispatch()
   const router = useRouter()
   const { hist } = router.query
-  const uid = useSelector(state => state)
+  // const uid = useSelector(state => state)
   // const { uid } = useSelector(state => state)
   console.log(hist+"+hist@signout");
-
+  const [logoutPush, setLogoutPush] = useState(false)
   
   const signButtonClicked = async() => {
-      console.log(JSON.stringify({uid})+"+JSS.uid@SignOut");
+    // console.log(JSON.stringify({uid})+"+JSS.uid@SignOut");
 
-      //dispatchすると_appが呼ばれてしまうっぽいので(awaitしても中身の処理の前に)
-      //事前にCookieを削除して_app内の間違った分岐を回避。
-      await destroyCookie(null,'userID',{path: '/',})
-      await dispatch(signOut())
-    if(hist == "Signup"){
-      router.push('/auth/signup');
-    } else {
-      router.push('/auth/signin');
-    }
+    //dispatchすると_appが呼ばれてしまうっぽいので(awaitしても中身の処理の前に)
+    //事前にCookieを削除して_app内の間違った分岐を回避。
+    setLogoutPush(true)
+
+    await destroyCookie(null,'userID',{path: '/',})
+    // await dispatch(signOut())
+    await dispatch(signOut())
+    .then(() => {
+      if(hist == "Signup"){
+        router.push('/auth/signup');
+      } else {
+        router.push('/auth/signin');
+      }
+    }).catch((error) => {
+        alert('wInfo DB fail')
+        throw new Error(error)
+    })
+
       // router.push('/');
   }
 
-  return(
-  <>
-    <Header />
+  console.log(logoutPush+"+logoutPush")
 
-    {hist == "Signup" && (
-      <a>サインアップするには、一度ログアウトしてください。</a>
-    )}
-    {hist == "Signin" && (
-      <a>ログインするには、一度ログアウトしてください。</a>
-    )}
+  if(logoutPush){
+    return <>loading...logout...</>
+  } else {
+    return(
+    <>
+      <Header />
 
-    <h1>SignOut</h1>
+      {hist == "Signup" && (
+        <a>サインアップするには、一度ログアウトしてください。</a>
+      )}
+      {hist == "Signin" && (
+        <a>ログインするには、一度ログアウトしてください。</a>
+      )}
 
-    <div className="center">
-        <PrimaryButton
-            label={"ログアウトする"}
-            onClick={signButtonClicked}
-        />
-    </div>
-    <Footer />
-  </>
-  )
+      <h1>SignOut</h1>
+
+      <div className="center">
+          <PrimaryButton
+              label={"ログアウトする"}
+              onClick={signButtonClicked}
+          />
+      </div>
+      <Footer />
+    </>
+    )
+
+  }
 }
 
 export default SignOut

@@ -12,7 +12,7 @@ import { parseCookies } from 'nookies'
 import { set } from 'immutable'
 import {useDispatch,useSelector} from 'react-redux'
 
-import {getUserId} from "../../../reducks/users/selectors";
+import {getUserId,getUserName} from "../../../reducks/users/selectors";
 // import { postWorkCreate } from '../../../reducks/works/operations'
 import { addPostedWork } from '../../../reducks/users/operations'
 
@@ -38,7 +38,15 @@ const Post = () => {
   // const { id, onework ,workId} = router.query
 
   // const [workData, setWorkData] = useState({})
-  const [workName, setWorkName] = useState("")
+  const userId = getUserId(selector)
+  const userName = getUserName(selector)
+  // setUserName(selector.users.userName)
+
+  // let workName = "initial workName" 
+  //letで定義すると、際レンダリング時に再初期化されてしまう。
+  //その為、dataでデータを取得するギミックがある場合は
+  //useStateを使った方がいい（と思う）
+  const [workName, setWorkName] = useState("not definded")
   const [infoCount, setInfoCount] = useState(0)
   const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
@@ -53,13 +61,14 @@ const Post = () => {
   const [workFinish, setWorkFinish] = useState("")
   const [workImage, setWorkImage] = useState("")
 
-  const [assessmentData ,setAssessmentData] = useState([{userName : "ini" , uid: "ini"}])
+  const [assessmentData ,setAssessmentData] = useState([])
+  // const [assessmentData ,setAssessmentData] = useState([{userName : "ini" , uid: "ini"}])
 
   const [isAssessmenter, setIsAssessmenter] = useState(0)
   const [isNonPublicAssessment, setIsNonPublicAssessment] = useState(0)
 
-  const [userId, setUserId] = useState("")
-  const [userName, setUserName] = useState("")
+  // const [userId, setUserId] = useState("")
+  // const [userName, setUserName] = useState("")
 
   const [winfoTag, setWinfoTag] = useState([])
 
@@ -101,8 +110,6 @@ const Post = () => {
     (async() => {
       console.log("useEffect Out")
 
-      setUserId(selector.users.uid)
-      setUserName(selector.users.userName)
 
       if(workId != undefined) {
         console.log("useEffect Done")
@@ -113,6 +120,9 @@ const Post = () => {
           if (wInfoData){
             console.log(JSON.stringify(wInfoData)+"+wInfoData JSONstr")
             // setWorkwInfoData(wInfoData)
+            // console.log(JSON.stringify(wInfoData.workName)+"wInfoData.workName@J")
+            // // let workName = wInfoData.workName
+            // console.log(JSON.stringify(workName)+"workName@J")
             setWorkName(wInfoData.workName)
             setInfoCount(wInfoData.winfoCount)
 
@@ -135,38 +145,24 @@ const Post = () => {
             console.log(JSON.stringify(wInfoData)+"+works wInfoData")
             console.log(JSON.stringify(checkBoxState)+"+works checkBoxState")
             // console.log(JSON.stringify(workData)+"+workData")
-
             //assessment内データなのでAPIからとってくる必要ある・・・？
-            // setWorkComment(data.workComment)
-            // setWorkComment(data.assessment.)
-            let tmpAssessmentData = []
-
             //投稿者情報を取得（isPublic==true以外は除外) 
-            if(data) {
-              // if(data.userName != undefined || data.userName != "") {
-              // if(data.length != 0) {
-                console.log(JSON.stringify(data[0])+"+data[0]@JSON")
-                console.log(data.length+"+data.length")
-                console.log(JSON.stringify(data)+"+data")
-                data.forEach((doc) => {
-                  tmpAssessmentData.push(doc)
-
-                  //一つでも非公開以外があればフラグを立てる
-                  //(「公開可能情報なし」と表示しない)
-                  if(doc.uid != "非公開") {
-                    setIsAssessmenter(1)
-                  }
+            if(data && assessmentData.length == 0) {
+              data.forEach((doc) => {
+                // tmpAssessmentData.push(doc)
+                setAssessmentData(prevAssessmentWorksId => {
+                  return ([
+                    ...prevAssessmentWorksId,
+                    doc
+                  ])
                 })
-              // } else {
-              //   tmpAssessmentData.push({userName : "非公開"})
-              //   console.log("data.userName no exist")
-              // }
-              setAssessmentData(tmpAssessmentData)
-              console.log(JSON.stringify(tmpAssessmentData)+"tmpAssessmentData@J")
-              console.log(JSON.stringify(assessmentData[0]) +"+assessmentData@J");
-              console.log(JSON.stringify(assessmentData[1]) +"+assessmentData@J1");
-              console.log(JSON.stringify(assessmentData)[0] +"+assessmentData@J");
-              console.log(assessmentData[0]+"+assessmentData");
+
+                //一つでも非公開以外があればフラグを立てる
+                //(「公開可能情報なし」と表示しない)
+                if(doc.uid != "非公開") {
+                  setIsAssessmenter(1)
+                }
+              })
             } else {
               console.log("data no exist")
             }
@@ -176,7 +172,7 @@ const Post = () => {
           alert('works DB get fail')
           throw new Error(error)
         })
-        await db.collection('privateUsers').doc(selector.users.uid)
+        await db.collection('privateUsers').doc(userId)
         .collection('postedWorksId').doc(workId)
         .get()
         .then((snapshot) => {
@@ -193,12 +189,15 @@ const Post = () => {
         })
       }
     })()
-  },[workId,data,selector.users.uid])
+  },[workId,data,userId])
 
-  if(workId != undefined){
+  console.log(data+"+data")
+  // console.log(workName+"+workName")
 
+  // if(data && typeof workName != "undefined"){
+  if(data && workName != "not definded"){
+  // if(data && workName){
     let isLoginUserAssessment = false
-
     return (
       <>
         <Header />
@@ -222,12 +221,12 @@ const Post = () => {
           {/* {(1) && ( */}
           {winfoTag[tokens] 
            ? (
-              <span>
-              {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
-              {tokens+":"+winfoTag[tokens]+" "}
-              </span>
-            )
-          :(
+            <span>
+            {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
+            {tokens+":"+winfoTag[tokens]+" "}
+            </span>
+          )
+          : (
             ''
           )}
           </>
@@ -320,9 +319,11 @@ const Post = () => {
       </>
     )
   } else {
-        <>
-        <p>...loading...</p>
-        </>
+    return(
+      <>
+      ...loading...
+      </>
+    )
   }
 }
 
