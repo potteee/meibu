@@ -40,7 +40,6 @@ const Post = () => {
   // const [workData, setWorkData] = useState({})
   const userId = getUserId(selector)
   const userName = getUserName(selector)
-  // setUserName(selector.users.userName)
 
   // let workName = "initial workName" 
   //letで定義すると、際レンダリング時に再初期化されてしまう。

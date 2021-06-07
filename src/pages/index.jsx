@@ -45,12 +45,13 @@ const News = () => {
       <Header />
       <h1>news</h1>
       <p>worksのデータを一覧表示。</p>
+      <p>作品名：評価点：カテゴリ</p>
       <ul>
       {worksData.map(oneworksData => (
         <li>
           <Link href="/post/[id]" 
           as={`/post/${oneworksData.workId}`}>
-            {"作品名："+oneworksData.workName+"("+oneworksData.winfoCount+")"}
+            {oneworksData.workName+"("+oneworksData.winfoCount+")"}
           </Link>
           <a>：{oneworksData.winfoScore != -1 ? oneworksData.winfoScore : "採点なし"}</a>
           <a>：{oneworksData.winfoCategory.map(cate => ( 

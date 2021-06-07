@@ -81,7 +81,7 @@ export const signIn = (email,password,router) => {
             .then(async (snapshot) => {
                 console.log("snapshot login user")
                 console.log(snapshot)
-                const gotUserId =snapshot.docs[0].data().uid
+                const gotUserId = snapshot.docs[0].data().uid
                 await db.collection('privateUsers')
                 .where('uid' ,'==' ,gotUserId).get()
                 .then((snapshot2) => {
@@ -90,6 +90,11 @@ export const signIn = (email,password,router) => {
                     email = snapshot2.docs[0].data().email
                     console.log(email+"is got email")
                 })
+            }).catch((error) => {
+                alert('アカウントもしくはパスワードに誤りがあります。')
+                throw new Error(error)
+                return false
+                // throw new Error(error)
             })
         }      
 
@@ -99,6 +104,7 @@ export const signIn = (email,password,router) => {
                 console.log(JSON.stringify(userState)+'+user@signin')
                 if (!userState) {
                     throw new Error('ユーザーIDを取得できません');
+                    return false
                 }
                 const userID = userState.uid
                 console.log(userID+'+userID@signin')
@@ -109,6 +115,7 @@ export const signIn = (email,password,router) => {
                         const data =snapshot.data()
                         if (!data) {
                             throw new Error('ユーザーデータが存在しません');
+                            return false    
                         }
                         await dispatch(signInAction({
                             isSignedIn: true,
@@ -144,6 +151,7 @@ export const signIn = (email,password,router) => {
             }).catch((error) => {
                 alert('アカウントもしくはパスワードに誤りがあります。')
                 throw new Error(error)
+                return false
                 // throw new Error(error)
             })
         

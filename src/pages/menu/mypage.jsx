@@ -5,7 +5,7 @@ import { TextInput,PrimaryButton } from "../../styles/UIkit"
 import Header from '../../components/header'
 import Footer from '../../components/footer'
 import {useDispatch, useSelector} from "react-redux";
-import {getUserId, getUserName, getRole} from '../../reducks/users/selectors'
+import {getIsSignedIn, getUserId, getUserName, getRole} from '../../reducks/users/selectors'
 // import {getUserId, getUserProfile} from '
 import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
@@ -44,12 +44,7 @@ const MyPage = () => {
   const userName = getUserName(selector)
   const role = getRole(selector)
   const uid = getUserId(selector)  
-
-  // /// users
-  // const [userName, setUserName] = useState("")
-  // const [role, setRole] = useState("")
-  // /// both
-  // const [uid, setUid] = useState(selector.users.uid)
+  const isSignedIn = getIsSignedIn(selector)
 
   //// from DataBase
   /// users
@@ -175,7 +170,7 @@ const MyPage = () => {
     console.log("投稿した作品はありません！")
   }
 
-  if(selector.users.isSignedIn === false){
+  if(isSignedIn === false){
     //ブラウザ更新時orログインから飛んできたときに'/'に行かないように。
     //ログインしているにもかかわらず、isSignedInがfalseだったとき
     if(userID || query.id){
@@ -199,7 +194,7 @@ const MyPage = () => {
       console.log("else patern")
     }
   } else {
-    console.log("selector.users.inSignedIn true")
+    console.log("isSignedIn true")
   }
 
   // if(data && userSex != ""){

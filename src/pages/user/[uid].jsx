@@ -25,6 +25,8 @@ const fetcher = async (url) => {
     throw new Error(data.message)
   }
   return data
+  // const result = {users : snapshot.data() ,pubPostedWorksId : pubPostedWorksId}
+
 }
 const userPage = () => {
 // export default function MyPage() {
@@ -41,10 +43,11 @@ const userPage = () => {
 
   //// from Redux
   /// users
-  const [userName, setUserName] = useState("")
-  const [role, setRole] = useState("")
+  const userName = getUserName(selector)
+  const role = getRole(selector)
+
   /// both
-  const [uid, setUid] = useState("")
+  const uid = getUserId(selector)
 
   //// from DataBase
   /// users
@@ -63,6 +66,8 @@ const userPage = () => {
 
   /// display worksName
   const [worksName ,setWorksName] = useState([])
+  
+  const [useEffectFin ,setUseEffectFin] = useState(false)
 
   // const users = getUserId(selector)
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
@@ -86,25 +91,17 @@ const userPage = () => {
   console.log(error+"+api error")
   console.log(JSON.stringify(data)+"+api tmpWorkName")
 
+
   // useSWR end
     
   useEffect(() => {
     (async() => {
-      //Redux
-      setUserName(getUserName(selector))
-      setRole(getRole(selector))
-      setUid(getUserId(selector))
-      
-      let uid2 = getUserId(selector)  
-      
-      console.log(JSON.stringify(selector)+"+selector2@mypage")
       console.log(uid+"+uid useEffect out")
-      console.log(uid2+"+uid2 useEffect out")
       
       //DB
-      if(uid2 && uid2 != "uid initial"){
+      if(uid && uid != "uid initial"){
         // await setUid(await getUserId(selector))
-        console.log(uid2+"+uid useEffect in")
+        console.log(uid+"+uid useEffect in")
     
         // if (error) return <div>Failed to load</div>
         let tmpWorksId = []
@@ -116,7 +113,7 @@ const userPage = () => {
             // console.log(JSON.stringify(data.ref())+"+data.data()@J")
 
             //ユーザ名
-            setUserName(data.users.userName)
+            // setUserName(data.users.userName)
 
             //性別
             setUserSex(data.users.userSex)
@@ -127,15 +124,19 @@ const userPage = () => {
             //画像
             setUserImage(data.users.userImage)
 
+  
             //作品たち
             setWorksName(data.pubPostedWorksId)
+
+            setUseEffectFin(true) 
         } 
         // }
       }
     })()
-  },[selector,data,fetcher])
+  },[data])
 
-  if(data && selector.users.uid != "initial uid"){
+  // if(data && uid != "initial uid" && worksName.length != 0){
+  if(data && uid != "initial uid" && useEffectFin){
     return (
       <>
       {/* {myInfo} */}

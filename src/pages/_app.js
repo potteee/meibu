@@ -12,7 +12,6 @@ const WrappedApp = ({Component, pageProps}) => {
   //cookie情報からuidの確認
   const selector = useSelector(state => state)
   const isSignedIn = getIsSignedIn(selector)
-  console.log(JSON.stringify(selector.users.isSignedIn)+"+selector.users.isSignedIn@_app")
   console.log(isSignedIn+"+isSignedIn")
 
   const dispatch = useDispatch();
@@ -29,8 +28,6 @@ const WrappedApp = ({Component, pageProps}) => {
   // cookieにuserIDが保存されていれば、データをディスパッチ
   const firstAction = async() => {
     if(isSignedIn == false && userID){
-    // if(selector.users.isSignedIn == false && userID){
-    // if(userID){
       try{
         console.log(userID+"+userID@Cookie true")
         const snapshot = await db.collection('users').doc(userID).get()
@@ -75,7 +72,7 @@ const WrappedApp = ({Component, pageProps}) => {
       console.log("return Comp")
       return <Component {...pageProps} />
     }
-  } else if(selector.users.isSignedIn == true && userID) {
+  } else if(isSignedIn == true && userID) {
     console.log("return Comp isSignedIn")
     return <Component {...pageProps} />
   } else {//no login 

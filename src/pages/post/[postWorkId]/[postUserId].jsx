@@ -6,7 +6,7 @@ import Header from '../../../components/header'
 import Footer from '../../../components/footer'
 
 import {useDispatch, useSelector} from "react-redux";
-import {getUserId, getUserName, getRole} from '../../../reducks/users/selectors'
+import {getUserId} from '../../../reducks/users/selectors'
 
 import Link from 'next/link'
 
@@ -32,6 +32,8 @@ const fetcher = async (url) => {
 
 const handlerPostUserId = () => {
   const selector = useSelector((state) => state)
+  const getUid = getUserId(selector)
+
   const router = useRouter()
   const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
   console.log(query+"+query at postUserId")
@@ -126,7 +128,7 @@ const handlerPostUserId = () => {
   },[data])
 
 
-  if(data && selector.users.uid != "initial uid"){
+  if(data && getUid != "initial uid"){
     return (
       <>
         <Header />
@@ -163,7 +165,7 @@ const handlerPostUserId = () => {
         <h3>投稿日時：{workUpdateTime}</h3>
 
         {/* リダックスのユーザ情報と作品のユーザ情報が同一の場合 */}
-        {(postUserId == selector.users.uid) && (
+        {(postUserId == getUid) && (
           <Link href={{
             pathname: "/post/posting",
             query: { 

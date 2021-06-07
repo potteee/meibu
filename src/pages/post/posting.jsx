@@ -45,7 +45,6 @@ const Posting = () => {
   // const { id } = router.query
   const dispatch = useDispatch()
   const selector = useSelector((state) => state)
-  // const uid = selector.users.uid
   //上記よりこっちの方が処理漏れ少ない？
   const uid = getUserId(selector);
   const userName = getUserName(selector);
