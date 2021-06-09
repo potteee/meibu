@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback,useMemo} from 'react';
 import { PrimaryButton, TextInput } from "../../styles/UIkit"
 
 import {useDispatch,useSelector} from "react-redux";
@@ -16,11 +16,25 @@ const SignIn = () => {
   const router = useRouter()
   // const uid = useSelector(state => state)
   const { hist } = router.query
-  const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
+  const oriQuery = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
 
-  const tmpEmail = /\?email=/.test(query) ? query.split('email=')[1] : ""
-
+  // const tmpEmail = /\?email=/.test(query) ? query.split('email=')[1] : ""
+  const query = /\?/.test(oriQuery) ? oriQuery.split('?')[1] : null
   console.log(query+"+query")
+
+  let tmpEmail = ""
+  let qStatus = ""
+
+  if(query){
+    tmpEmail = /email=/.test(query) ? query.split('email=')[1] : ""
+    tmpEmail = /\&/.test(tmpEmail) ? tmpEmail.split('&')[0] : tmpEmail
+    qStatus = /status=/.test(query) ? query.split('status=')[1] : null
+    qStatus = /\&/.test(qStatus) ? qStatus.split('&')[0] : qStatus
+  }
+
+  console.log(tmpEmail+"+tmpEmail")
+  console.log(qStatus+"+qStatus")
+
   console.log(decodeURIComponent(tmpEmail)+"+tmpEmail")
 
   const [signinPush,setSigninPush] = useState(false)
@@ -36,24 +50,24 @@ const SignIn = () => {
       setPassword(e.target.value)
   },[]);
 
+  //useCallbackに入れてあげないと、dispatch(signInAction...のところで再レンダリングされる。
+  const signInModule = useCallback(async(email,password, router) => {
+    return await dispatch(signIn(email, password, router))
+  },[]);
+
   const loginButtonClicked = async() => {
   // const loginButtonClicked = () => {
 
     setSigninPush(true)
     console.log(email+"+email,"+password+"+password,"+router+"+router")
-    // dispatch(signIn(email, password, router))
-    await dispatch(signIn(email, password, router))
 
-    // console.log(uid+"+uid@SignIn@pages")
-    // JSON.stringify({uid});
-    // router.push('/menu/mypage')
+    // const signinResult = await dispatch(signIn(email, password, router))
+    const signinResult = signInModule(email, password, router)
 
-    // router.push({
-    //   pathname: '/menu/mypage',
-    //   query: { name: 'Someone' }
-    // })
-
-    // dispatch(MyPage()) //page配下にいくときはdispatchダメ
+    console.log(signinResult+"+sigininResult")
+    if(!signinResult){
+      setSigninPush(false)
+    }
   }
 
 
@@ -73,10 +87,22 @@ const SignIn = () => {
         <div className="c-section-container">
               <h2 className="u-text-center u-text__headline">ログイン画面</h2>
               <div className="module-spacer--medium" />
-              <TextInput
-                  fullWidth={true} label={"メールアドレス/ユーザ名"} multiline={false} required={true}
-                  rows={1} value={email} type={"email"} onChange={inputEmail}
-              />
+              {qStatus == "requiredMail" 
+              ?(
+                <>
+                <a>申し訳ございません。メールアドレスを入力してログインしてください</a>
+                <TextInput
+                    fullWidth={true} label={"メールアドレス"} multiline={false} required={true}
+                    rows={1} value={email} type={"email"} onChange={inputEmail}
+                />
+                </>
+                )
+              :(
+                <TextInput
+                    fullWidth={true} label={"メールアドレス/ユーザ名"} multiline={false} required={true}
+                    rows={1} value={email} type={"email"} onChange={inputEmail}
+                />)
+              }
               <TextInput
                   fullWidth={true} label={"パスワード"} multiline={false} required={true}
                   rows={1} value={password} type={"password"} onChange={inputPassword}

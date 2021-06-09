@@ -29,7 +29,27 @@ const WrappedApp = ({Component, pageProps}) => {
   const firstAction = async() => {
     if(isSignedIn == false && userID){
       try{
+        console.log("firstAction start")
         console.log(userID+"+userID@Cookie true")
+
+        //Cookie偽装対策
+        //Cookieに有効なuidが登録されていても、ログインしている状態でないと
+        //ブラウザリロード時にログイン状態が自動継続しない。
+        //バックエンドでやらなくても良さそう。
+        const unsubscribe = await auth.onAuthStateChanged(function(user) {
+          if (user) {
+            console.log("user")
+            console.log(user)
+            console.log("User is signed in.")
+            unsubscribe() //これやらないとずっとここだけ回り続ける
+          } else {
+            console.log("No user is signed in.")
+            alert("不正な処理が行われました。")
+            unsubscribe()
+            return false
+          }
+        });
+
         const snapshot = await db.collection('users').doc(userID).get()
         console.log(snapshot+"+snapshot")
         const data = snapshot.data()

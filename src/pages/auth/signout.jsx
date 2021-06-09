@@ -11,8 +11,6 @@ const SignOut = () => {
   const dispatch = useDispatch()
   const router = useRouter()
   const { hist } = router.query
-  // const uid = useSelector(state => state)
-  // const { uid } = useSelector(state => state)
   console.log(hist+"+hist@signout");
   const [logoutPush, setLogoutPush] = useState(false)
   
@@ -21,23 +19,22 @@ const SignOut = () => {
 
     //dispatchすると_appが呼ばれてしまうっぽいので(awaitしても中身の処理の前に)
     //事前にCookieを削除して_app内の間違った分岐を回避。
-    setLogoutPush(true)
 
     await destroyCookie(null,'userID',{path: '/',})
     // await dispatch(signOut())
     await dispatch(signOut())
     .then(() => {
       if(hist == "Signup"){
+        setLogoutPush(true)
         router.push('/auth/signup');
       } else {
+        setLogoutPush(true)
         router.push('/auth/signin');
       }
     }).catch((error) => {
         alert('wInfo DB fail')
         throw new Error(error)
     })
-
-      // router.push('/');
   }
 
   console.log(logoutPush+"+logoutPush")

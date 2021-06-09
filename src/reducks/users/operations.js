@@ -1,4 +1,5 @@
 //redux-thunkを使うとこのようにasync/awaitを使える様になる。
+import React, {useMemo} from 'react';
 
 import {signInAction ,signOutAction, updateUsersAction} from "./actions";
 // import { push } from "connected-react-router";
@@ -13,148 +14,169 @@ import {isValidEmailFormat, isValidRequiredInput} from "../../components/common"
 import { parseCookies, setCookie } from 'nookies'
 import { AddAlarmOutlined } from "@material-ui/icons";
 
-// var admin = require("firebase-admin");
-
 const usersRef = db.collection('users')
 const privateUserRef = db.collection('privateUsers')
-// const router = useRouter()
-// const usersRefAdmiin = admindb.collection('users')
-
-//何やってんのかよくわからん
-export const listenAuthState = () => {
-    // const router = useRouter()
-    console.log("listen auth state start")
-    return async (dispatch) => {
-        return auth.onAuthStateChanged(user => {
-            if (user) {
-                usersRef.doc(user.uid).get()
-                    .then(snapshot => {
-                        const data = snapshot.data()
-                        if (!data) {
-                            throw new Error('ユーザーデータが存在しません。')
-                        }
-                        console.log(user+"*onauthStateChanged+user")
-                        // Update logged in user state
-                        dispatch(signInAction({
-                            customer_id: (data.customer_id) ? data.customer_id : "",
-                            // email: data.email,
-                            isSignedIn: true,
-                            // payment_method_id: (data.payment_method_id) ? data.payment_method_id : "",
-                            role: data.role,
-                            uid: user.uid,
-                            userName: data.userName,
-                        }))
-                        // // backup
-                        // dispatch(signInAction({
-                        //     customer_id: (data.customer_id) ? data.customer_id : "",
-                        //     email: data.email,
-                        //     isSignedIn: true,
-                        //     payment_method_id: (data.payment_method_id) ? data.payment_method_id : "",
-                        //     role: data.role,
-                        //     uid: user.uid,
-                        //     userName: data.userName,
-                        // }))
-                    })
-            } else {
-                // dispatch(router.push('/signin'))
-            }
-        })
-    }
-}
 
 export const signIn = (email,password,router) => {
     // const router = useRouter()    
+    // async (dispatch) => {
     return async (dispatch) => {
         //Validation
+        let signInFail = false
+
         if (email=== "" || password === ""){
             alert("必須項目が未入力です");
             return false;
         } 
 
+        let gotUsersId = []
+        let gotEmails = []
         //userNameでのログイン
         if(/@/.test(email)){
             console.log(email+" is email")
+            gotEmails = [email]    
         } else {
             console.log(email+" is not email")
             await db.collection('users')
             .where('userName' ,'==', email).get()
-            .then(async (snapshot) => {
+            .then( async(snapshot) => {
                 console.log("snapshot login user")
                 console.log(snapshot)
-                const gotUserId = snapshot.docs[0].data().uid
-                await db.collection('privateUsers')
-                .where('uid' ,'==' ,gotUserId).get()
-                .then((snapshot2) => {
-                    console.log("snapshot2 login user")
-                    console.log(snapshot2)
-                    email = snapshot2.docs[0].data().email
-                    console.log(email+"is got email")
+
+                //同じユーザ名が存在する場合emailが複数取得される。
+                //email
+                snapshot.docs.map((doc) => {
+                    gotUsersId = [...gotUsersId, doc.data().uid]
+                    console.log(gotUsersId+"gotUsersId")
                 })
+                    // snapshot.docs[0].data().uid
+                
+                await Promise.all(gotUsersId.map(async(gotUserId) => {
+                    await db.collection('privateUsers')
+                    .where('uid' ,'==' ,gotUserId).get()
+                    .then((snapshot2) => {
+                        console.log("snapshot2 login user")
+                        console.log(snapshot2)
+                        // email = snapshot2.docs[0].data().email
+                        gotEmails = [...gotEmails,snapshot2.docs[0].data().email]
+                        console.log(gotEmails+" is got email")
+                    }).catch((error) => {
+                        alert("メールアドレス取得失敗")
+                    })
+                }))
             }).catch((error) => {
-                alert('アカウントもしくはパスワードに誤りがあります。')
-                throw new Error(error)
-                return false
+                // return false //ここでreturnしても戻らない。（returnした非同期処理の直下にないから？上記のawait の前にreturnつけると戻る。)
+                alert('アカウントもしくはパスワードに誤りがありますよ。')
+                signInFail = true
+                // throw new Error("you could not getting account")
                 // throw new Error(error)
             })
-        }      
+        }
 
-        return auth.signInWithEmailAndPassword(email, password)
-            .then(async (result) => {
-                const userState = result.user
-                console.log(JSON.stringify(userState)+'+user@signin')
-                if (!userState) {
-                    throw new Error('ユーザーIDを取得できません');
-                    return false
-                }
+        console.log(gotEmails+"+got emails")
+        console.log(gotEmails[0]+"+got emails[0]")
+        console.log(signInFail+"+signInFail")
+
+        if(signInFail){
+            return false
+        }
+
+        let emailsQua = 0
+        let signinSucCount = 0
+
+        if(gotEmails.length != 0){
+            await Promise.all(gotEmails.map(async(gotEmail) => {
+                emailsQua++
+                console.log(gotEmail+"+email in map")
+
+                //パスワードに誤りがある場合、ここで失敗
+                await auth.signInWithEmailAndPassword(gotEmail, password)
+                .then(async (result) => {
+                    signinSucCount++
+                    await auth.signOut().catch((error) => {
+                        console.log("fail signout in signin")
+                    })
+                    email = gotEmail
+
+                }).catch((error) => {
+                    console.log("pre login error")
+                    //配列が最後まで回ったにもかかわらず、一度も成功パターンに入らなかった場合。→パスワードに誤りがあるということ。
+                    if(emailsQua == gotEmails.length && signinSucCount == 0){
+                        alert('アカウントもしくはパスワードに誤りがあります。')
+                        // throw new Error(error)
+                        signInFail = true
+                        // return false
+                        // throw new Error(error)
+                    }
+                })     
+            }))
+        }
+        //２回以上ログインに成功してしまった場合
+        //emailでログインしてもらう。
+        //ユーザ名とパスワードが同一のアカウントが複数存在する場合に入るルートなので、ほとんどないとと思うが。
+        if(signinSucCount >= 2){
+            router.push({
+                pathname: '/auth/signin',
+                query: { status: 'requiredMail' }
+            })
+            return false
+        } 
+
+    　　if(signInFail){
+            return false
+        }
+        console.log("aaaa")
+
+        return await auth.signInWithEmailAndPassword(email, password)
+        .then(async (result) => {
+            const userState = result.user
+            console.log(JSON.stringify(userState)+'+user@signin')
+            if (!userState) {
+                throw new Error('ユーザーIDを取得できません');
+                // return false
+                signInFail = true
+            } else {
                 const userID = userState.uid
                 console.log(userID+'+userID@signin')
                 console.log(email+'+email')
 
                 await db.collection('users').doc(userID).get()
-                    .then(async (snapshot) => {
-                        const data =snapshot.data()
-                        if (!data) {
-                            throw new Error('ユーザーデータが存在しません');
-                            return false    
-                        }
-                        await dispatch(signInAction({
-                            isSignedIn: true,
-                            role: data.role,
-                            uid:userID,
-                            // userEmail: userState.email,
-                            userName: data.userName,
-                            userImage: ""
-                        }))
-                        // console.log(JSON.stringify({ cookiesParse })+"cookies@operations@signin bef")
-                        console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin before")
-                        
-                        setCookie(null, 'userID', userID, {
-                            maxAge: 30 * 24 * 60 * 60,
-                            path: '/',
-                        })
-                        const cookiesParse = parseCookies()
-                        const cookiesDocument = document.cookie
+                .then(async (snapshot) => {
+                    const data = snapshot.data()
+                    if (!data) {
+                        throw new Error('ユーザーデータが存在しません');
+                        // return false  
+                        signInFail = true
+                    }
 
-                        // const foo_cookies = JSON.parse(JSON.stringify(cookiesParse))
-
-                        // console.log(cookiesParse+"+cookies@operations@signin aft original")
-                        // console.log(JSON.stringify(foo_cookies)+"+cookies@operations@signin aft")
-                        console.log(cookiesDocument+"+cookiesDocument@operations@signin aft2")
-                        console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin after")
-
-                        //Someoneもう使ってないかも...?
-                        router.push({
-                            pathname: '/menu/mypage',
-                            query: { name: 'Someone' }
-                        })
+                    await setCookie(null, 'userID', userID, {
+                        maxAge: 30 * 24 * 60 * 60,
+                        path: '/',
                     })
-            }).catch((error) => {
-                alert('アカウントもしくはパスワードに誤りがあります。')
-                throw new Error(error)
-                return false
-                // throw new Error(error)
-            })
-        
+                    const cookiesParse = parseCookies()
+                    const cookiesDocument = document.cookie
+
+                    console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin before")
+                    console.log(cookiesDocument+"+cookiesDocument@operations@signin aft2")
+                    console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin after")
+
+                    await dispatch(signInAction({
+                        isSignedIn: true,
+                        role: data.role,
+                        uid:userID,
+                        // userEmail: userState.email,
+                        userName: data.userName,
+                        userImage: ""
+                    }))
+
+                    //Someoneもう使ってないかも...?
+                    router.push({
+                        pathname: '/menu/mypage',
+                        query: { name: 'Someone' }
+                    })
+                })
+            }
+        })
     }
 }
 
@@ -286,7 +308,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
             }).catch((error) => {
                 // dispatch(hideLoadingAction())
                 alert('アカウント登録に失敗しました。もう１度お試しください。')
-                throw new Error(error)
+                // throw new Error(error)
                 return false
             })
     }
