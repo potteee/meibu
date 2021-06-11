@@ -26,6 +26,9 @@ const fetcher = async (url) => {
   if (res.status !== 200) {
     throw new Error(data.message)
   }
+
+  console.log("got data")
+  console.log(data)
   return data
 }
 const MyPage = () => {
@@ -200,7 +203,7 @@ const MyPage = () => {
   // if(data && userSex != ""){
 
     // 最後にsetしているuseBirthdayをチェック
-  if(data && userBirthday != ""){
+  if(isSignedIn && data && userBirthday != ""){
     return (
       <>
       {/* {myInfo} */}
@@ -277,7 +280,7 @@ const MyPage = () => {
       </>
     )
   } else {
-    return <>loading...</>
+    return <>loading...mypage...</>
   }
 }
 

@@ -62,14 +62,13 @@ const SignIn = () => {
     console.log(email+"+email,"+password+"+password,"+router+"+router")
 
     // const signinResult = await dispatch(signIn(email, password, router))
-    const signinResult = signInModule(email, password, router)
+    const signinResult = await signInModule(email, password, router)
 
     console.log(signinResult+"+sigininResult")
     if(!signinResult){
       setSigninPush(false)
     }
   }
-
 
   if(signinPush){
     return <>loading...singin...</>

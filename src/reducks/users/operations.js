@@ -2,14 +2,8 @@
 import React, {useMemo} from 'react';
 
 import {signInAction ,signOutAction, updateUsersAction} from "./actions";
-// import { push } from "connected-react-router";
-// import { useRouter } from 'next/router'
 import { auth, db, FirebaseTimestamp } from "../../firebase/index";
-// import { auth, db, admindb, FirebaseTimestamp } from "../../firebase/index";
-// import * as admin from 'firebase-admin';
-
 import {isValidEmailFormat, isValidRequiredInput} from "../../components/common";
-// import Link from 'next/link'
 
 import { parseCookies, setCookie } from 'nookies'
 import { AddAlarmOutlined } from "@material-ui/icons";
@@ -47,8 +41,13 @@ export const signIn = (email,password,router) => {
                 //email
                 snapshot.docs.map((doc) => {
                     gotUsersId = [...gotUsersId, doc.data().uid]
-                    console.log(gotUsersId+"gotUsersId")
                 })
+
+                console.log(gotUsersId+"+gotUsersId")
+                if(gotUsersId.length == 0) {
+                    alert('アカウントもしくはパスワードに誤りがありますよん。')
+                    signInFail = true
+                }
                     // snapshot.docs[0].data().uid
                 
                 await Promise.all(gotUsersId.map(async(gotUserId) => {
@@ -83,23 +82,36 @@ export const signIn = (email,password,router) => {
 
         let emailsQua = 0
         let signinSucCount = 0
+        let signinResult = true
 
         if(gotEmails.length != 0){
-            await Promise.all(gotEmails.map(async(gotEmail) => {
+            for(let i = 0;i <= gotEmails.length;i++){
                 emailsQua++
-                console.log(gotEmail+"+email in map")
+                console.log(gotEmails[i]+"+email in map")
 
-                //パスワードに誤りがある場合、ここで失敗
-                await auth.signInWithEmailAndPassword(gotEmail, password)
-                .then(async (result) => {
+                // signinResult = await auth.signInWithEmailAndPassword(gotEmails[i], password)
+                // console.log("signinResult")
+                // console.log(signinResult)
+                // return signinResult
+
+                try {
+                    await auth.signInWithEmailAndPassword(gotEmails[i], password)
+                    console.log("successed signin")
                     signinSucCount++
-                    await auth.signOut().catch((error) => {
+                    await auth.signOut()
+                    .then(() => {
+                        console.log("successed signout in signin")
+                        email = gotEmails[i]
+                    })
+                    .catch((error) => {
                         console.log("fail signout in signin")
                     })
-                    email = gotEmail
-
-                }).catch((error) => {
+                    // return true
+                } catch {
                     console.log("pre login error")
+                    console.log(signinSucCount+"+signinSuccount")
+                    console.log(gotEmails.length+"+gotEmails.length")
+                    console.log(emailsQua+"+emailsQua")
                     //配列が最後まで回ったにもかかわらず、一度も成功パターンに入らなかった場合。→パスワードに誤りがあるということ。
                     if(emailsQua == gotEmails.length && signinSucCount == 0){
                         alert('アカウントもしくはパスワードに誤りがあります。')
@@ -108,8 +120,9 @@ export const signIn = (email,password,router) => {
                         // return false
                         // throw new Error(error)
                     }
-                })     
-            }))
+                    // return false
+                }
+            }
         }
         //２回以上ログインに成功してしまった場合
         //emailでログインしてもらう。
@@ -125,7 +138,7 @@ export const signIn = (email,password,router) => {
     　　if(signInFail){
             return false
         }
-        console.log("aaaa")
+        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
         return await auth.signInWithEmailAndPassword(email, password)
         .then(async (result) => {
@@ -140,7 +153,7 @@ export const signIn = (email,password,router) => {
                 console.log(userID+'+userID@signin')
                 console.log(email+'+email')
 
-                await db.collection('users').doc(userID).get()
+                return await db.collection('users').doc(userID).get()
                 .then(async (snapshot) => {
                     const data = snapshot.data()
                     if (!data) {
@@ -160,7 +173,9 @@ export const signIn = (email,password,router) => {
                     console.log(cookiesDocument+"+cookiesDocument@operations@signin aft2")
                     console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin after")
 
-                    await dispatch(signInAction({
+                    // await dispatch(signInAction({
+                    //解決前にpushしてしまった方がいい。これを待ってしまうと、signInのページで再レンダリングされてしまう場合がある。
+                    dispatch(signInAction({
                         isSignedIn: true,
                         role: data.role,
                         uid:userID,
@@ -174,6 +189,8 @@ export const signIn = (email,password,router) => {
                         pathname: '/menu/mypage',
                         query: { name: 'Someone' }
                     })
+
+                    return true
                 })
             }
         })

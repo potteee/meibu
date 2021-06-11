@@ -188,7 +188,8 @@ const Post = () => {
         })
       }
     })()
-  },[workId,data,userId])
+  // },[workId,data,userId])
+  },[data])
 
   console.log(data+"+data")
   // console.log(workName+"+workName")
@@ -247,7 +248,7 @@ const Post = () => {
         <p>完結：{workFinish}</p>
         <p>画：{workImage}</p>
 
-        <h3>この作品を評価した人</h3>
+        <h3>評価を見る</h3>
         {(assessmentData.length != 0 && isAssessmenter == 1) && (
           <>
             <ul>
