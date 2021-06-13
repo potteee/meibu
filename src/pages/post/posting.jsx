@@ -27,6 +27,9 @@ import { tokenize } from '../api/firebase/allStringSearch/text-processor';
 
 import { db, FirebaseTimestamp } from "../../firebase/index";
 
+import {tagMap} from "../../models/tagMap"
+import {categoryMap} from "../../models/categoryMap"
+
 const useStyles = makeStyles((theme) => ({
   button: {
     display: 'block', 
@@ -89,29 +92,20 @@ const Posting = () => {
 
   const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
-  //Catgory
-  //絶対的なもの
-  const categoryMap = {
-    SF : "SF",
-    Love : "ラブストーリー",
-    Fantasy : "ファンタジー",
-    Comedy : "コメディ",
-  }
-
-  //Tag
-  //主観によるもの
-  const tagMap = {
-    SyujinMiryo : "主人公が魅力的",
-    KanjohInyuu : "感情移入できる",
-    Sekaikan : "世界観が良い",
-    HardBoild : "ハードボイルド",
-  }
 
   let tagResult = {}
 
   Object.keys(tagMap).map((map) => 
     tagResult = {...tagResult, [map] : false}
+    // tagResult = {...tagResult, [tagMap.[map].key] : false}
+    // console.log(tagMap.map+"+inMap")
   )
+   
+  // console.log(tagResult)
+  // console.log(JSON.stringify(tagResult))
+  // console.log("++tagResult")
+  // console.log(tagMap.Autodoa.key+"+tagMap.Autodoa.key")
+  // console.log(JSON.stringify(tagMap.Autodoa)+"+tagMap.Autodoa")
 
   const [tagCheckBox, setTagCheckBox] = useState(tagResult)
   
@@ -121,13 +115,7 @@ const Posting = () => {
     cateResult = {...cateResult, [map] : false}
   )
 
-  const [checkBoxState, setCheckBoxState] = useState(tagResult)
-  
-  // {
-  //   SF: false,  
-  //   Love: false,
-  //   Fantasy: false
-  // })
+  const [checkBoxState, setCheckBoxState] = useState(cateResult)
 
   const [isPublic,setIsPublic] = useState(true)
   const [isSpoiler,setIsSpoiler] = useState(false)
@@ -227,7 +215,7 @@ const Posting = () => {
             snapshot.data().assessmentWorkTag.map((tag) => {
               console.log(tag+"+tags")
               Object.keys(tagMap).map((map) => {
-                if(tagMap[map] == tag){
+                if([tagMap.[map].key] == tag){
                   setTagCheckBox(tagCheckBox => ({...tagCheckBox , [map]:true}))
                 }
               })
@@ -332,8 +320,8 @@ const Posting = () => {
     Object.keys(tagCheckBox).map((map,index) => {
       if(tagCheckBox[map] == true){
         console.log(map+"+map+"+index)
-        console.log(tagMap[map]+"+tagMap")
-        goTagCheckBoxState = [...goTagCheckBoxState,tagMap[map]]
+        console.log(tagMap.[map].key+"+tagMap")
+        goTagCheckBoxState = [...goTagCheckBoxState,tagMap.[map].key]
       }
     })
     // if(tagCheckBox.SyujinMiryo){
@@ -523,7 +511,7 @@ const Posting = () => {
                       checked={tagCheckBox[map]} onChange={tagCheckBoxHandleChange} 
                       name={map} color={"secondary"}
                       />
-                    } label = {tagMap[map]}
+                    } label = {[tagMap.[map].key]}
                   />
                 ))}
               </FormGroup>
