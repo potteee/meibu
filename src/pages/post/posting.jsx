@@ -8,6 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Grid from '@material-ui/core/Grid';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -27,7 +28,7 @@ import { tokenize } from '../api/firebase/allStringSearch/text-processor';
 
 import { db, FirebaseTimestamp } from "../../firebase/index";
 
-import {tagMap} from "../../models/tagMap"
+import {tagMap,tagExtraData} from "../../models/tagMap"
 import {categoryMap} from "../../models/categoryMap"
 
 const useStyles = makeStyles((theme) => ({
@@ -35,10 +36,31 @@ const useStyles = makeStyles((theme) => ({
     display: 'block', 
     marginTop: theme.spacing(2),
   },
-  formControl: {
-    margin: theme.spacing(0),
+  input: {
+    // height: "20px",
+    padding: "20px 0px 0px 0px",
+    boxSizing: "content-box" // <-- add this
+  },
+  bunruiFormControl: {
+    margin: theme.spacing(6),
     minWidth: 120,
   },
+  tagFormControl: {
+    // margin: theme.spacing(10),
+    // // focused : false ,
+    // fullWidth : true ,
+    // margin : "normal",
+    
+    // labelPlacement : 'bottom', //これはreturn内でしか定義できない？
+  },
+  tagFormGroup:{
+    // position: relative,
+  },
+  gridTagKey: {
+    flexGrow: 1,
+    textAlign : "center",
+    margin: theme.auto,
+  }
 }))
 
 // 作品投稿ページ
@@ -324,15 +346,6 @@ const Posting = () => {
         goTagCheckBoxState = [...goTagCheckBoxState,tagMap.[map].key]
       }
     })
-    // if(tagCheckBox.SyujinMiryo){
-    //   goTagCheckBoxState.push("主人公が魅力的")
-    // }
-    // if(tagCheckBox.KanjohInyuu){
-    //   goTagCheckBoxState.push("感情移入できる")
-    // }
-    // if(tagCheckBox.Sekaikan){
-    //   goTagCheckBoxState.push("世界観が良い")
-    // }
 
     //検索用トークンマップ作成
     const tokenMap = buildTokenMap(
@@ -397,7 +410,7 @@ const Posting = () => {
             fullWidth={true} label={"作品名(必須)"} multiline={false} required={true}
             rows={1}  value={workName} type={"text"} onChange={inputWorkName}
             />
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.bunruiFormControl}>
               <InputLabel id="demo-controlled-open-select-label">分類(必須)</InputLabel>
               <Select
                 labelId="demo-controlled-open-select-label"
@@ -492,91 +505,139 @@ const Posting = () => {
         )}
       </div>
 
-        {/* ログインしていないと以下は表示されない */}
+      {(() => {
+        let iList = []
+        for(let i = 0;i < 5;i++){
+          iList = [...iList , <a>{i}</a>]
+        }
+        console.log("iList")
+        console.log(iList)
+        return <>{iList}</>
+      })()}
 
-        {uid !== "uid initial" 
-        ? (
-            <div className="c-section-container">
-              <TextInput
-              fullWidth={true} label={"(任意)点数(0-100)"} multiline={false} required={true}
-              rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
+      {/* ログインしていないと以下は表示されない */}
+      {uid !== "uid initial" 
+      ? (
+          <div>
+          {/* <div className="c-section-container"> */}
+            <TextInput
+            fullWidth={true} label={"(任意)点数(0-100)"} multiline={false} required={true}
+            rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
+            />
+            <div>タグ/属性</div> 
+            {/* <FormGroup root> */}
+            {/* <FormGroup row2> */}
+            <FormGroup clsssName={classes.tagFormGroup}>
+              <FormControl className={classes.tagFormControl}>
+                {/* <Grid container alignItems="center" justify="center" className={classes.gridTagKey} spacing={2}> */}
+                <Grid container whiteSpace="nowrap" alignItems="flex-start" className={classes.gridTagKey} spacing={0}>
+                {/* <Grid container whiteSpace="nowrap" alignItems="center" className={classes.gridTagKey} spacing={0}> */}
+                  {(() => {
+                    let tagList = []
+                    for(let j = 0;j < Object.keys(tagMap).length;j++){
+                      tagList = [...tagList , 
+                        <>
+                          {j == 0 
+                            ? <Grid item xs={12} sm={16} justify="center" ><h3>{tagExtraData.Genre.key}</h3></Grid>
+                            : j == tagExtraData.Genre.count
+                              ? <a>{tagExtraData.Impression.key}</a>
+                              : j == tagExtraData.Genre.count + tagExtraData.Impression.count - 1
+                                ? <a>{tagExtraData.Original.key}</a>
+                                : j == tagExtraData.Genre.count + tagExtraData.Impression.count + tagExtraData.Original.count - 1
+                                  ? <a>{tagExtraData.Position.key}</a>
+                                  : null
+                          }
+
+                          <Grid container item xs={4} md={3} lg={2} spacing={0} justify="space-evenly" alignItems="stretch">
+                            <FormControlLabel 
+                              control={
+                                <CheckIconBox
+                                checked={tagCheckBox[Object.keys(tagMap)[j]]} onChange={tagCheckBoxHandleChange} 
+                                name={Object.keys(tagMap)[j]} color={"secondary"}
+                                classes={{ root: classes.input }}
+                                />
+                              }
+                              label = {
+                                [tagMap.[Object.keys(tagMap)[j]].key]
+                              }
+                              className = {classes.formControlLabel}
+                              labelPlacement="bottom"
+                            />
+                          </Grid>
+                        </>
+                      ]
+                    }
+                    console.log(Object.keys(tagMap).length+"++Object.keys(tagMap).length")
+                    console.log("tagList")
+                    console.log(tagList)
+                    return <>{tagList}</>
+                  })()}
+                </Grid>
+              </FormControl>
+            </FormGroup>
+
+            <TextInput
+                fullWidth={true} label={"コメント(5000字以内)"} multiline={true} required={true}
+                rows={1} value={workComment} type={"text"} onChange={inputWorkComment}
+            />
+
+            <FormGroup row>
+            <FormControlLabel
+            control={
+              <CheckIconBox
+              checked={isSpoiler} onChange={isSpoilerHandleChange} 
+              name={"ネタバレコメント"} color={"primary"}
               />
-              <div>タグ/属性</div> 
-              {/* <FormGroup root> */}
-              <FormGroup row2>
-                {Object.keys(tagMap).map((map) => (
-                  <FormControlLabel
-                    control={
-                      <CheckIconBox
-                      checked={tagCheckBox[map]} onChange={tagCheckBoxHandleChange} 
-                      name={map} color={"secondary"}
-                      />
-                    } label = {[tagMap.[map].key]}
-                  />
-                ))}
-              </FormGroup>
-              <TextInput
-                  fullWidth={true} label={"コメント(5000字以内)"} multiline={true} required={true}
-                  rows={1} value={workComment} type={"text"} onChange={inputWorkComment}
+            } label = {"ネタバレコメント"}
+            />
+            </FormGroup>
+
+            <FormGroup row>
+            <FormControlLabel
+            control={
+              <CheckIconBox
+              checked={isPublic} onChange={isPublicHandleChange} 
+              name={"一般公開"} color={"primary"}
               />
+            } label = {"投稿内容を一般公開する"}
+            />
+            </FormGroup>
 
-              <FormGroup row>
-              <FormControlLabel
-              control={
-                <CheckIconBox
-                checked={isSpoiler} onChange={isSpoilerHandleChange} 
-                name={"ネタバレコメント"} color={"primary"}
-                />
-              } label = {"ネタバレコメント"}
-              />
-              </FormGroup>
+          <PrimaryButton label={"投稿"} onClick={postButtonClicked} />
 
-              <FormGroup row>
-              <FormControlLabel
-              control={
-                <CheckIconBox
-                checked={isPublic} onChange={isPublicHandleChange} 
-                name={"一般公開"} color={"primary"}
-                />
-              } label = {"投稿内容を一般公開する"}
-              />
-              </FormGroup>
-
-            <PrimaryButton label={"投稿"} onClick={postButtonClicked} />
-
-            <h2>作品情報を入力(オプション)</h2>
-            <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
-          </div>
-        )
-        : (
-          // <div className="c-section-container">
-          // </div>
-          <>
-          アカウントがある方はログイン、ない方はアカウント作成をしてください。
-            <ul>
-              <li>
-                <Link
-                  href={{
-                  pathname: "/auth/signup",
-                  query: { hist : "Signup" },
-                }}>
-                  <a>SignUp</a>
-                </Link>
-              </li>
-              <li>
-                {/* //ログインしているときにはsignout画面に遷移 */}
-                <Link
-                  href={{
-                  pathname: "/auth/signin",
-                  query: { hist : "Signin" },
-                }}>
-                  <a>SignIn</a>
-                </Link>
-              </li>
-            </ul>
-          </>
-        )}
-      <Footer />
+          <h2>作品情報を入力(オプション)</h2>
+          <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
+        </div>
+      )
+      : (
+        // <div className="c-section-container">
+        // </div>
+        <>
+        アカウントがある方はログイン、ない方はアカウント作成をしてください。
+          <ul>
+            <li>
+              <Link
+                href={{
+                pathname: "/auth/signup",
+                query: { hist : "Signup" },
+              }}>
+                <a>SignUp</a>
+              </Link>
+            </li>
+            <li>
+              {/* //ログインしているときにはsignout画面に遷移 */}
+              <Link
+                href={{
+                pathname: "/auth/signin",
+                query: { hist : "Signin" },
+              }}>
+                <a>SignIn</a>
+              </Link>
+            </li>
+          </ul>
+        </>
+      )}
+    <Footer />
     </>
   )
 }

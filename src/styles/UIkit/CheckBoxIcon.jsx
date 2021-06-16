@@ -16,6 +16,7 @@ const CheckIconBox = (props) => {
             onChange={props.onChange}
             name={props.name}
             color={props.color}
+            classes={props.classes}
         />
     )
 }
