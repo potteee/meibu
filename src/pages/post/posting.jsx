@@ -36,16 +36,23 @@ const useStyles = makeStyles((theme) => ({
     display: 'block', 
     marginTop: theme.spacing(2),
   },
-  input: {
+  inputCheck: {
     // height: "20px",
-    padding: "20px 0px 0px 0px",
+    // margin : "20px 0px 0px 0px",
+    margin : "0px",
+    // top : "20px",
+    padding: "0px 0px 0px 0px",
     boxSizing: "content-box" // <-- add this
   },
   bunruiFormControl: {
     margin: theme.spacing(6),
     minWidth: 120,
   },
-  tagFormControl: {
+  tagMasterGrid: {
+    position : "relative",
+    // height : "60px",
+    // top : "20px",
+    color : "blue",
     // margin: theme.spacing(10),
     // // focused : false ,
     // fullWidth : true ,
@@ -53,13 +60,35 @@ const useStyles = makeStyles((theme) => ({
     
     // labelPlacement : 'bottom', //これはreturn内でしか定義できない？
   },
+  tagFormControl: {
+    
+  },
+  tagFormControlLabel: {
+    textAlign : "center",
+    margin: "0px 0px 22px 0px",
+    boxSizing: "content-box", // <-- add this
+    // display: "inline-block",
+    // width: "auto",
+    // height: "80px",
+  },
   tagFormGroup:{
+    position: "relative",
     // position: relative,
   },
   gridTagKey: {
     flexGrow: 1,
     textAlign : "center",
-    margin: theme.auto,
+    // margin: theme.auto,
+    margin : "0px"
+  },
+  inputTagKey: {
+    flexGrow: 1,
+    textAlign : "center",
+    // margin: theme.auto,
+    margin : "0px"
+  },
+  h3TagKey: {
+    margin : "20px 0px 0px 0px",
   }
 }))
 
@@ -528,40 +557,48 @@ const Posting = () => {
             {/* <FormGroup root> */}
             {/* <FormGroup row2> */}
             <FormGroup clsssName={classes.tagFormGroup}>
-              <FormControl className={classes.tagFormControl}>
+              <FormControl className={classes.tagFormControl} margin="none">
                 {/* <Grid container alignItems="center" justify="center" className={classes.gridTagKey} spacing={2}> */}
-                <Grid container whiteSpace="nowrap" alignItems="flex-start" className={classes.gridTagKey} spacing={0}>
+                <Grid container classes={{ root: classes.tagMasterGrid}} whiteSpace="nowrap" alignContent="space-between" spacing={0}>
+                {/* <Grid container whiteSpace="nowrap" alignItems="flex-start" spacing={0}> */}
                 {/* <Grid container whiteSpace="nowrap" alignItems="center" className={classes.gridTagKey} spacing={0}> */}
                   {(() => {
                     let tagList = []
                     for(let j = 0;j < Object.keys(tagMap).length;j++){
                       tagList = [...tagList , 
                         <>
-                          {j == 0 
-                            ? <Grid item xs={12} sm={16} justify="center" ><h3>{tagExtraData.Genre.key}</h3></Grid>
-                            : j == tagExtraData.Genre.count
-                              ? <a>{tagExtraData.Impression.key}</a>
-                              : j == tagExtraData.Genre.count + tagExtraData.Impression.count - 1
-                                ? <a>{tagExtraData.Original.key}</a>
-                                : j == tagExtraData.Genre.count + tagExtraData.Impression.count + tagExtraData.Original.count - 1
-                                  ? <a>{tagExtraData.Position.key}</a>
-                                  : null
-                          }
+                          {(() => {
+                            switch(j) {
+                              case 0 : 
+                                return <Grid item xs={12} sm={16} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
+                              case tagExtraData.Genre.count :
+                                return <Grid item xs={12} sm={16} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
+                              case tagExtraData.Genre.count + tagExtraData.Impression.count - 1 :
+                                return <Grid item xs={12} sm={16} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
+                              case tagExtraData.Genre.count + tagExtraData.Impression.count + tagExtraData.Original.count - 1 :
+                                return <Grid item xs={12} sm={16} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
+                              default :
+                                null
+                            }
+                          })()}
 
-                          <Grid container item xs={4} md={3} lg={2} spacing={0} justify="space-evenly" alignItems="stretch">
+                          <Grid container item xs={4} md={3} lg={2} spacing={0} 
+                           justify="space-evenly">
                             <FormControlLabel 
                               control={
                                 <CheckIconBox
                                 checked={tagCheckBox[Object.keys(tagMap)[j]]} onChange={tagCheckBoxHandleChange} 
                                 name={Object.keys(tagMap)[j]} color={"secondary"}
-                                classes={{ root: classes.input }}
+                                classes={{ root: classes.inputCheck }}
                                 />
                               }
                               label = {
                                 [tagMap.[Object.keys(tagMap)[j]].key]
                               }
-                              className = {classes.formControlLabel}
+                              // className = {classes.formControlLabel}
+                              classes={{ root: classes.tagFormControlLabel}}
                               labelPlacement="bottom"
+                              lineHeight={1}
                             />
                           </Grid>
                         </>
