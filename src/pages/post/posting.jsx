@@ -9,6 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -52,13 +53,20 @@ const useStyles = makeStyles((theme) => ({
     position : "relative",
     // height : "60px",
     // top : "20px",
-    color : "blue",
+    // color : "blue",
     // margin: theme.spacing(10),
     // // focused : false ,
     // fullWidth : true ,
     // margin : "normal",
     
     // labelPlacement : 'bottom', //これはreturn内でしか定義できない？
+  },
+  tagItemGrid: {
+    position : "relative",
+  },
+  tagItemGridHidden: {
+    position : "relative",
+    display : "none"
   },
   tagFormControl: {
     
@@ -67,6 +75,16 @@ const useStyles = makeStyles((theme) => ({
     textAlign : "center",
     margin: "0px 0px 22px 0px",
     boxSizing: "content-box", // <-- add this
+    // display: "none",
+    // display: "inline-block",
+    // width: "auto",
+    // height: "80px",
+  },
+  tagFormControlLabelHidden: {
+    textAlign : "center",
+    margin: "0px 0px 22px 0px",
+    boxSizing: "content-box", // <-- add this
+    display: "none",
     // display: "inline-block",
     // width: "auto",
     // height: "80px",
@@ -85,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     textAlign : "center",
     // margin: theme.auto,
-    margin : "0px"
+    margin : "0px 0px 20px 0px"
   },
   h3TagKey: {
     margin : "20px 0px 0px 0px",
@@ -106,9 +124,9 @@ const Posting = () => {
 
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
   // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
-  console.log(asPath+"+asPath first")
+  // console.log(asPath+"+asPath first")
   const oriQuery = /^\/post\/posting\?searchWord=/.test(asPath) ? asPath.split('\/post\/posting')[1] : ""
-  console.log(oriQuery+"+oriQuery")
+  // console.log(oriQuery+"+oriQuery")
   // const qInfoMedia = router.query.infoMedia 
 
   let query = ""
@@ -143,6 +161,18 @@ const Posting = () => {
 
   const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
+
+  const firstCheckBoxDisp = 6
+  const totalCountGenre = tagExtraData.Genre.count
+  const totalCountImpression = totalCountGenre + tagExtraData.Impression.count
+  const totalCountOriginal = totalCountImpression + tagExtraData.Original.count
+  const totalCountPosition = totalCountOriginal + tagExtraData.Position.count  
+
+  //showmore
+  const [showMoreGenre ,setShowMoreGenre] = useState(6)
+  const [showMoreImpression ,setShowMoreImpression] = useState(totalCountGenre + 6)
+  const [showMoreOriginal ,setShowMoreOriginal] = useState(totalCountImpression + 6)
+  const [showMorePosition ,setShowMorePosition] = useState(totalCountOriginal + 6)
 
   let tagResult = {}
 
@@ -190,9 +220,9 @@ const Posting = () => {
     setTagCheckBox({...tagCheckBox,[event.target.name]: event.target.checked})
   },[tagCheckBox])
   
-  console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J")
-  console.log(checkBoxState+"+checkBoxState")
-  console.log(JSON.stringify(tagCheckBox)+"+tagCheckBox@J")
+  // console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J")
+  // console.log(checkBoxState+"+checkBoxState")
+  // console.log(JSON.stringify(tagCheckBox)+"+tagCheckBox@J")
   
   const inputWorkComment = useCallback((event) => {
     setWorkComment(event.target.value)
@@ -564,25 +594,56 @@ const Posting = () => {
                 {/* <Grid container whiteSpace="nowrap" alignItems="center" className={classes.gridTagKey} spacing={0}> */}
                   {(() => {
                     let tagList = []
+                    let displayFlag = true
+
+                    // let showMoreGenre = 6
                     for(let j = 0;j < Object.keys(tagMap).length;j++){
                       tagList = [...tagList , 
                         <>
                           {(() => {
                             switch(j) {
-                              case 0 : 
+                              case 0 : //ジャンル
                                 return <Grid item xs={12} sm={16} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
-                              case tagExtraData.Genre.count :
+                              case showMoreGenre : 
+                                displayFlag = false 
+                                if(showMoreGenre != totalCountGenre){
+                                  break
+                                }
+                              case totalCountGenre: //印象
+                                displayFlag = true
                                 return <Grid item xs={12} sm={16} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
-                              case tagExtraData.Genre.count + tagExtraData.Impression.count - 1 :
+                              case showMoreImpression :
+                                displayFlag = false
+                                if(showMoreImpression != (totalCountImpression)){
+                                  break
+                                }
+                              case totalCountImpression : // 原作
+                                displayFlag = true
                                 return <Grid item xs={12} sm={16} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
-                              case tagExtraData.Genre.count + tagExtraData.Impression.count + tagExtraData.Original.count - 1 :
+                              case showMoreOriginal :
+                              // case totalCountImpression + 5 :
+                                displayFlag = false                                
+                                if(showMoreOriginal != (totalCountOriginal)){
+                                  break
+                                }
+                                // break
+                              case totalCountOriginal : //人
+                                displayFlag = true
                                 return <Grid item xs={12} sm={16} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
+                              case showMorePosition :
+                                displayFlag = false
+                                if(showMorePosition != (totalCountPosition)){
+                                  break
+                                }
+                                // break
                               default :
-                                null
+                                break
                             }
                           })()}
 
-                          <Grid container item xs={4} md={3} lg={2} spacing={0} 
+                          <Grid container item xs={4} sm={3} md={2} spacing={0} 
+                          // <Grid container item xs={4} md={3} lg={2} spacing={0}
+                           classes={displayFlag ? {root: classes.tagItemGrid} : {root: classes.tagItemGridHidden}} 
                            justify="space-evenly">
                             <FormControlLabel 
                               control={
@@ -596,17 +657,144 @@ const Posting = () => {
                                 [tagMap.[Object.keys(tagMap)[j]].key]
                               }
                               // className = {classes.formControlLabel}
-                              classes={{ root: classes.tagFormControlLabel}}
+                              
+                              classes={{root: classes.tagFormControlLabel}}
+                              // classes={displayFlag ? {root: classes.tagFormControlLabel} : { root: classes.tagFormControlLabelHidden}}
+                                // : (classes={{ root: classes.tagFormControlLabelHidden}})
                               labelPlacement="bottom"
                               lineHeight={1}
                             />
                           </Grid>
+
+                          {(() => {
+                            switch(j) {
+                              case (showMoreGenre -1) :
+                               return (
+                                  <Grid container item spacing={0} justify={
+                                    (showMoreGenre != totalCountGenre) 
+                                      ? "flex-end" 
+                                      : "frex-start"
+                                    }
+                                    alignItems="flex-start"
+                                  >  
+                                  {/* : <Grid container item spacing={0} justify="flex-start" alignItems="flex-start">   */}
+                                    <Button onClick={() => {
+                                      // setShowMoreGenre(showMoreGenre + 3) 
+                                      setShowMoreGenre((preShowMoreGenre) => { 
+                                        if(showMoreGenre != totalCountGenre){　 //全てが表示されてるかいなか
+                                          preShowMoreGenre = preShowMoreGenre + 51
+                                          if (preShowMoreGenre > totalCountGenre) {
+                                              return totalCountGenre
+                                          } else {
+                                            return preShowMoreGenre
+                                          }
+                                        } else {
+                                          return 6
+                                        }
+                                      })
+                                    }}> 
+                                      {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
+                                    </Button>
+                                  </Grid>
+                                )
+                              case (showMoreImpression - 1) :
+                               return (
+                                  <Grid container item spacing={0} justify={
+                                    (showMoreImpression != (totalCountImpression))
+                                      ? "flex-end" 
+                                      : "frex-start"
+                                    }
+                                    alignItems="flex-start"
+                                  >  
+                                  {/* : <Grid container item spacing={0} justify="flex-start" alignItems="flex-start">   */}
+                                    <Button onClick={() => {
+                                      // setShowMoreGenre(showMoreGenre + 3) 
+                                      setShowMoreImpression((preShowMoreImpressions) => { 
+                                        if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
+                                          preShowMoreImpressions = preShowMoreImpressions + 51
+                                          if (preShowMoreImpressions > (totalCountImpression)) {
+                                              return (totalCountImpression)
+                                          } else {
+                                            return preShowMoreImpressions
+                                          }
+                                        } else {
+                                          return (totalCountGenre + 6)
+                                        }
+                                      })
+                                    }}> 
+                                      {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
+                                    </Button>
+                                  </Grid>
+                                )
+                              case (showMoreOriginal - 1) :
+                               return (
+                                  <Grid container item spacing={0} justify={
+                                    (showMoreOriginal != (totalCountOriginal))
+                                      ? "flex-end" 
+                                      : "frex-start"
+                                    }
+                                    alignItems="flex-start"
+                                  >  
+                                  {/* : <Grid container item spacing={0} justify="flex-start" alignItems="flex-start">   */}
+                                    <Button onClick={() => {
+                                      // setShowMoreGenre(showMoreGenre + 3) 
+                                      setShowMoreOriginal((preShowMoreOriginal) => { 
+                                        if(showMoreOriginal != (totalCountOriginal)){ //全てが表示されてるかいなか
+                                          preShowMoreOriginal = preShowMoreOriginal + 51
+                                          if (preShowMoreOriginal > (totalCountOriginal)) {
+                                              return (totalCountOriginal)
+                                          } else {
+                                            return preShowMoreOriginal
+                                          }
+                                        } else {
+                                          return (totalCountImpression + 6)
+                                        }
+                                      })
+                                    }}> 
+                                      {(showMoreOriginal == (totalCountOriginal) ) ? "　縮める" :  "もっと見る　"}
+                                    </Button>
+                                  </Grid>
+                                )
+                              case (showMorePosition - 1) :
+                               return (
+                                  <Grid container item spacing={0} justify={
+                                    (showMorePosition != (totalCountPosition))
+                                      ? "flex-end" 
+                                      : "frex-start"
+                                    }
+                                    alignItems="flex-start"
+                                  >  
+                                  {/* : <Grid container item spacing={0} justify="flex-start" alignItems="flex-start">   */}
+                                    <Button onClick={() => {
+                                      // setShowMoreGenre(showMoreGenre + 3) 
+                                      setShowMorePosition((preShowMorePosition) => { 
+                                        if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
+                                          preShowMorePosition = preShowMorePosition + 51
+                                          if (preShowMorePosition > (totalCountPosition)) {
+                                              console.log("retorun max ")
+                                              return (totalCountPosition)
+                                          } else {
+                                            return preShowMorePosition
+                                          }
+                                        } else {
+                                          return (totalCountOriginal + 6)
+                                        }
+                                      })
+                                    }}> 
+                                      {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
+                                    </Button>
+                                  </Grid>
+                                )
+                              default :
+                                break                          
+                             }
+                          })()}
                         </>
                       ]
                     }
-                    console.log(Object.keys(tagMap).length+"++Object.keys(tagMap).length")
-                    console.log("tagList")
-                    console.log(tagList)
+                    // console.log(Object.keys(tagMap).length+"++Object.keys(tagMap).length")
+                    // console.log("tagList")
+                    // console.log(tagList)
                     return <>{tagList}</>
                   })()}
                 </Grid>

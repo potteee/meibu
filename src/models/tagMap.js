@@ -15,6 +15,7 @@ export const tagMap = {
     Eiai : {key : "AI" , class : "Genre" } ,
     Eiesuemuaaru : {key : "ASMR" , class : "Genre" } ,
     Ekizochikku : {key : "エキゾチック" , class : "Genre" } ,
+    Esudhiijiizu : {key : "SDGs" , class : "Genre" } ,
     Eroi : {key : "エロい" , class : "Genre" } ,
     Oogui : {key : "大食い" , class : "Genre" } ,
     Oseania : {key : "オセアニア" , class : "Genre" } ,
@@ -22,7 +23,7 @@ export const tagMap = {
     Otonamuke : {key : "大人向け" , class : "Genre" } ,
     Oyakoai : {key : "親子愛" , class : "Genre" } ,
     Oretueee : {key : "俺Tsueeeee!!" , class : "Genre" } ,
-    OnngakuIi : {key : "音楽" , class : "Genre" } ,
+    Onngaku : {key : "音楽" , class : "Genre" } ,
     KaadoGame : {key : "カードゲーム" , class : "Genre" } ,
     Kagaku : {key : "科学" , class : "Genre" } ,
     Gakuennmono : {key : "学園もの" , class : "Genre" } ,
@@ -149,7 +150,6 @@ export const tagMap = {
     Utu : {key : "鬱" , class : "Impression" } ,
     Eikyuuhozonnban : {key : "永久保存版" , class : "Impression" } ,
     Ekisentoriku : {key : "エキセントリック" , class : "Impression" } ,
-    Esudhiijiizu : {key : "SDGs" , class : "Impression" } ,
     EnjaIi : {key : "演者が良い" , class : "Impression" } ,
     EnjaZannen : {key : "演者が残念" , class : "Impression" } ,
     OnngakuIi : {key : "音楽がいい" , class : "Impression" } ,
@@ -190,6 +190,8 @@ export const tagMap = {
     Orijinaru : {key : "オリジナル" , class : "Original" } ,
     GameGennsaku : {key : "ゲーム原作" , class : "Original" } ,
     SyousetuGennsaku : {key : "小説原作" , class : "Original" } ,
+    DoramaGennsaku : {key : "ドラマ原作" , class : "Original" } ,
+    SonotaGennsaku : {key : "その他" , class : "Original" } ,
     Akachan : {key : "赤ちゃん" , class : "Position" } ,
     Ikebo : {key : "イケボ" , class : "Position" } ,
     Ikemen : {key : "イケメン" , class : "Position" } ,
@@ -231,8 +233,8 @@ export const tagMap = {
 }
 
 export const tagExtraData = {
-    Impression : {key : "印象" , count : 41 , order : 1},
+    Impression : {key : "印象" , count : 40 , order : 1},
     Position : {key: "人" , count : 38 , order : 3},
-    Original : {key: "原作" , count : 5 , order : 2},
-    Genre : {key: "ジャンル" , count : 143 ,order : 0},
+    Original : {key: "原作" , count : 7 , order : 2},
+    Genre : {key: "ジャンル" , count : 144 ,order : 0},
 }
