@@ -103,6 +103,7 @@ const searchResult = () => {
         console.log("useEffect Done")
         try{
           console.log(uid+"uid searchR")
+          //ログインユーザが評価した作品を取得し、検索結果と比較。
           if(uid != "uid initial"){
             console.log(uid+"+uid")
             const snapshot = await db.collection('privateUsers').doc(uid)

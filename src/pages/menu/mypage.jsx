@@ -4,6 +4,8 @@ import { TextInput,PrimaryButton } from "../../styles/UIkit"
 
 import Header from '../../components/header'
 import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
+
 import {useDispatch, useSelector} from "react-redux";
 import {getIsSignedIn, getUserId, getUserName, getRole} from '../../reducks/users/selectors'
 // import {getUserId, getUserProfile} from '
@@ -207,8 +209,9 @@ const MyPage = () => {
     return (
       <>
       {/* {myInfo} */}
-        <Header />
-        <h2>MyPage</h2>
+        {/* <Header /> */}
+        <ApplicationBar title="マイページ"/>
+        {/* <h2>MyPage</h2> */}
         {/* Reduxからのデータを表示する部分と
         DBからのデータを表示する部分を分けて高速化。 */}
 

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import {db} from '../firebase/index'
 import {useDispatch,useSelector} from 'react-redux'
 import Header from '../components/header'
+import ApplicationBar from '../components/applicationBar'
 import Footer from '../components/footer'
 
 const News = () => {
@@ -42,9 +43,10 @@ const News = () => {
   } else {
     return (
     <>
-      <Header />
-      <h1>news</h1>
-      <p>worksのデータを一覧表示。</p>
+      {/* <Header /> */}
+      <ApplicationBar title="NEWS"/>
+      {/* <h1>news</h1> */}
+      <p>worksのデータを一覧表示。→バズビデオみたいにカテゴリごとに表示</p>
       <p>作品名：評価点：カテゴリ</p>
       <ul>
       {worksData.map(oneworksData => (

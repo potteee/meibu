@@ -192,7 +192,11 @@ const postWInfoCreate = (
                     const befWinfoScore = snapshot.data()["winfoScore"] != -1 ? snapshot.data()["winfoScore"] : 0
                     let ediWinfoScoreCount = -1
                     let ediWinfoScore = -1
-                    //////ユーザとしては新規登録
+                    //////編集
+
+                    ////カテゴリ
+                    //編集不可
+
                     //// 評価点
                     if(workScore){
                         console.log(workScore+"+workScore in")

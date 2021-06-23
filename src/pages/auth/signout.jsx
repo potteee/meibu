@@ -1,6 +1,7 @@
 import React,{useState} from "react"
 import Header from '../../components/header'
 import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
 import {signOut} from "../../reducks/users/operations";
 import { PrimaryButton } from "../../styles/UIkit"
 import {useDispatch,useSelector} from "react-redux";
@@ -44,7 +45,8 @@ const SignOut = () => {
   } else {
     return(
     <>
-      <Header />
+      {/* <Header /> */}
+      <ApplicationBar title="ログアウト"/>
 
       {hist == "Signup" && (
         <a>サインアップするには、一度ログアウトしてください。</a>
@@ -53,7 +55,7 @@ const SignOut = () => {
         <a>ログインするには、一度ログアウトしてください。</a>
       )}
 
-      <h1>SignOut</h1>
+      {/* <h1>SignOut</h1> */}
 
       <div className="center">
           <PrimaryButton

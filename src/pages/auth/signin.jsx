@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 
 import Header from '../../components/header'
 import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
 import MyPage from '../menu/mypage'
 
 const SignIn = () => {
@@ -74,9 +75,9 @@ const SignIn = () => {
     return <>loading...singin...</>
   } else {
     return (
-      <div>
-        <Header />
-
+      <>
+        <ApplicationBar title="ログイン" />
+        {/* <Header /> */}
         {hist == "Posting" && (
           <p>投稿機能を使用するにはログインしてください</p>
         )}
@@ -84,38 +85,38 @@ const SignIn = () => {
           <p>MyPageを見るにはログインしてね！</p>
         )}
         <div className="c-section-container">
-              <h2 className="u-text-center u-text__headline">ログイン画面</h2>
-              <div className="module-spacer--medium" />
-              {qStatus == "requiredMail" 
-              ?(
-                <>
-                <a>申し訳ございません。メールアドレスを入力してログインしてください</a>
-                <TextInput
-                    fullWidth={true} label={"メールアドレス"} multiline={false} required={true}
-                    rows={1} value={email} type={"email"} onChange={inputEmail}
-                />
-                </>
-                )
-              :(
-                <TextInput
-                    fullWidth={true} label={"メールアドレス/ユーザ名"} multiline={false} required={true}
-                    rows={1} value={email} type={"email"} onChange={inputEmail}
-                />)
-              }
-              <TextInput
-                  fullWidth={true} label={"パスワード"} multiline={false} required={true}
-                  rows={1} value={password} type={"password"} onChange={inputPassword}
-              />
-              <div className="module-spacer--medium" />
-              <div className="center">
-                  <PrimaryButton label={"ログイン"} onClick={loginButtonClicked} />
-                  <div className="module-spacer--small" />
-                  {/* <p className="u-text-small" onClick={() => dispatch(push('/signin/reset'))}>パスワードを忘れた方はこちら</p> */}
-                  <p className="u-text-small" onClick={() => dispatch(router.push('/auth/signup'))}>アカウント登録がまだですか？</p>
-              </div>
+          {/* <h2 className="u-text-center u-text__headline">ログイン画面</h2> */}
+          <div className="module-spacer--medium" />
+          {qStatus == "requiredMail" 
+          ?(
+            <>
+            <a>申し訳ございません。メールアドレスを入力してログインしてください</a>
+            <TextInput
+                fullWidth={true} label={"メールアドレス"} multiline={false} required={true}
+                rows={1} value={email} type={"email"} onChange={inputEmail}
+            />
+            </>
+            )
+          :(
+            <TextInput
+                fullWidth={true} label={"メールアドレス/ユーザ名"} multiline={false} required={true}
+                rows={1} value={email} type={"email"} onChange={inputEmail}
+            />)
+          }
+          <TextInput
+              fullWidth={true} label={"パスワード"} multiline={false} required={true}
+              rows={1} value={password} type={"password"} onChange={inputPassword}
+          />
+          <div className="module-spacer--medium" />
+          <div className="center">
+              <PrimaryButton label={"ログイン"} onClick={loginButtonClicked} />
+              <div className="module-spacer--small" />
+              {/* <p className="u-text-small" onClick={() => dispatch(push('/signin/reset'))}>パスワードを忘れた方はこちら</p> */}
+              <p className="u-text-small" onClick={() => dispatch(router.push('/auth/signup'))}>アカウント登録がまだですか？</p>
+          </div>
           </div>
         <Footer />
-      </div>
+      </>
     )
   }
 }
