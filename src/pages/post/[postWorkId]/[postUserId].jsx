@@ -4,6 +4,7 @@ import React, {useState, useEffect, useCallback} from 'react'
 import { useRouter } from 'next/router'
 import Header from '../../../components/header'
 import Footer from '../../../components/footer'
+import ApplicationBar from '../../../components/applicationBar'
 
 import {useDispatch, useSelector} from "react-redux";
 import {getUserId} from '../../../reducks/users/selectors'
@@ -131,8 +132,9 @@ const handlerPostUserId = () => {
   if(data && getUid != "initial uid"){
     return (
       <>
-        <Header />
-        <h2>ユーザごとの作品評価ページ</h2>
+        {/* <Header /> */}
+        <ApplicationBar title="作品評価"/>
+        {/* <h2>ユーザごとの作品評価ページ</h2> */}
         
         {!isPublic && (<a>※このページは他のユーザには公開されません</a>)}
         

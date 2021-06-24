@@ -46,7 +46,7 @@ const News = () => {
       {/* <Header /> */}
       <ApplicationBar title="NEWS"/>
       {/* <h1>news</h1> */}
-      <p>worksのデータを一覧表示。→バズビデオみたいにカテゴリごとに表示</p>
+      {/* <p>worksのデータを一覧表示。→バズビデオみたいにカテゴリごとに表示</p> */}
       <p>作品名：評価点：カテゴリ</p>
       <ul>
       {worksData.map(oneworksData => (

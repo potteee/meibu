@@ -7,6 +7,15 @@ import {getIsSignedIn} from "../reducks/users/selectors";
 import { auth, db, FirebaseTimestamp } from "../firebase/index"
 import SignIn from './auth/signin';
 
+import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+
+const useStyles = makeStyles((theme) => ({
+  appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
+    margin : "0px 0px 52px 0px",
+  },
+}))
+
 const WrappedApp = ({Component, pageProps}) => {
 
   //cookie情報からuidの確認
@@ -15,6 +24,7 @@ const WrappedApp = ({Component, pageProps}) => {
   console.log(isSignedIn+"+isSignedIn")
 
   const dispatch = useDispatch();
+  const classes = useStyles();
 
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_app")
   const userID = parseCookies().userID
@@ -26,6 +36,8 @@ const WrappedApp = ({Component, pageProps}) => {
   // リロード時にログイン状態を保持する為の処理
   // リロード時に
   // cookieにuserIDが保存されていれば、データをディスパッチ
+
+
   const firstAction = async() => {
     if(isSignedIn == false && userID){
       try{
@@ -94,7 +106,11 @@ const WrappedApp = ({Component, pageProps}) => {
     }
   } else if(isSignedIn == true && userID) {
     console.log("return Comp isSignedIn")
-    return <Component {...pageProps} />
+    return (
+      <Box className={classes.appStyle} >
+        <Component {...pageProps} />
+      </Box>
+    )
   } else {//no login 
     console.log("return Comp nologin user")
     return <Component {...pageProps} />

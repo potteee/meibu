@@ -11,6 +11,9 @@ import { useRouter } from 'next/router'
 
 import Header from '../../components/header'
 import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
+
+
 
 const SignUp = () => {
 
@@ -58,7 +61,8 @@ const SignUp = () => {
   } else {
     return (
       <div>
-        <Header />
+        <ApplicationBar title="マイページ"/>
+        {/* <Header /> */}
         <div className="c-section-container">
             <h2 className="u-text__headline u-text-center">アカウント登録</h2>
             <div className="module-spacer--medium" />

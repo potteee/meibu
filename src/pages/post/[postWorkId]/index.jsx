@@ -7,6 +7,8 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Header from '../../../components/header'
 import Footer from '../../../components/footer'
+import ApplicationBar from '../../../components/applicationBar'
+
 import {db} from '../../../firebase/index'
 import { parseCookies } from 'nookies'
 import { set } from 'immutable'
@@ -200,9 +202,12 @@ const Post = () => {
     let isLoginUserAssessment = false
     return (
       <>
-        <Header />
-        <p>作品ページ</p>
-        <h2>作品名: {workName}</h2>
+        {/* <Header /> */}
+
+　　     <ApplicationBar title={workName}/>
+
+        {/* <p>作品ページ</p> */}
+        {/* <h2>作品名: {workName}</h2> */}
         <h2>score: {workScore != -1 ? workScore : "評価なし"}</h2>
 
         <h2>評価数：{infoCount}</h2>

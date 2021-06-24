@@ -1,5 +1,6 @@
 import Header from '../../components/header'
 import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
 
 import React, {useState, useCallback} from 'react';
 import { PrimaryButton, TextInput } from "../../styles/UIkit"
@@ -47,9 +48,9 @@ const Search = () => {
 
   return(
   <>
-    <Header />
-
-    <h2>作品検索画面</h2>
+    {/* <Header /> */}
+    <ApplicationBar title="作品検索画面"/>
+    {/* <h2>作品検索画面</h2> */}
     {hist == "Posting" && (
         <p>記録する作品を検索しましょう！</p>
     )}

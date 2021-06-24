@@ -53,7 +53,7 @@ function ElevationScroll(props) {
   });
 
   return React.cloneElement(children, {
-    elevation: trigger ? 4 : 0,
+    elevation: trigger ? 5 : 0, //昇降の高さ
   });
 }
 
@@ -67,7 +67,6 @@ ElevationScroll.propTypes = {
 };
 
 const ApplicationBar = (props) => {
-
   const router = useRouter();
   const classes = useStyles();
   // export default function MenuAppBar() {
@@ -103,6 +102,11 @@ const ApplicationBar = (props) => {
     setAnchorLeftEl(null);
   };
 
+  const handleMypage = () => {
+    setAnchorEl(null);
+    router.push('/menu/mypage')
+  }
+
   const handleSignOut = () => {
     setAnchorEl(null);
     router.push('/auth/signout')
@@ -113,16 +117,21 @@ const ApplicationBar = (props) => {
     router.push('/auth/signin')
   }
 
+  const handleSignUp = () => {
+    setAnchorEl(null);
+    router.push('/auth/signup')
+  }
+
   console.log("...props")
   console.log(props)
-
 
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
         <React.Fragment>
           <CssBaseline />
-            <ElevationScroll {...props}>
+            <ElevationScroll>
+            {/* <ElevationScroll {...props}> */}
               {/* <AppBar position="static"> */}
               <AppBar position="fixed">
                 <Toolbar>
@@ -146,6 +155,9 @@ const ApplicationBar = (props) => {
                         open={Boolean(anchorLeftEl)}
                         onClose={handleLeftClose}>
                         <MenuItem >このサイトについて(準備中)</MenuItem>
+                        <MenuItem >Q & A(準備中)</MenuItem>
+                        <MenuItem >問合せ(準備中)</MenuItem>
+                        <MenuItem >設定(準備中)</MenuItem>
                       </Menu>
                     </Grid>
                     <Grid container item xs={8} justify="center" alignItems="center">
@@ -181,12 +193,8 @@ const ApplicationBar = (props) => {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                           >
-                            <MenuItem onClick={handleClose}>マイページ</MenuItem>
+                            <MenuItem onClick={handleMypage}>マイページ</MenuItem>
                             <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
-                            <MenuItem >このサイトについて(準備中)</MenuItem>
-                            <MenuItem >Q & A(準備中)</MenuItem>
-                            <MenuItem >問合せ(準備中)</MenuItem>
-                            <MenuItem >設定(準備中)</MenuItem>
                           </Menu>
                         </div>
                         )
@@ -218,7 +226,7 @@ const ApplicationBar = (props) => {
                           >
                             {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
                             <MenuItem onClick={handleSignIn}>ログイン</MenuItem>
-                            <MenuItem onClick={handleClose}>My account</MenuItem>
+                            <MenuItem onClick={handleSignUp}>新規登録</MenuItem>
                           </Menu>
                         </div>
                       )

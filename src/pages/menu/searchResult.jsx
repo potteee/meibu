@@ -6,6 +6,8 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Header from '../../components/header'
 import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
+
 import {db} from '../../firebase/index'
 import {useDispatch,useSelector} from 'react-redux'
 import {getUserId,getUserName} from "../../reducks/users/selectors";
@@ -154,8 +156,9 @@ const searchResult = () => {
     if(data.length != 0){
       return (
         <>
-          <Header />
-          <h2>検索結果ページ</h2>
+　　　　   <ApplicationBar title="検索結果"/>
+          {/* <Header /> */}
+          {/* <h2>検索結果ページ</h2> */}
           {/* render時にworkDataGetが読み込まれるうようにしたい */}
           <a>お探しの作品はありますか？</a>
           <ul>
@@ -209,7 +212,8 @@ const searchResult = () => {
     } else {
       return (
         <>
-          <Header />
+          <ApplicationBar title="検索結果"/>
+          {/* <Header /> */}
           <div className="c-section-container">
             <div>お探しの作品が見つかりません.</div>
             <PrimaryButton label={"新しい作品として登録する"} onClick={createNewWork} />

@@ -17,6 +17,7 @@ import { useRouter } from 'next/router'
 
 import Header from '../../components/header'
 import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
 
 import { auth, db, FirebaseTimestamp } from "../../firebase/index";
 
@@ -211,7 +212,8 @@ const mypageEdit = () => {
 
   return(
     <>
-    <Header />
+    <ApplicationBar title="マイページ編集"/>
+    {/* <Header /> */}
     {/* <p>{userProfile}</p> */}
     <div className="c-section-container">
       <h2 className="u-text__headline u-text-center">mypage編集</h2>
