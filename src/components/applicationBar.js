@@ -32,39 +32,44 @@ const useStyles = makeStyles((theme) => ({
   authdiv: {
     // display: 'block', 
     position : "relative",
-    left : 8, 
+    // left : 8, 
+    left : "auto",
+    right : "6px",
  },
   title: {
     // display: 'block', 
     position : "relative",
-    left : 12, 
+    // left : "0.5em", 
+ },
+ appBarPositionHeader: {
+   boxShadow : "none", //デフォルトで影がついてるので消す。
+
+ },
+  masterBox : {
+  flexGrow: 10,
+  minHeight : "0.0rem",
  },
 }))
 
-function ElevationScroll(props) {
-  const { children, window } = props;
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 0,
-    target: window ? window() : undefined,
-  });
+// function ElevationScroll(props) {
+//   const { children, window } = props;
+//   // Note that you normally won't need to set the window ref as useScrollTrigger
+//   // will default to window.
+//   // This is only being set here because the demo is in an iframe.
+//   const trigger = useScrollTrigger({
+//     disableHysteresis: true,
+//     threshold: 0,
+//     target: window ? window() : undefined,
+//   });
 
-  return React.cloneElement(children, {
-    elevation: trigger ? 5 : 0, //昇降の高さ
-  });
-}
+//   return React.cloneElement(children, {
+//     elevation: trigger ? 5 : 0, //昇降の高さ
+//   });
+// }
 
-ElevationScroll.propTypes = {
-  children: PropTypes.element.isRequired,
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
-};
+// ElevationScroll.propTypes = {
+//   children: PropTypes.element.isRequired,
+// };
 
 const ApplicationBar = (props) => {
   const router = useRouter();
@@ -127,129 +132,119 @@ const ApplicationBar = (props) => {
 
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
-        <React.Fragment>
-          <CssBaseline />
-            <ElevationScroll>
-            {/* <ElevationScroll {...props}> */}
-              {/* <AppBar position="static"> */}
-              <AppBar position="fixed">
-                <Toolbar>
-                  <Grid container item xs={12} justify="space-between" direction="row">
-                    <Grid container item xs={1}>
-                      <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={handleLeftMenu}>
-                        <MenuIcon />
-                      </IconButton>
-                      <Menu
-                        id="menu-appbar"
-                        anchorEl={anchorLeftEl}
-                        anchorOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right',
-                        }}
-                        open={Boolean(anchorLeftEl)}
-                        onClose={handleLeftClose}>
-                        <MenuItem >このサイトについて(準備中)</MenuItem>
-                        <MenuItem >Q & A(準備中)</MenuItem>
-                        <MenuItem >問合せ(準備中)</MenuItem>
-                        <MenuItem >設定(準備中)</MenuItem>
-                      </Menu>
-                    </Grid>
-                    <Grid container item xs={8} justify="center" alignItems="center">
-                      <Typography variant="h5" className={classes.title}>
-                      {/* <Typography variant="h4" component="div" sx={{ center: 20 }}> */}
-                        {props.title}
-                      </Typography>
-                    </Grid>
-                    {(uid != "uid initial") 
-                      ? (
-                        <div className={classes.authdiv}>
-                          <IconButton
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleMenu}
-                            color="inherit"
-                          >
-                            <AccountCircle />
-                          </IconButton>
-                          <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            anchorOrigin={{
-                              vertical: 'top',
-                              horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                              vertical: 'top',
-                              horizontal: 'right',
-                            }}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                          >
-                            <MenuItem onClick={handleMypage}>マイページ</MenuItem>
-                            <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
-                          </Menu>
-                        </div>
-                        )
-                      : (
-                        <div className={classes.authdiv}>
-                          <IconButton
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleMenu}
-                            color="inherit"
-                          >
-                            <AccountCircle />
-                          </IconButton>
-                          <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            anchorOrigin={{
-                              vertical: 'top',
-                              horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                              vertical: 'top',
-                              horizontal: 'right',
-                            }}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                          >
-                            {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
-                            <MenuItem onClick={handleSignIn}>ログイン</MenuItem>
-                            <MenuItem onClick={handleSignUp}>新規登録</MenuItem>
-                          </Menu>
-                        </div>
-                      )
-                    }
-                  </Grid>
-                </Toolbar>
-              </AppBar>
-            </ElevationScroll>
-            <Toolbar />
-              {/* <container>
-              <Box sx={{ my: 2 }}>
-                {[...new Array(12)]
-                  .map(
-                    () => `Cras mattis consectetur purus sit amet fermentum.
-                            Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-                            Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                            Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
-                  )
-                  .join('\n')}
-              </Box>
-            </container> */}
-        </React.Fragment>
-      </Box>
+      {/* <Box sx={{ flexGrow: 1 }}> */}
+      {/* <Box className={classes.masterBox}> */}
+      <CssBaseline />
+        {/* <ElevationScroll> */}
+        {/* <ElevationScroll {...props}> */}
+          {/* <AppBar position="static"> */}
+      <AppBar position="fixed" className={classes.appBarPositionHeader}>
+        <Toolbar variant="dense">
+          <Grid container item xs={12} justify="space-between" direction="row">
+            <Grid container item xs={1}>
+              <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={handleLeftMenu}>
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorLeftEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorLeftEl)}
+                onClose={handleLeftClose}>
+                <MenuItem >このサイトについて(準備中)</MenuItem>
+                <MenuItem >Q & A(準備中)</MenuItem>
+                <MenuItem >問合せ(準備中)</MenuItem>
+                <MenuItem >設定(準備中)</MenuItem>
+              </Menu>
+            </Grid>
+            <Grid container item xs={10} justify="center" alignItems="center">
+              <Typography variant="h5">
+              {/* <Typography variant="h5" className={classes.title}> */}
+              {/* <Typography variant="h4" component="div" sx={{ center: 20 }}> */}
+                {props.title}
+              </Typography>
+            </Grid>
+            <Grid container item xs={1} className={classes.authdiv}>
+            {(uid != "uid initial") 
+              ? (
+                <div>
+                  <IconButton
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                  >
+                    <MenuItem onClick={handleMypage}>マイページ</MenuItem>
+                    <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
+                  </Menu>
+                </div>
+                )
+              : (
+                <div>
+                  <IconButton
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="default"
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                  >
+                    {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
+                    <MenuItem onClick={handleSignIn}>ログイン</MenuItem>
+                    <MenuItem onClick={handleSignUp}>新規登録</MenuItem>
+                  </Menu>
+                </div>
+              )
+            }
+            </Grid>
+          </Grid>
+        </Toolbar>
+      </AppBar>
+        {/* </ElevationScroll> */}
+        {/* <Toolbar /> */}
+        {/* </Box> */}
     </>
   )
 }

@@ -12,7 +12,8 @@ import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme) => ({
   appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
-    margin : "0px 0px 52px 0px",
+    margin : "3.4rem 0.3rem 2.8rem 0.3rem",
+    // margin : "40px 5px 52px 5px",
   },
 }))
 
@@ -39,7 +40,7 @@ const WrappedApp = ({Component, pageProps}) => {
 
 
   const firstAction = async() => {
-    if(isSignedIn == false && userID){
+    if((isSignedIn == false) && userID){
       try{
         console.log("firstAction start")
         console.log(userID+"+userID@Cookie true")
@@ -53,30 +54,30 @@ const WrappedApp = ({Component, pageProps}) => {
             console.log("user")
             console.log(user)
             console.log("User is signed in.")
-            unsubscribe() //これやらないとずっとここだけ回り続ける
           } else {
             console.log("No user is signed in.")
             alert("不正な処理が行われました。")
-            unsubscribe()
+            // unsubscribe()
             return false
           }
         });
+        unsubscribe() //これやらないとずっとここだけ回り続ける
 
         const snapshot = await db.collection('users').doc(userID).get()
         console.log(snapshot+"+snapshot")
         const data = snapshot.data()
         console.log(JSON.stringify(data)+"+data@app")
         if (!data) {
-            throw new Error('ユーザーデータが存在しません');
+          throw new Error('ユーザーデータが存在しません');
         }
         console.log("dispatch signInAction")
         await dispatch(signInAction({
-            isSignedIn: true,
-            role: data.role,
-            uid:userID,
-            // userEmail: data.email,
-            userName: data.userName,
-            userImage: data.userImage
+          isSignedIn: true,
+          role: data.role,
+          uid:userID,
+          // userEmail: data.email,
+          userName: data.userName,
+          userImage: data.userImage
         }))
         faFinished = true
         // setFaFinished(true)
@@ -89,10 +90,23 @@ const WrappedApp = ({Component, pageProps}) => {
       }
     } else {
       console.log(userID+"+userID@Cookie else")
+      // await dispatch(signInAction({
+      //   isSignedIn: false,
+      //   // role: data.role,
+      //   // uid:userID,
+      //   // userName: data.userName,
+      //   // userImage: data.userImage
+      // }))
+      return true
     }
   }
 
   useEffect(() => {
+    const jssStyles = document.querySelector('#jss-server-side');
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+      console.log("delete jss")
+    }
     firstAction()
   },[])
 
@@ -102,7 +116,8 @@ const WrappedApp = ({Component, pageProps}) => {
       return (<>loading..._app.js...</>)
     } else { //ここは読み込まれないはず。
       console.log("return Comp")
-      return <Component {...pageProps} />
+      // return <Component {...pageProps} />
+      return null
     }
   } else if(isSignedIn == true && userID) {
     console.log("return Comp isSignedIn")
@@ -112,8 +127,14 @@ const WrappedApp = ({Component, pageProps}) => {
       </Box>
     )
   } else {//no login 
-    console.log("return Comp nologin user")
-    return <Component {...pageProps} />
+    console.log("return Comp nologin userr")
+    return (
+      <>
+        <Box className={classes.appStyle} >
+          <Component {...pageProps} />
+        </Box>
+      </>
+    )
   }
 }
 

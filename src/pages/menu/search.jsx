@@ -24,7 +24,6 @@ const Search = () => {
   },[]);
 
   const searchButtonClicked = () => {
-
     console.log(searchWord+"+searchWord 1")
 
     //Validation

@@ -64,10 +64,15 @@ const searchResult = () => {
           ? (routerPath.split('hist=')[1]).split('&')[0] 
           : routerPath.split('hist=')[1]
  
-  searchWord = decodeURIComponent(/\&/.test(routerPath.split('searchWord=')[1]) 
+  searchWord = decodeURIComponent((/\&/.test(routerPath.split('searchWord=')[1]) 
                  ? (routerPath.split('searchWord=')[1]).split('&')[0] 
                  : routerPath.split('searchWord=')[1]
-               )
+               ).replace(/\+/g,' '))
+  
+  // searchWord = decodeURIComponent(/\&/.test(routerPath.split('searchWord=')[1]) 
+  //                ? (routerPath.split('searchWord=')[1]).split('&')[0] 
+  //                : routerPath.split('searchWord=')[1]
+  //              )
   
   console.log(searchWord+"+searchWord 2")
   console.log(hist+"+hist")
@@ -143,6 +148,9 @@ const searchResult = () => {
       // pathname: '/post/index',
       query: {
         searchWord: searchWord,
+        // searchWord: decodeURIComponent(searchWord),
+        // searchWord: searchWord.replace('+',' ').replace('%2B','+'),
+        // searchWord: decodeURIComponent(searchWord.replace(/\+/g,' ')),
         infoMedia : "",
         workId : "NoData because firstPost",
         firstPostFlag : 1,

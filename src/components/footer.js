@@ -54,36 +54,43 @@ const useStyles = makeStyles((theme) => ({
  appBarPosition : {
    top: 'auto',
    bottom: 0,
+   boxShadow : "none", //デフォルトで影がついてるので消す。
+
+  //  height: "40px",
+ },
+ footerToolBar:{
+   height : "2.3rem", //親要素のrem倍
+   minHeight : "2.3rem",
  },
  masterBox : {
   flexGrow: 1,
  },
 }))
 
-function ElevationScroll(props) {
-  const { children, window } = props;
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 0,
-    target: window ? window() : undefined,
-  });
+// function ElevationScroll(props) {
+//   const { children, window } = props;
+//   // Note that you normally won't need to set the window ref as useScrollTrigger
+//   // will default to window.
+//   // This is only being set here because the demo is in an iframe.
+//   const trigger = useScrollTrigger({
+//     disableHysteresis: true,
+//     threshold: 30,
+//     target: window ? window() : undefined,
+//   });
 
-  return React.cloneElement(children, {
-    elevation: trigger ? 4 : 0,
-  });
-}
+//   return React.cloneElement(children, {
+//     elevation: trigger ? 10 : 0,
+//   });
+// }
 
-ElevationScroll.propTypes = {
-  children: PropTypes.element.isRequired,
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
-};
+// ElevationScroll.propTypes = {
+//   children: PropTypes.element.isRequired,
+//   /**
+//    * Injected by the documentation to work in an iframe.
+//    * You won't need it on your project.
+//    */
+//   // window: PropTypes.func,
+// };
 
 
 const Footer = () => {
@@ -119,17 +126,18 @@ const Footer = () => {
   return (
     <>
       {/* <a>aaa</a> */}
-      <Box className={classes.masterBox}> {/* //スクロールが一番下までいくようになる設定 */}
+      <Box>
+      {/* <Box className={classes.masterBox}> //スクロールが一番下までいくようになる設定 ...なの？ */}
       {/* <Box sx={{ flexGrow: 1 }}> //スクロールが一番下までいくようになる設定 */}
         <React.Fragment>
           <CssBaseline />
-          <ElevationScroll>
+          {/* <ElevationScroll> */}
             <AppBar position="fixed" className={classes.appBarPosition}> 
             {/* 下記のsxはなぜか効かない */}
             {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}> */}
-              <Toolbar variant="dense">
+              <Toolbar variant="dense" className={classes.footerToolBar}>
                 <Grid container item xs={12} justify="space-between" direction="row">
-                  <Grid container item xs={3} justify="center" alignItems="center">
+                  <Grid container item xs={2} justify="center" alignItems="center">
                     {/* <a>マイページ</a> */}
                     <IconButton
                       onClick={handleGoMypage}
@@ -138,7 +146,7 @@ const Footer = () => {
                       <HomeIcon />
                     </IconButton>
                   </Grid>
-                  <Grid container item xs={3} justify="center" alignItems="center">
+                  <Grid container item xs={2} justify="center" alignItems="center">
                     {/* <a>通知</a> */}
                     <IconButton
                       onClick={handleGoNotification}
@@ -147,7 +155,7 @@ const Footer = () => {
                       <NotificationsNoneIcon />
                     </IconButton>
                   </Grid>
-                  <Grid container item xs={3} justify="center" alignItems="center">
+                  <Grid container item xs={2} justify="center" alignItems="center">
                     {/* <a>NEWS</a> */}
                     <IconButton
                       onClick={handleGoNews}
@@ -156,7 +164,7 @@ const Footer = () => {
                       <AnnouncementOutlinedIcon />
                     </IconButton>
                   </Grid>
-                  <Grid container item xs={3} justify="center" alignItems="center">
+                  <Grid container item xs={2} justify="center" alignItems="center">
                     {/* <a>検索</a> */}
                     <IconButton
                       onClick={handleGoSearch}
@@ -168,7 +176,7 @@ const Footer = () => {
                 </Grid>
               </Toolbar>
             </AppBar>
-          </ElevationScroll>
+          {/* </ElevationScroll> */}
         </React.Fragment>
       </Box>
     </>

@@ -1,13 +1,19 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import { PrimaryButton, TextInput ,CheckIconBox} from "../../../styles/UIkit"
+
+//MaterialUi
 import FormGroup from '@material-ui/core/FormGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Header from '../../../components/header'
 import Footer from '../../../components/footer'
 import ApplicationBar from '../../../components/applicationBar'
+import SpeedDialPosting from '../../../components/speedDialPosting'
 
 import {db} from '../../../firebase/index'
 import { parseCookies } from 'nookies'
@@ -32,6 +38,23 @@ const fetcher = async (url) => {
   return data
 }
 
+const useStyles = makeStyles((thema) => ({
+  h5WorksTitle: {
+    margin : "9px 0px 0px 0px",
+    color : "#393e4f", //青褐あおかち
+    // marginBlockStart: "0.0em",
+    // marginBlockEnd: "0.0em",
+  },
+  h3WorksName: {
+    margin : "0px 4px",
+  },
+  boxTotalStyle : {
+    position : "relative",
+    top : "-1.3rem",
+  },
+}))
+
+
 //作品情報閲覧ページ
 const Post = () => {
   const router = useRouter()
@@ -42,6 +65,8 @@ const Post = () => {
   // const [workData, setWorkData] = useState({})
   const userId = getUserId(selector)
   const userName = getUserName(selector)
+  const classes = useStyles();
+
 
   // let workName = "initial workName" 
   //letで定義すると、際レンダリング時に再初期化されてしまう。
@@ -95,7 +120,6 @@ const Post = () => {
       }
     }
   }
-
 
   const { data , error } = useSWR(
     () => workIdCheck() ? `../api/firebase/assessment/${workId}` : null , fetcher,
@@ -201,126 +225,191 @@ const Post = () => {
   // if(data && workName){
     let isLoginUserAssessment = false
     return (
-      <>
-        {/* <Header /> */}
+      <>     
+        {/* <div className="c-section-container"> */}
+        {/* <div className="module-spacer--medium" /> */}
+  　　     <ApplicationBar title="作品情報"/>
 
-　　     <ApplicationBar title={workName}/>
+          {/* //なぜかこのページだけ全体が20pxくらい下に下がってしまうのでfixで調整 */}
+          <Box className={classes.boxTotalStyle}> 
+            <Typography>
+              <h5 className={classes.h5WorksTitle}>{"作品名"}</h5>
+            </Typography>        
 
-        {/* <p>作品ページ</p> */}
-        {/* <h2>作品名: {workName}</h2> */}
-        <h2>score: {workScore != -1 ? workScore : "評価なし"}</h2>
+            <h3 className={classes.h3WorksName}>
+              {workName +" ("+workMedia+")"}
+            </h3>
 
-        <h2>評価数：{infoCount}</h2>
+            <Typography>
+              <h5 className={classes.h5WorksTitle}>{"スコア"}</h5>
+            </Typography> 
 
-        {workScore == [""] && (
-          <h2>score: 未評価 </h2>
-        )}
-        
-        <h2>情報:{workInfo}</h2>
-        <h2>category:{checkBoxState.map(cate => (
-          <span>{cate} </span>
-        ))}</h2>
+            <h3 className={classes.h3WorksName}>
+              {workScore != -1 ? workScore : "評価なし"}
+            </h3>
 
-        <h3>tag:{Object.keys(winfoTag).map(tokens => (
-          <>
-          {/* {(1) && ( */}
-          {winfoTag[tokens] 
-           ? (
-            <span>
-            {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
-            {tokens+":"+winfoTag[tokens]+" "}
-            </span>
-          )
-          : (
-            ''
-          )}
-          </>
-        ))}</h3>
+            <Typography>
+              <h5 className={classes.h5WorksTitle}>{"評価数"}</h5>
+            </Typography> 
 
-        {/* return内でfor使えない？ */}
-        {/* <h3>tag:{Object.keys(winfoTag).forEach((tokens) => (
-          <span>{tokens}:{winfoTag[tokens]} </span>
-        ))}</h3> */}
+            <h3 className={classes.h3WorksName}>
+              {infoCount}
+            </h3>
 
-        <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2>
+            {/* いらなそうだけど・・・
+            {workScore == [""] && (
+              <h2>score: 未評価 </h2>
+            )} */}
 
+            <Typography>
+              <h5 className={classes.h5WorksTitle}>{"情報"}</h5>
+            </Typography> 
 
-        <p>シリーズ：{workSeries ? workSeries : "no data at workSeries"}</p>
+            <h3 className={classes.h3WorksName}>
+              {workInfo}
+            </h3>
 
-        <p>メディア：{workMedia}</p>
-        <p>出版社：{workPublisher}</p>
-        <p>発表：{workStart}</p>
-        <p>完結：{workFinish}</p>
-        <p>画：{workImage}</p>
+            <Typography>
+              <h5 className={classes.h5WorksTitle}>{"カテゴリ"}</h5>
+            </Typography> 
+            
+            <h3 className={classes.h3WorksName}>{checkBoxState.map(cate => (
+              <span>{cate} </span>
+            ))}</h3>
 
-        <h3>評価を見る</h3>
-        {(assessmentData.length != 0 && isAssessmenter == 1) && (
-          <>
-            <ul>
-              {assessmentData.map(mapAssessmentData => ( 
-                <>
-                  {mapAssessmentData.uid != "非公開" && (
+            <Typography>
+              <h5 className={classes.h5WorksTitle}>{"タグ/属性"}</h5>
+            </Typography>
+
+            <h3 className={classes.h3WorksName}>{Object.keys(winfoTag).map(tokens => (
+              <>
+              {/* {(1) && ( */}
+              {winfoTag[tokens] 
+              ? (
+                <div>
+                {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
+                {tokens+":"+winfoTag[tokens]+" "}
+                </div>
+              )
+              : (
+                ''
+              )}
+              </>
+            ))}</h3>
+
+            {/* return内でfor使えない？ */}
+            {/* <h3>tag:{Object.keys(winfoTag).forEach((tokens) => (
+              <span>{tokens}:{winfoTag[tokens]} </span>
+            ))}</h3> */}
+
+            <Typography>
+              <h5 className={classes.h5WorksTitle}>{"クリエーター"}</h5>
+            </Typography> 
+            
+            <h3 className={classes.h3WorksName}>
+              {workCreator ? workCreator : "no data at Creator" }
+            </h3>
+
+          　 <Typography>
+              <h5 className={classes.h5WorksTitle}>{"シリーズ"}</h5>
+            </Typography> 
+            
+            <h3 className={classes.h3WorksName}>
+              {workSeries ? workSeries : "no data at workSeries"}
+            </h3>
+
+            {/* <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2> */}
+            {/* <p>シリーズ：{workSeries ? workSeries : "no data at workSeries"}</p> */}
+
+            {/* <p>メディア：{workMedia}</p> */}
+            <p>出版社：{workPublisher}</p>
+            <p>発表：{workStart}</p>
+            <p>完結：{workFinish}</p>
+            <p>画：{workImage}</p>
+
+            <h3>みんなの評価</h3>
+            {(assessmentData.length != 0 && isAssessmenter == 1) && (
+              <>
+                <ul>
+                  {assessmentData.map(mapAssessmentData => ( 
                     <>
-                      <li>
-                        <Link href="/post/[id]/[postUserId]" 
-                          as={`/post/${workId}/${mapAssessmentData.uid}`}>
-                          <a>{mapAssessmentData.userName}</a>
-                        </Link>
-                      </li>
+                      {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (////消えてくれねぇ
+                        <>
+                          <li>
+                            <Link href="/post/[id]/[postUserId]" 
+                              as={`/post/${workId}/${mapAssessmentData.uid}`}>
+                              <a>{mapAssessmentData.userName}</a>
+                            </Link>
+                          </li>
+                        </>
+                      )}
                       {mapAssessmentData.uid == userId && (
                         isLoginUserAssessment = true
                       )}
                     </>
-                  )}
-                </>
-              ))}
-            </ul>
-          </>
-        )}
-        {isAssessmenter == 0 && (<p> 公開可能情報なし </p>) }
+                  ))}
+                </ul>
+              </>
+            )}
+            {isAssessmenter == 0 && (<p> 公開可能情報なし </p>) }
 
-        {/* <h3>あなたの評価</h3> */}
-        {/* <a>userId:::: {userId}</a> */}
-        {isLoginUserAssessment == true && (
-          <Link href="/post/[id]/[postUserId]" 
-            as={`/post/${workId}/${userId}`}>
-            <a>{userName}の評価</a>
-          </Link>
-        )}
+            {/* <h3>あなたの評価</h3> */}
+            {/* <a>userId:::: {userId}</a> */}
+            {isLoginUserAssessment == true && (
+              <>
+                <Link href="/post/[id]/[postUserId]" 
+                  as={`/post/${workId}/${userId}`}>
+                  <a>{userName}自身の評価をみる</a>
+                </Link>
+                <SpeedDialPosting workName={workName} workMedia={workMedia} workId={workId} firstPostFlag="2"/>
+              </>
+            )}
 
-        {(isLoginUserAssessment != true && isNonPublicAssessment == 0)&& (
-          <Link href={{
-            pathname: "/post/posting",
-            query: {
-              searchWord: workName,
-              infoMedia : workMedia,
-              workId : workId,
-              firstPostFlag : 0,
-            }
-          }}>
-            <a>[{workName}]を評価する。</a>
-          </Link>
-        )}
+            {/* 自分未評価　他人評価済み */}
+            {(isLoginUserAssessment != true && isNonPublicAssessment == 0)&& (
+              <>
+                <Link href={{
+                  pathname: "/post/posting",
+                  query: {
+                    searchWord: workName,
+                    infoMedia : workMedia,
+                    workId : workId,
+                    firstPostFlag : 0,
+                  }
+                }}>
+                  <a>[{workName}]を評価する。</a>
+                </Link>
+                <SpeedDialPosting workName={workName} workMedia={workMedia} workId={workId} firstPostFlag="0"/>
+              </>
+            )}
 
-        {(isLoginUserAssessment != true && isNonPublicAssessment == 1)&& (
-          <Link href={{
-            pathname: "/post/posting",
-            query: {
-              searchWord: workName,
-              infoMedia : workMedia,
-              workId : workId,
-              firstPostFlag : 2,
-            }
-          }}>
-            <a>[{workName}]の評価を編集する。</a>
-          </Link>
-        )}
-        {/*    
-          step2 
-          <h2>ーこの作品が読めるアプリー</h2> 
-          <h2>同じジャンルの人気作</h2>
-        */}
-        <Footer />
+            {/* 自分評価済み */}
+            {(isLoginUserAssessment != true && isNonPublicAssessment == 1)&& (
+              <>
+                <Link href={{
+                  pathname: "/post/posting",
+                  query: {
+                    searchWord: workName,
+                    infoMedia : workMedia,
+                    workId : workId,
+                    firstPostFlag : 2,
+                  }
+                }}>
+                  <a>[{workName}]の評価を編集する。</a>
+                </Link>
+                <SpeedDialPosting workName={workName} workMedia={workMedia} workId={workId} firstPostFlag="2"/>
+              </>
+            )}
+
+
+          </Box>
+          {/*    
+            step2 
+            <h2>ーこの作品が読めるアプリー</h2> 
+            <h2>同じジャンルの人気作</h2>
+          */}
+          <Footer />
+        {/* </div> */}
       </>
     )
   } else {

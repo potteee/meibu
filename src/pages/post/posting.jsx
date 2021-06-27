@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react'
-import { PrimaryButton, TextInput ,CheckIconBox} from "../../styles/UIkit"
+import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
 
 //material UI
 import FormGroup from '@material-ui/core/FormGroup'
@@ -282,7 +282,7 @@ const Posting = () => {
   // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
   // console.log(asPath+"+asPath first")
   const oriQuery = /^\/post\/posting\?searchWord=/.test(asPath) ? asPath.split('\/post\/posting')[1] : ""
-  // console.log(oriQuery+"+oriQuery")
+  console.log(oriQuery+"+oriQuery")
   // const qInfoMedia = router.query.infoMedia 
 
   console.log("bunruiMap")
@@ -296,8 +296,11 @@ const Posting = () => {
   let firstPostFlag = ""
 
   if(oriQuery){
-    query = decodeURIComponent(/\&/.test(oriQuery.split('?searchWord=')[1]) ? (oriQuery.split('?searchWord=')[1]).split('&')[0] : oriQuery.split('?searchWord=')[1])
+    query = /\&/.test(oriQuery.split('?searchWord=')[1]) ? (oriQuery.split('?searchWord=')[1]).split('&')[0] : oriQuery.split('?searchWord=')[1]
+    // query = decodeURIComponent(/\&/.test(oriQuery.split('?searchWord=')[1]) ? (oriQuery.split('?searchWord=')[1]).split('&')[0] : oriQuery.split('?searchWord=')[1])
     console.log(query+"+query first")
+    query = decodeURIComponent(query.replace(/\+/g,' '))
+    console.log(query+"+query second")
 
     qInfoMedia = decodeURIComponent(/\&/.test(oriQuery.split('&infoMedia=')[1]) ? (oriQuery.split('&infoMedia=')[1]).split('&')[0] : oriQuery.split('&infoMedia=')[1])
     console.log(qInfoMedia+"+qInfoMedia first")
@@ -622,8 +625,8 @@ const Posting = () => {
   return (
     <>
       {/* <Header /> */}
-      <div className="c-section-container">
-        <div className="module-spacer--medium" />
+      {/* <div className="c-section-container">
+        <div className="module-spacer--medium" /> */}
         {/* // 他人が登録した作品を評価 */}
         {firstPostFlag == 0 && (
           <>
@@ -664,14 +667,11 @@ const Posting = () => {
             {/* <h2>新規登録/評価</h2> */}
             <ApplicationBar title="新規登録/評価"/>
             <h2 className={classes.postingH2}>作品名</h2>
-            <FormControl className={classes.FCHissu}>
               <TextInput
                 fullWidth={true} label={<a className={classes.inputHissu}>(必須)</a>} multiline={false} required={true}
                 rows={1}  value={workName} type={"text"} onChange={inputWorkName}
                 // className={classes.FCHissu}
               />
-            </FormControl>
-
             <h2 className={classes.postingH2}>メディア</h2>
             <FormControl className={classes.bunruiFormControl}>
               <InputLabel id="demo-controlled-open-select-label"><a className={classes.inputHissu}>(必須)</a></InputLabel>
@@ -757,7 +757,7 @@ const Posting = () => {
           </h3>
           </>
         )}
-      </div>
+      {/* </div> */}
 
       {/* ログインしていないと以下は表示されない */}
       {uid !== "uid initial" 
@@ -1044,7 +1044,7 @@ const Posting = () => {
 
             {/* 投稿ボタン */}
             <FormGroup row>
-              <Grid container xs={12} classes={{root : classes.postingGrid}}
+              <Grid container item xs={12} classes={{root : classes.postingGrid}}
                                               // classes={{ root: classes.tagInputCheck }}
               >
                 <Grid container item xs={6} justify="center">

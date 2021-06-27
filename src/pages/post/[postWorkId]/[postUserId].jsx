@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import Header from '../../../components/header'
 import Footer from '../../../components/footer'
 import ApplicationBar from '../../../components/applicationBar'
+import SpeedDialPosting from '../../../components/speedDialPosting'
 
 import {useDispatch, useSelector} from "react-redux";
 import {getUserId} from '../../../reducks/users/selectors'
@@ -167,19 +168,28 @@ const handlerPostUserId = () => {
         <h3>投稿日時：{workUpdateTime}</h3>
 
         {/* リダックスのユーザ情報と作品のユーザ情報が同一の場合 */}
-        {(postUserId == getUid) && (
-          <Link href={{
-            pathname: "/post/posting",
-            query: { 
-              searchWord : workName,
-              workId : postWorkId,
-              infoMedia : workMedia,
-              firstPostFlag : 2, // 自分の作品を編集
-              },
-          }}>
-            <a>編集する</a>
-          </Link>
-        )}
+        {(postUserId == getUid) ? (
+          <>
+            <Link href={{
+              pathname: "/post/posting",
+              query: { 
+                searchWord : workName,
+                workId : postWorkId,
+                infoMedia : workMedia,
+                firstPostFlag : 2, // 自分の作品を編集
+                },
+            }}>
+              <a>編集する</a>
+            </Link>
+            <SpeedDialPosting workName={workName} workMedia={workMedia} workId={postWorkId} firstPostFlag="2"/>
+          </>
+        )
+        : (
+            <SpeedDialPosting workName={workName} workMedia={workMedia} workId={postWorkId} firstPostFlag="0"/>
+        )
+        
+
+        }
         <br/>
         <h3>評価に対するコメント：{assessmentComment}</h3>
         <h3>いいね：{assessmentLike}</h3>
