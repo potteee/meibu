@@ -103,10 +103,10 @@ const WrappedApp = ({Component, pageProps}) => {
 
   useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-      console.log("delete jss")
-    }
+    // if (jssStyles) {
+    //   jssStyles.parentElement.removeChild(jssStyles);
+    //   console.log("delete jss")
+    // }
     firstAction()
   },[])
 
