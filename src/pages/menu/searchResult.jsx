@@ -64,15 +64,12 @@ const searchResult = () => {
           ? (routerPath.split('hist=')[1]).split('&')[0] 
           : routerPath.split('hist=')[1]
  
-  searchWord = decodeURIComponent((/\&/.test(routerPath.split('searchWord=')[1]) 
-                 ? (routerPath.split('searchWord=')[1]).split('&')[0] 
-                 : routerPath.split('searchWord=')[1]
-               ).replace(/\+/g,' '))
-  
-  // searchWord = decodeURIComponent(/\&/.test(routerPath.split('searchWord=')[1]) 
-  //                ? (routerPath.split('searchWord=')[1]).split('&')[0] 
-  //                : routerPath.split('searchWord=')[1]
-  //              )
+  searchWord = 
+      (/\&/.test(routerPath.split('searchWord=')[1]))
+        ? ((routerPath.split('searchWord=')[1]).split('&')[0])
+        : ((routerPath.split('searchWord=')[1]))
+
+  searchWord =　decodeURIComponent(String(searchWord).replace(/\+/g,' '))
   
   console.log(searchWord+"+searchWord 2")
   console.log(hist+"+hist")
@@ -168,7 +165,7 @@ const searchResult = () => {
           {/* <Header /> */}
           {/* <h2>検索結果ページ</h2> */}
           {/* render時にworkDataGetが読み込まれるうようにしたい */}
-          <a>お探しの作品はありますか？</a>
+          <div>お探しの作品はありますか？</div>
           <ul>
             {hist == "Posting" && ( 
             <> 
@@ -212,7 +209,7 @@ const searchResult = () => {
               ))}
             </>
             )}
-            </ul>
+          </ul>
           <PrimaryButton label={"候補にないので新しい作品として登録する"} onClick={createNewWork} />
           <Footer />
         </>

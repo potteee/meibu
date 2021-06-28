@@ -42,6 +42,7 @@ const useStyles = makeStyles((thema) => ({
   h5WorksTitle: {
     margin : "9px 0px 0px 0px",
     color : "#393e4f", //青褐あおかち
+    fontSize : "0.8em",
     // marginBlockStart: "0.0em",
     // marginBlockEnd: "0.0em",
   },
@@ -232,24 +233,24 @@ const Post = () => {
 
           {/* //なぜかこのページだけ全体が20pxくらい下に下がってしまうのでfixで調整 */}
           <Box className={classes.boxTotalStyle}> 
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"作品名"}</h5>
+            <Typography className={classes.h5WorksTitle}>
+              {"作品名"}
             </Typography>        
 
             <h3 className={classes.h3WorksName}>
               {workName +" ("+workMedia+")"}
             </h3>
 
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"スコア"}</h5>
+            <Typography className={classes.h5WorksTitle}>
+              <div>{"スコア"}</div>
             </Typography> 
 
             <h3 className={classes.h3WorksName}>
               {workScore != -1 ? workScore : "評価なし"}
             </h3>
 
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"評価数"}</h5>
+            <Typography className={classes.h5WorksTitle}>
+              <div>{"評価数"}</div>
             </Typography> 
 
             <h3 className={classes.h3WorksName}>
@@ -261,24 +262,24 @@ const Post = () => {
               <h2>score: 未評価 </h2>
             )} */}
 
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"情報"}</h5>
+            <Typography className={classes.h5WorksTitle}>
+              <div>{"情報"}</div>
             </Typography> 
 
             <h3 className={classes.h3WorksName}>
               {workInfo}
             </h3>
 
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"カテゴリ"}</h5>
+            <Typography className={classes.h5WorksTitle}>
+              <div>{"カテゴリ"}</div>
             </Typography> 
             
             <h3 className={classes.h3WorksName}>{checkBoxState.map(cate => (
               <span>{cate} </span>
             ))}</h3>
 
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"タグ/属性"}</h5>
+            <Typography className={classes.h5WorksTitle}>
+              <div>{"タグ/属性"}</div>
             </Typography>
 
             <h3 className={classes.h3WorksName}>{Object.keys(winfoTag).map(tokens => (
@@ -302,16 +303,16 @@ const Post = () => {
               <span>{tokens}:{winfoTag[tokens]} </span>
             ))}</h3> */}
 
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"クリエーター"}</h5>
+            <Typography className={classes.h5WorksTitle}>
+              <div>{"クリエーター"}</div>
             </Typography> 
             
             <h3 className={classes.h3WorksName}>
               {workCreator ? workCreator : "no data at Creator" }
             </h3>
 
-          　 <Typography>
-              <h5 className={classes.h5WorksTitle}>{"シリーズ"}</h5>
+          　 <Typography className={classes.h5WorksTitle}>
+              <div>{"シリーズ"}</div>
             </Typography> 
             
             <h3 className={classes.h3WorksName}>
