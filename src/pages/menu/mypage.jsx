@@ -62,6 +62,8 @@ const MyPage = () => {
   const [userLiveIn ,setUserLiveIn] = useState("")
   const [userWebsite ,setUserWebsite] = useState("")
   const [userBirthday ,setUserBirthday] = useState("")
+  const [userBookmark, setUserBookmark] = useState([])
+
 
   /// postedWorkId
   const [workIds ,setWorkIds] = useState([])
@@ -145,6 +147,9 @@ const MyPage = () => {
           setUserLiveIn(dbData.userLiveIn)
           setUserWebsite(dbData.userWebsite)
           setUserBirthday(dbData.userBirthday)
+          if(dbData.userBookmark) {
+            setUserBookmark(dbData.userBookmark)
+          }
         })
         .catch((error) => {
           alert('Get privateUsers DB fail')
@@ -261,9 +266,27 @@ const MyPage = () => {
         }
         
 
-        <h3>非公開情報</h3>
+        <h4>ブックマークした作品</h4>
+        {userBookmark.length != 0 
+          ? <>
+            {userBookmark.map((map) => (
+              <>
+              <Link
+                href="/post/[postWorkId]/"
+                as={`/post/${map.workId}/`}
+              >
+                {map.workName}
+              </Link>
+              <br/>
+              </>
+            ))}
+          </>
+          : <>"ブックマークした作品はありません"</>
+        }    
+
+        {/* <h3>非公開情報</h3>
         <p>role : {role}</p>
-        <p>uid : {uid}</p>
+        <p>uid : {uid}</p> */}
         
         <Link 
           href={{

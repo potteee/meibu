@@ -1,8 +1,12 @@
 import React ,{useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useRouter } from 'next/router'
-
+//redux
+import {useDispatch,useSelector} from "react-redux"
+import {getUserId} from '../reducks/users/selectors'
+//FireStore
+import { auth, db, FirebaseTimestamp } from "../firebase/index";
 //material-UI
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Backdrop from '@material-ui/core/Backdrop';
 import SpeedDial from '@material-ui/lab/SpeedDial';
@@ -45,8 +49,14 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function SpeedDialPosting(props) {
+  const selector = useSelector((state) => state)
+  
+  const uid = getUserId(selector)
+
   const classes = useStyles();
   const router = useRouter()
+
+  const privateUserRef = db.collection('privateUsers').doc(uid)
 
   const [open, setOpen] = useState(false);
 
@@ -55,6 +65,10 @@ export default function SpeedDialPosting(props) {
 //   const handleVisibility = () => {
 //     setHidden((prevHidden) => !prevHidden);
 //   };
+
+  let privateUserData = {
+    userBookmark: []
+  }
 
   const handleOpen = () => {
     setOpen(true);
@@ -80,7 +94,19 @@ export default function SpeedDialPosting(props) {
   };
 
   const bookmark = () => {
+    //   配列に追加しないとダメ
+    privateUserData.userBookmark = [...privateUserData.userBookmark ,{workId: props.workId ,workName:props.workName ,workMedia:props.workMedia}]
     // setOpen(true);
+
+    privateUserRef
+    .set(privateUserData,
+            {merge : true } // 有効　→　指定しないフィールドを消さない
+    ).then(() => {
+        console.log("workBookmark set DB")
+    }).catch((error) => {
+        alert('assesworkBookmark set DB fail')
+        throw new Error(error)
+    })
     console.log("ブックマークが押されました")
   };
 

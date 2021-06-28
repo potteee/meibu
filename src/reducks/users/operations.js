@@ -273,6 +273,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                         userLiveIn: "未登録",
                         userWebsite: "未登録",
                         userBirthday: "未登録",
+                        userBookmark: [],
                         created_at: timestamp,
                         updated_at: timestamp,   
                     }

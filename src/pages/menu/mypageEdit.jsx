@@ -43,7 +43,8 @@ const mypageEdit = () => {
         [userWebsite ,setUserWebsite] = useState(""),
         [userBirthday, setUserBirthday] = useState(""),
         [workIds ,setWorkIds] = useState([]),
-        [userEmail, setUserEmail] = useState("")
+        [userEmail, setUserEmail] = useState(""),
+        [userBookmark, setUserBookmark] = useState([])
 
   let usersChangeFlag = false
 
@@ -127,6 +128,7 @@ const mypageEdit = () => {
             setUserLiveIn(data.userLiveIn)
             setUserWebsite(data.userWebsite)
             setUserBirthday(data.userBirthday)
+            setUserBookmark(data.userBookmark)
           })
           .catch((error) => {
             alert('Get privateUsers DB fail')
@@ -189,6 +191,7 @@ const mypageEdit = () => {
          userLiveIn: userLiveIn,
          userWebsite: userWebsite,
          userBirthday: userBirthday,
+         userBookmark : userBookmark,
          created_at: timestamp,
          updated_at: timestamp,  
         }
@@ -253,6 +256,15 @@ const mypageEdit = () => {
         fullWidth={true} label={"Birthday"} multiline={false} required={false}
         rows={1} value={userBirthday} type={"text"} onChange={inputUserBirthday}
       />
+      <h4>ブックマーク</h4>
+      {/* 一覧で表示。削除も簡単にできる。 */}
+
+
+
+      {/* マイページの方にも表示する　→　まずはそっちか。 */}
+
+
+
       <div className="center">
         <PrimaryButton
             label={"変更を確定"}
