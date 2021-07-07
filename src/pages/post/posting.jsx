@@ -36,7 +36,7 @@ import { addPostedWork } from '../../reducks/users/operations'
 
 import postWInfoCreate from '../../foundations/wInfo'
 import checkSameWork from '../../foundations/wInfo/checkSameWork'
-import { tokenize } from '../api/firebase/allStringSearch/text-processor';
+import { tokenize } from '../api/allStringSearch/text-processor';
 
 import { db, FirebaseTimestamp } from "../../firebase/index";
 
@@ -161,9 +161,11 @@ const useStyles = makeStyles((theme) => ({
     margin : "12px 0px 0px 0px",
   },
   h5WorksTitle: {
-    margin : "12px 0px 0px 0px",
-    // color : "#203744", //褐返かちかえし
+    margin : "9px 0px 0px 0px",
     color : "#393e4f", //青褐あおかち
+    fontSize : "0.8em",
+    // margin : "12px 0px 0px 0px",
+    // color : "#203744", //褐返かちかえし
     // color : "#aacf53", //萌黄
   },
   h3WorksName: {
@@ -234,16 +236,23 @@ const useStyles = makeStyles((theme) => ({
   },
   postingButton : {
     padding : "8px 29px",
+    margin : "0px 0.5rem",
   },
   postingBox : {
+    margin : "0px 5px 0px 15px",
+    // component : "h3",
+
     // color : "red",
+    // fontSize : 20,
+  },
+  // postingSubBox : {
+  //   margin : "0px 5px 0px 15px"
+  // },
+  postingTypology : {
     fontSize : 20,
   },
-  postingSubBox : {
+  postingSubTypology : {
     fontSize : 11,
-  },
-  postingTypology : {
-    margin : "0px 5px 0px 15px"
   },
 }))
 
@@ -368,6 +377,7 @@ const Posting = () => {
   let isPublic = true
   const [isSpoiler,setIsSpoiler] = useState(false)
   // const [workInfo, setWorkInfo] = useState("")
+  const [isLiked,setIsLiked] = useState(false)
   
   // console.log(id+"+id@post/index")
   
@@ -405,6 +415,11 @@ const Posting = () => {
     setIsSpoiler(event.target.checked)
     // },[checkBoxState])
   },[isSpoiler])
+
+  const isLikedHandleChange = useCallback((event) => {
+    setIsLiked(event.target.checked)
+    // },[checkBoxState])
+  },[isLiked])
   
   // const inputWorkInfo = useCallback((event) => {
     //   setWorkInfo(event.target.value)
@@ -474,6 +489,8 @@ const Posting = () => {
             // setIsPublic(snapshot.data().isPublic)
             isPublic = snapshot.data().isPublic
             setIsSpoiler(snapshot.data().isSpoiler)
+            setIsLiked(snapshot.data().isLiked)
+            console.log(snapshot.data().isLiked+"+setIsLiked")
           })
           .catch((error) => {
             alert('failed fistPostFlag 2 get postedWorksId')
@@ -500,7 +517,7 @@ const Posting = () => {
           throw new Error(error)
         })
       }
-        //未評価の既に登録されている作品
+      //未評価の既に登録されている作品
       if(firstPostFlag == 0){
         console.log("firstPostFlag = 0 effect start")
         await db.collection('wInfo').doc(preWorkId)
@@ -537,7 +554,6 @@ const Posting = () => {
       alert("作品名を入力してください！")
       return false
     }
-
 
     //チェックされた項目だけを配列として抽出する
     let validCheckBosState = false
@@ -594,6 +610,7 @@ const Posting = () => {
       workComment,
       isPublic,
       isSpoiler,
+      isLiked,
       tokenMap,
       firstPostFlag,
       preWorkId,
@@ -606,6 +623,7 @@ const Posting = () => {
         workName,
         isPublic,
         isSpoiler,
+        isLiked,
         workScore,
         goCheckBoxState,
         goTagCheckBoxState,
@@ -648,16 +666,6 @@ const Posting = () => {
             <h5 className={classes.h5WorksTitle}>{"分類"}</h5>
           </Typography>
           <h3 className={classes.h3WorksName}>{workMedia}</h3>
-          {/* <h3>作品名：{workName}</h3>
-          <h3>作品名：
-            <Link
-              href="/post/[postWorkId]/"
-              as={`/post/${preWorkId}/`}
-            >
-              {workName}
-            </Link>
-          </h3>
-          <h3>分類　：{workMedia}</h3> */}
           </>
         )}
 
@@ -725,9 +733,10 @@ const Posting = () => {
           <>
           <ApplicationBar title="評価編集"/>
           {/* <h2>評価編集</h2> */}
-          <Typography>
-            <h5 className={classes.h5WorksTitle}>{"作品名"}</h5>
+          <Typography className={classes.h5WorksTitle}>
+            {"作品名"}
           </Typography>
+
           <h3 className={classes.h3WorksName}>            
             <Link
               href="/post/[postWorkId]/"
@@ -736,8 +745,8 @@ const Posting = () => {
               {workName}
             </Link>
           </h3>
-          <Typography>
-            <h5 className={classes.h5WorksTitle}>{"分類"}</h5>
+          <Typography className={classes.h5WorksTitle}>
+            {"分類"}
           </Typography>
           <h3 className={classes.h3WorksName}>{workMedia}</h3>
           </>
@@ -745,14 +754,14 @@ const Posting = () => {
 
         {(firstPostFlag == 0 || firstPostFlag == 2 ) && (
           <>
-          <Typography>
-            <h5 className={classes.h5WorksTitle}>{"カテゴリ"}</h5>
+          <Typography className={classes.h5WorksTitle}>
+            {"カテゴリ"}
           </Typography>
           <h3 className={classes.h3WorksName}>
             {Object.keys(checkBoxState).map((map) => (
-              <a>{checkBoxState[map] == true && (
+              <>{checkBoxState[map] == true && (
                 <a>{categoryMap[map]} </a>
-              )}</a>
+              )}</>
             ))}
           </h3>
           </>
@@ -763,6 +772,18 @@ const Posting = () => {
       {uid !== "uid initial" 
         ? (
           <div>
+            <FormControlLabel
+              control={
+                <CheckIconBox
+                checked={isLiked} onChange={isLikedHandleChange} 
+                name={"isLiked"} color={"secondary"}
+                // classes={{ root: classes.tagInputCheck }}
+                />}
+              label = {
+                <span>いいね</span>
+              }
+              className={classes.postingInlineNetabareBox}
+            />
           {/* <div className="c-section-container"> */}
             <h2 className={classes.postingH2}>採点評価</h2>
             <FormControl className={classes.FCtensuu}>
@@ -779,7 +800,7 @@ const Posting = () => {
                 {(showGenre == true) ? "タグ全体を非表示" : "タグを選択する(任意)"}
               </Button>
             </Grid> */}
-            <FormGroup clsssName={classes.tagFormGroup}>
+            <FormGroup className={classes.tagFormGroup}>
               <FormControl margin="none">
                 <Collapse in={showGenre} timeout={1000}>
                   <Grid container classes={{ root: classes.tagMasterGrid}} alignContent="space-between" spacing={0}>
@@ -1064,14 +1085,18 @@ const Posting = () => {
                       postButtonClicked()
                     }}
                   >
-                    <Typography classes={{root : classes.postingTypology}}>
-                      <Box className={classes.postingBox}>
-                        投稿
-                      </Box>
-                      <Box className={classes.postingSubBox}>
-                        個人記録
-                      </Box>
-                    </Typography>
+                    <Grid container item xs={12}>
+                      <Grid item xs={12} className={classes.postingBox}>
+                        <Typography classes={{root : classes.postingTypology}}>
+                          投稿
+                      </Typography>
+                      </Grid>
+                      <Grid item xs={12} className={classes.postingBox}>
+                        <Typography classes={{root : classes.postingSubTypology}}>
+                          個人記録
+                      </Typography>
+                      </Grid>
+                    </Grid>
                   </Button>
                 </Grid>
 
@@ -1088,14 +1113,18 @@ const Posting = () => {
                       postButtonClicked()
                     }}
                   >
-                    <Typography classes={{root : classes.postingTypology}}>
-                      <Box className={classes.postingBox}>
-                        投稿
-                      </Box>
-                      <Box className={classes.postingSubBox}>
-                        一般公開
-                      </Box>
-                    </Typography>
+                    <Grid container item xs={12}>
+                      <Grid item xs={12} className={classes.postingBox}>
+                        <Typography classes={{root : classes.postingTypology}}>
+                          投稿
+                      </Typography>
+                      </Grid>
+                      <Grid item xs={12} className={classes.postingBox}>
+                        <Typography classes={{root : classes.postingSubTypology}}>
+                          一般公開
+                      </Typography>
+                      </Grid>
+                    </Grid>
                   </Button>
                 </Grid>
               </Grid>

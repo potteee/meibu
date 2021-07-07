@@ -273,7 +273,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                         userLiveIn: "未登録",
                         userWebsite: "未登録",
                         userBirthday: "未登録",
-                        userBookmark: [],
+                        userBookmark: {},
                         created_at: timestamp,
                         updated_at: timestamp,   
                     }
@@ -286,6 +286,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                         updated_at: timestamp,
                         isPublic: false,
                         isSpoiler: false,
+                        isLiked : false,
                     }
 
                     await usersRef.doc(uid).set(userInitialData)
@@ -338,6 +339,7 @@ export const addPostedWork = (
     workName,
     isPublic,
     isSpoiler,
+    isLiked,
     workScore,
     goCheckBoxState,
     goTagCheckBoxState,
@@ -363,6 +365,7 @@ export const addPostedWork = (
                 created_at: timestamp,
                 updated_at:timestamp,
                 isPublic: isPublic,
+                isLiked : isLiked,
                 isSpoiler: isSpoiler,
                 workScore: workScore ? workScore : -1,
                 // assessmentCategory: goCheckBoxState,
@@ -377,6 +380,7 @@ export const addPostedWork = (
                 // created_at: timestamp,
                 updated_at:timestamp,
                 isPublic: isPublic,
+                isLiked : isLiked,
                 isSpoiler: isSpoiler,
                 workScore: workScore ? workScore : -1,
                 // assessmentCategory: goCheckBoxState,
@@ -390,6 +394,7 @@ export const addPostedWork = (
             workName : workName,
             uid : uid,
             isSpoiler: isSpoiler,
+            isLiked : isLiked,
             workScore: workScore,
         }
 

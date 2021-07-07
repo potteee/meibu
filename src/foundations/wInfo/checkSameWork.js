@@ -1,7 +1,7 @@
 import React, {useState, useCallback} from 'react';
 import { db, FirebaseTimestamp } from "../../firebase/index";
 
-/// Redux no だからここに書いている
+/// Redux no だからここに書いている　→　apiに書くべき。というか同じ名前を許容するからこの機能いらないかも。
 
 const checkSameWork = async(
 workName,

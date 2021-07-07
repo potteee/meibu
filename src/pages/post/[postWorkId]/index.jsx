@@ -8,6 +8,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteTwoToneIcon from '@material-ui/icons/FavoriteTwoTone';
+
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Header from '../../../components/header'
@@ -40,24 +43,32 @@ const fetcher = async (url) => {
 
 const useStyles = makeStyles((thema) => ({
   h5WorksTitle: {
-    margin : "9px 0px 0px 0px",
+    margin : "0px 0px 0px 0px",
     color : "#393e4f", //青褐あおかち
     fontSize : "0.8em",
     // marginBlockStart: "0.0em",
     // marginBlockEnd: "0.0em",
   },
   h3WorksName: {
-    margin : "0px 4px",
+    margin : "0px 4px 9px 4px",
   },
   boxTotalStyle : {
     position : "relative",
     top : "-1.3rem",
   },
+  isLikedSignal : {
+    position: 'fixed',
+    top : "2.4em",
+    right : "0.6em",
+  },
+
 }))
 
 
 //作品情報閲覧ページ
 const Post = () => {
+  const [standbyState,setStandbyState] = useState(false)
+
   const router = useRouter()
   const dispatch = useDispatch()
   const selector = useSelector((state) => state)
@@ -75,6 +86,7 @@ const Post = () => {
   //useStateを使った方がいい（と思う）
   const [workName, setWorkName] = useState("not definded")
   const [infoCount, setInfoCount] = useState(0)
+  const [likedCount, setLikedCount] = useState(0)
   const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
   const [checkBoxState, setCheckBoxState] = useState([])
@@ -91,8 +103,12 @@ const Post = () => {
   const [assessmentData ,setAssessmentData] = useState([])
   // const [assessmentData ,setAssessmentData] = useState([{userName : "ini" , uid: "ini"}])
 
-  const [isAssessmenter, setIsAssessmenter] = useState(0)
-  const [isNonPublicAssessment, setIsNonPublicAssessment] = useState(0)
+  const [isAssessmenter, setIsAssessmenter] = useState(false)
+  const [isAssessed, setIsAssessed] = useState(false)
+  const [isMyAssessmentPublic, setIsMyAssessmentPublic] = useState(false)
+
+  const [isBookmark ,setIsBookmark] = useState(false)
+  const [isLiked ,setIsLiked] = useState(false)
 
   // const [userId, setUserId] = useState("")
   // const [userName, setUserName] = useState("")
@@ -100,6 +116,12 @@ const Post = () => {
   const [winfoTag, setWinfoTag] = useState([])
 
     // let data = undefined
+
+  //useCallback => レンダリング葉されないが副作用(useEffect)は走るらしい。
+  const isLikedStateChange = useCallback((state) => {
+    setIsLiked(state)
+    console.log("isLikedStateChange")
+  },[isLiked]) 
 
   const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
   console.log(query+"+query")
@@ -123,7 +145,7 @@ const Post = () => {
   }
 
   const { data , error } = useSWR(
-    () => workIdCheck() ? `../api/firebase/assessment/${workId}` : null , fetcher,
+    () => workIdCheck() ? `/api/firebase/assessment/${workId}` : null , fetcher,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false
@@ -135,7 +157,6 @@ const Post = () => {
   useEffect(() => {
     (async() => {
       console.log("useEffect Out")
-
 
       if(workId != undefined) {
         console.log("useEffect Done")
@@ -151,6 +172,8 @@ const Post = () => {
             // console.log(JSON.stringify(workName)+"workName@J")
             setWorkName(wInfoData.workName)
             setInfoCount(wInfoData.winfoCount)
+
+            setLikedCount(wInfoData.winfoLikedCount)
 
             setWorkScore(wInfoData.winfoScore)
             // setWorkScore(sum/wInfoData.workScore.length)
@@ -174,19 +197,19 @@ const Post = () => {
             //assessment内データなのでAPIからとってくる必要ある・・・？
             //投稿者情報を取得（isPublic==true以外は除外) 
             if(data && assessmentData.length == 0) {
+              setAssessmentData([...data])
               data.forEach((doc) => {
-                // tmpAssessmentData.push(doc)
-                setAssessmentData(prevAssessmentWorksId => {
-                  return ([
-                    ...prevAssessmentWorksId,
-                    doc
-                  ])
-                })
+                // setAssessmentData(prevAssessmentWorksId => {
+                //   return ([
+                //     ...prevAssessmentWorksId,
+                //     doc
+                //   ])
+                // })
 
                 //一つでも非公開以外があればフラグを立てる
                 //(「公開可能情報なし」と表示しない)
                 if(doc.uid != "非公開") {
-                  setIsAssessmenter(1)
+                  setIsAssessmenter(true)
                 }
               })
             } else {
@@ -201,28 +224,59 @@ const Post = () => {
         await db.collection('privateUsers').doc(userId)
         .collection('postedWorksId').doc(workId)
         .get()
-        .then((snapshot) => {
-          console.log(snapshot+"+snapshot")
-          // console.log(JSON.stringify(snapshot)+"+snapshot@J")
-          console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-          if(snapshot.data()){
-            setIsNonPublicAssessment(1)
-          }
+        .then(async(postSnapshot) => {
+          console.log(postSnapshot+"+postSnapshot")
+          await db.collection('privateUsers').doc(userId)
+          .get()
+          .then((privateSnapshot) => {
+            console.log(privateSnapshot+"+privateSnapshot")
+            console.log(JSON.stringify(privateSnapshot.data())+"+privateSnapshot@J")
+
+            if(privateSnapshot.data()["userBookmark"]){//このifはいずれ消す。初期DBだとuserBookmarkのフィールドがないため、この分岐が必要
+              console.log(Object.keys(privateSnapshot.data()["userBookmark"])+"OBkey userBookmark")
+              if(Object.keys(privateSnapshot.data()["userBookmark"]).includes(workId)){
+                setIsBookmark(true)
+              }
+            }
+            
+            console.log(JSON.stringify(postSnapshot.data())+"+postSnapshot.data()@J")
+            if(postSnapshot.data()){
+              setIsAssessed(true)
+              if(postSnapshot.data()["isPublic"] == true){
+                setIsMyAssessmentPublic(true)
+              } else {
+                setIsMyAssessmentPublic(false)
+              }
+              if(postSnapshot.data()["isLiked"] == true){
+                // setIsLiked(true)
+                isLikedStateChange(true)
+              } else {
+                isLikedStateChange(false)
+                // setIsLiked(false)
+              }
+            }
+          })
+          // console.log(JSON.stringify(postSnapshot)+"+postSnapshot@J")
         })
         .catch((error) => {
           alert('privateUsers DB get fail')
           throw new Error(error)
         })
       }
+
+      setStandbyState(true)
+
     })()
   // },[workId,data,userId])
-  },[data])
+  },[data,isLiked])
+   //isLikedが[]内にある理由いいねしたときに「評価投稿数」「いいね数」を更新するため
 
   console.log(data+"+data")
   // console.log(workName+"+workName")
+  console.log(standbyState+"+standbyStatesta")
 
   // if(data && typeof workName != "undefined"){
-  if(data && workName != "not definded"){
+  if(data && (workName != "not definded") && standbyState){
   // if(data && workName){
     let isLoginUserAssessment = false
     return (
@@ -232,6 +286,10 @@ const Post = () => {
   　　     <ApplicationBar title="作品情報"/>
 
           {/* //なぜかこのページだけ全体が20pxくらい下に下がってしまうのでfixで調整 */}
+          {/* いいね：{isLiked ? "○" : "×"}
+          公開　：{isMyAssessmentPublic ? "○" : "×"}
+          ブックマーク：{isBookmark ? "○" : "×"} */}
+
           <Box className={classes.boxTotalStyle}> 
             <Typography className={classes.h5WorksTitle}>
               {"作品名"}
@@ -242,7 +300,7 @@ const Post = () => {
             </h3>
 
             <Typography className={classes.h5WorksTitle}>
-              <div>{"スコア"}</div>
+              {"スコア"}
             </Typography> 
 
             <h3 className={classes.h3WorksName}>
@@ -250,11 +308,19 @@ const Post = () => {
             </h3>
 
             <Typography className={classes.h5WorksTitle}>
-              <div>{"評価数"}</div>
+              {"評価投稿数"}
             </Typography> 
 
             <h3 className={classes.h3WorksName}>
               {infoCount}
+            </h3>
+
+            <Typography className={classes.h5WorksTitle}>
+              {"いいね数"}
+            </Typography> 
+
+            <h3 className={classes.h3WorksName}>
+              {likedCount ? likedCount : 0}
             </h3>
 
             {/* いらなそうだけど・・・
@@ -263,7 +329,7 @@ const Post = () => {
             )} */}
 
             <Typography className={classes.h5WorksTitle}>
-              <div>{"情報"}</div>
+              {"情報"}
             </Typography> 
 
             <h3 className={classes.h3WorksName}>
@@ -271,7 +337,7 @@ const Post = () => {
             </h3>
 
             <Typography className={classes.h5WorksTitle}>
-              <div>{"カテゴリ"}</div>
+              {"カテゴリ"}
             </Typography> 
             
             <h3 className={classes.h3WorksName}>{checkBoxState.map(cate => (
@@ -279,7 +345,7 @@ const Post = () => {
             ))}</h3>
 
             <Typography className={classes.h5WorksTitle}>
-              <div>{"タグ/属性"}</div>
+              {"タグ/属性"}
             </Typography>
 
             <h3 className={classes.h3WorksName}>{Object.keys(winfoTag).map(tokens => (
@@ -287,10 +353,10 @@ const Post = () => {
               {/* {(1) && ( */}
               {winfoTag[tokens] 
               ? (
-                <div>
+                <div >
                 {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
                 {tokens+":"+winfoTag[tokens]+" "}
-                </div>
+                </div >
               )
               : (
                 ''
@@ -304,7 +370,7 @@ const Post = () => {
             ))}</h3> */}
 
             <Typography className={classes.h5WorksTitle}>
-              <div>{"クリエーター"}</div>
+              {"クリエーター"}
             </Typography> 
             
             <h3 className={classes.h3WorksName}>
@@ -312,7 +378,7 @@ const Post = () => {
             </h3>
 
           　 <Typography className={classes.h5WorksTitle}>
-              <div>{"シリーズ"}</div>
+              {"シリーズ"}
             </Typography> 
             
             <h3 className={classes.h3WorksName}>
@@ -322,14 +388,13 @@ const Post = () => {
             {/* <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2> */}
             {/* <p>シリーズ：{workSeries ? workSeries : "no data at workSeries"}</p> */}
 
-            {/* <p>メディア：{workMedia}</p> */}
-            <p>出版社：{workPublisher}</p>
+            {/* <p>出版社：{workPublisher}</p>
             <p>発表：{workStart}</p>
             <p>完結：{workFinish}</p>
-            <p>画：{workImage}</p>
+            <p>画：{workImage}</p> */}
 
             <h3>みんなの評価</h3>
-            {(assessmentData.length != 0 && isAssessmenter == 1) && (
+            {(assessmentData.length != 0 && isAssessmenter == true) && (
               <>
                 <ul>
                   {assessmentData.map(mapAssessmentData => ( 
@@ -352,7 +417,7 @@ const Post = () => {
                 </ul>
               </>
             )}
-            {isAssessmenter == 0 && (<p> 公開可能情報なし </p>) }
+            {isAssessmenter == false && (<p> 公開可能情報なし </p>) }
 
             {/* <h3>あなたの評価</h3> */}
             {/* <a>userId:::: {userId}</a> */}
@@ -360,57 +425,44 @@ const Post = () => {
               <>
                 <Link href="/post/[id]/[postUserId]" 
                   as={`/post/${workId}/${userId}`}>
-                  <a>{userName}自身の評価をみる</a>
+                  <p>{userName}自身の評価をみる</p>
                 </Link>
-                <SpeedDialPosting workName={workName} workMedia={workMedia} workId={workId} firstPostFlag="2"/>
               </>
             )}
 
-            {/* 自分未評価　他人評価済み */}
-            {(isLoginUserAssessment != true && isNonPublicAssessment == 0)&& (
-              <>
-                <Link href={{
-                  pathname: "/post/posting",
-                  query: {
-                    searchWord: workName,
-                    infoMedia : workMedia,
-                    workId : workId,
-                    firstPostFlag : 0,
-                  }
-                }}>
-                  <a>[{workName}]を評価する。</a>
-                </Link>
-                <SpeedDialPosting workName={workName} workMedia={workMedia} workId={workId} firstPostFlag="0"/>
-              </>
-            )}
-
-            {/* 自分評価済み */}
-            {(isLoginUserAssessment != true && isNonPublicAssessment == 1)&& (
-              <>
-                <Link href={{
-                  pathname: "/post/posting",
-                  query: {
-                    searchWord: workName,
-                    infoMedia : workMedia,
-                    workId : workId,
-                    firstPostFlag : 2,
-                  }
-                }}>
-                  <a>[{workName}]の評価を編集する。</a>
-                </Link>
-                <SpeedDialPosting workName={workName} workMedia={workMedia} workId={workId} firstPostFlag="2"/>
-              </>
-            )}
-
-
+            <>
+              <Link href={{
+                pathname: "/post/posting",
+                query: {
+                  searchWord: workName,
+                  infoMedia : workMedia,
+                  workId : workId,
+                  firstPostFlag : isAssessed ? 2 : 0 ,
+                }
+              }}>
+                <a>[{workName}] {isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
+              </Link>
+              <SpeedDialPosting
+                workName={workName} 
+                workMedia={workMedia} 
+                workId={workId} 
+                isLiked={isLiked}
+                // setIsLiked={setIsLiked}
+                uid={userId}
+                setIsLiked={isLikedStateChange}
+                firstPostFlag={isAssessed ? 2 : 0} 
+                hist={"work"}
+              />
+            </>
           </Box>
           {/*    
             step2 
             <h2>ーこの作品が読めるアプリー</h2> 
             <h2>同じジャンルの人気作</h2>
           */}
+          {(isLiked && isMyAssessmentPublic) ? <FavoriteIcon className={classes.isLikedSignal}/> : null}
+          {(isLiked && !isMyAssessmentPublic) ? <FavoriteTwoToneIcon className={classes.isLikedSignal}/> : null}
           <Footer />
-        {/* </div> */}
       </>
     )
   } else {

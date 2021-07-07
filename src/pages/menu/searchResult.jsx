@@ -15,7 +15,7 @@ import {getUserId,getUserName} from "../../reducks/users/selectors";
 // import { getWorkData } from '../../reducks/works/operations'
 import { DiscFull } from '@material-ui/icons'
 
-import { tokenize } from '../api/firebase/allStringSearch/text-processor'
+import { tokenize } from '../api/allStringSearch/text-processor'
 
 //API
 import useSWR,{ mutate } from 'swr'
@@ -90,7 +90,7 @@ const searchResult = () => {
   console.log(JSON.stringify(searchTokenMap)+"+searchTokenMap@J")
 
   const {data, error} = useSWR(
-    () => searchWord ? `../api/firebase/search/${searchWord}` : null ,url => fetcher(url,searchTokenMap)
+    () => searchWord ? `/api/firebase/search/${searchWord}` : null ,url => fetcher(url,searchTokenMap)
     ,{
       revalidateOnFocus: false,
       revalidateOnReconnect: false

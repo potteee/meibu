@@ -44,7 +44,7 @@ const mypageEdit = () => {
         [userBirthday, setUserBirthday] = useState(""),
         [workIds ,setWorkIds] = useState([]),
         [userEmail, setUserEmail] = useState(""),
-        [userBookmark, setUserBookmark] = useState([])
+        [userBookmark, setUserBookmark] = useState({})
 
   let usersChangeFlag = false
 

@@ -1,7 +1,7 @@
 import React, {useState, useCallback} from 'react';
 import { db, FirebaseTimestamp } from "../../firebase/index";
 
-/// Redux no だからここに書いている
+/// Redux no だからここに書いている →api配下に移行予定
 
 
 const postWInfoCreate = (
@@ -15,6 +15,7 @@ const postWInfoCreate = (
     workComment,
     isPublic,
     isSpoiler,
+    isLiked,
     tokenMap,
     firstPostFlag,
     preWorkId) => {
@@ -22,7 +23,6 @@ const postWInfoCreate = (
         const timestamp = FirebaseTimestamp.now()
         // var workIdObject = {}
         // workIdObject['editor.' + workId] = new Date()
-
 
         const wInfoRef = db.collection('wInfo').doc()
         //自動生成されたIDを取得
@@ -53,9 +53,10 @@ const postWInfoCreate = (
             var wInfoData = { 
                 workId : workId,
                 workName : workName,
-                winfoScore : workScore ? workScore : -1, //workScore 0は0とし登録したいができているか？
+                winfoScore : workScore ? workScore : -1, //workScore 
                 winfoScoreCount : workScore ? 1 : 0, //作成時の初期値なので1
                 winfoCount : 1, //作成時の初期値なので1
+                winfoLikedCount : isLiked ? 1 : 0,
                 winfoTag : tmpWorkTag, ///////////新規　5/17 {xxxx : 3},{yyyy : 2} 
                 winfoInfomation : "no data at infomation",
                 winfoCategory : checkBoxState,
@@ -150,6 +151,12 @@ const postWInfoCreate = (
 
                 const ediWinfoCount = snapshot.data()["winfoCount"] + 1
 
+                //// いいね
+                console.log(isLiked+"+isLiked")
+
+                let tmpLikedCount = snapshot.data()["winfoLikedCount"] + (isLiked ? 1 : 0)
+
+                console.log(tmpLikedCount+"+tmpLikedCount")
 
                 // ****************************
 
@@ -157,6 +164,7 @@ const postWInfoCreate = (
                     winfoScoreCount : ediWinfoScoreCount,
                     winfoCount : ediWinfoCount,
                     winfoScore : ediWinfoScore,
+                    winfoLikedCount : tmpLikedCount,
                     winfoTag : tmpWorkTag,
                 }).then(() => {
                     console.log("successed to update Count & Score")
@@ -189,16 +197,23 @@ const postWInfoCreate = (
                 .then((snapshotPrivate) => {
                     console.log(snapshotPrivate.data()["workScore"]+"++++snapshotPrivate.data()[workScore]")
 
-                    const befWinfoScore = snapshot.data()["winfoScore"] != -1 ? snapshot.data()["winfoScore"] : 0
-                    let ediWinfoScoreCount = -1
-                    let ediWinfoScore = -1
+                    // ↓バグ　0入れたらダメ。評価したことになってしまう。
+                    // const befWinfoScore = snapshot.data()["winfoScore"] != -1 ? snapshot.data()["winfoScore"] : 0
+                    const befWinfoScore = snapshot.data()["winfoScore"] // wrote 0707
+
+                    // ↓バグ　よくわからないところで-1で定義している。変更されることが大前提
+                    // let ediWinfoScoreCount = -1
+                    // let ediWinfoScore = -1
+                    let ediWinfoScoreCount
+                    let ediWinfoScore
+
                     //////編集
 
                     ////カテゴリ
                     //編集不可
 
                     //// 評価点
-                    if(workScore){
+                    if(workScore){ //評価していなければ""となる
                         console.log(workScore+"+workScore in")
                         const befWinfoScoreCount = snapshot.data()["winfoScoreCount"]
                         
@@ -224,18 +239,40 @@ const postWInfoCreate = (
                         console.log(ediWinfoScore+"+ediWinfoScore")
                         console.log(workScore+"+workScore")
                     } else { //今回、評価しておらず、前回評価している場合、消す必要がある。
+                       //バグアあるのはこの中っぽい。
                         console.log(workScore+"+workScore out")
                         const befWinfoScoreCount = snapshot.data()["winfoScoreCount"]
                         const befWorkScore = snapshotPrivate.data()["workScore"]
 
-                        ediWinfoScoreCount = Number(befWinfoScoreCount) - 1
-                        ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) ) /ediWinfoScoreCount
+                        //↓バグ　ここで-1しちゃダメ。前回評価していない場合でも-1してしまう。
+                        // ediWinfoScoreCount = Number(befWinfoScoreCount) -1
+
+                        //↓バグ　これここでいいの？→だめ　前回時点の評価数から1減産した数を代入してから。
+                        //評価者「0」では割れないので直接評価者無し符号-1を代入する。
+                        // if(ediWinfoScoreCount != 0 ){// wrote 0705
+                        //     ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) ) /ediWinfoScoreCount
+                        // } else {
+                        //     //評価しているユーザがいなくなった場合、-1とする。
+                        //     ediWinfoScore = -1
+                        // }
+
                         //前回 ログインユーザが評価していた場合
                         if(befWorkScore != -1){
+                            ediWinfoScoreCount = Number(befWinfoScoreCount) -1
+
+                            if(ediWinfoScoreCount != 0 ){// wrote 0705
+                                ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) - Number(befWorkScore) ) /ediWinfoScoreCount
+                            } else {
+                                //評価しているユーザがいなくなった場合、-1とする。
+                                ediWinfoScore = -1
+                            }
+
                             console.log(befWorkScore+"snapshotPrivate.data()[workScore]")
-                            if(befWinfoScoreCount != 0){
+                            // if(befWinfoScoreCount != 0){ // 0705
+                            if(befWinfoScoreCount == 0){
                                 //評価しているはずなので、wInfoが0ということはありえないのでエラー
                                 console.log('ERROR')
+                                alert('src　ERROR')
                                 return false;
                             } else {
                                 // 前回評価ー今回未評価
@@ -258,8 +295,12 @@ const postWInfoCreate = (
                         //前回　ログインユーザが評価していなかった場合
                         } else { 
                             console.log("前回も未評価")
+
+                            ediWinfoScoreCount = befWinfoScoreCount // wrote 0707
+                            ediWinfoScore = befWinfoScore // wrote 0707
                             // 何も実行しない。
-                            // wInfoも更新なし。
+                            // wInfoも更新なし。　//更新しないというわけには行かないので初期値を代入
+
                         }
                     }
                     //// 評価タグ
@@ -295,11 +336,23 @@ const postWInfoCreate = (
 
                     const ediWinfoCount = snapshot.data()["winfoCount"]
 
+                    //いいね
+                    let tmpLikedCount = -9999
+
+                    ////前回いいね
+                    if(snapshotPrivate.data()["isLiked"] == true) {
+                        tmpLikedCount = snapshot.data()["winfoLikedCount"] + (isLiked ? 0 : -1)
+                    ////前回だめね
+                    } else {
+                        tmpLikedCount = snapshot.data()["winfoLikedCount"] + (isLiked ? 1 : 0)
+                    }
+
                     // ****************************
 
                     db.collection('wInfo').doc(workId).update({
                         winfoCount : ediWinfoCount,
                         winfoScoreCount : ediWinfoScoreCount,
+                        winfoLikedCount : tmpLikedCount,
                         winfoScore : ediWinfoScore,
                         winfoTag : tmpWorkTag,
                     }).then(() => {
@@ -322,22 +375,23 @@ const postWInfoCreate = (
 
         //subCollection　ユーザごとの作品評価(isPublicのみ)
         if(isPublic){
-            var assessment = {
+            const assessment = {
                 uid　: uid,
                 userName : userName,
                 // assessmentCategory : checkBoxState,
-                updateTime : {},
+                updateTime : new Date(),
                 workScore : workScore ? workScore : -1, // -1は初期値
                 workComment : workComment,
                 workTag : tagCheckBox,
                 // isPublic : isPublic,
+                isLiked : isLiked,
                 isSpoiler : isSpoiler,
                 worksLikedCount : 0,
                 assessmentComment : [],
             }
 
-            // wInfoData.editor[uid] = new Date()
-            assessment.updateTime = new Date()
+            // assessment.updateTime = new Date()
+
             return assessmentRef
             // await assessmentRef
             .set(assessment,

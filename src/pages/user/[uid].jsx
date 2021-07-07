@@ -84,7 +84,7 @@ const userPage = () => {
 
   // useSWR start
   const { data , error } = useSWR(
-    () => (userId && userId != "[uid]") ? `../api/firebase/user/${userId}` : null, fetcher
+    () => (userId && userId != "[uid]") ? `/api/firebase/user/${userId}` : null, fetcher
     ,{
       revalidateOnFocus: false,
       revalidateOnReconnect: false

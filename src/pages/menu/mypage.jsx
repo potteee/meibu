@@ -62,7 +62,7 @@ const MyPage = () => {
   const [userLiveIn ,setUserLiveIn] = useState("")
   const [userWebsite ,setUserWebsite] = useState("")
   const [userBirthday ,setUserBirthday] = useState("")
-  const [userBookmark, setUserBookmark] = useState([])
+  const [userBookmark, setUserBookmark] = useState({})
 
 
   /// postedWorkId
@@ -93,7 +93,7 @@ const MyPage = () => {
   //  ★初期ログイン直後に読み込んでくれるようにしないと。
   const { data , error } = useSWR(
     // () => query.id ? `../api/firebase/postedWorksId/${query.id}` : null, fetcher
-    () => uid ? `../api/firebase/postedWorksId/${uid}` : null, fetcher
+    () => uid ? `/api/firebase/postedWorksId/${uid}` : null, fetcher
     // const {data, error } = useSWR(['../api/firebase',22], (url,id) => fetcher(url, {id}),
     // イニシャル値を設定してしまうと、レンダリング直後に読みに行ってくれない。
     // ,{ initialData: {names: 'SWRinitialWorksName',id: '99'}},
@@ -244,7 +244,7 @@ const MyPage = () => {
         
         {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
         
-        <p>投稿した作品：</p>
+        <p>評価を投稿した作品：</p>
         {worksData.length != 0 
           ? <>{!noWorkFlag 
             ? <>
@@ -267,21 +267,22 @@ const MyPage = () => {
         
 
         <h4>ブックマークした作品</h4>
-        {userBookmark.length != 0 
+        {Object.keys(userBookmark).length != 0 
           ? <>
-            {userBookmark.map((map) => (
+            {Object.keys(userBookmark).map((map) => (
               <>
-              <Link
-                href="/post/[postWorkId]/"
-                as={`/post/${map.workId}/`}
-              >
-                {map.workName}
-              </Link>
-              <br/>
+                <Link
+                  href="/post/[postWorkId]/"
+                  as={`/post/${map}/`}
+                >
+                  {userBookmark[map]["workName"]}
+                </Link>
+                <br/>
               </>
             ))}
           </>
-          : <>"ブックマークした作品はありません"</>
+          : <p>
+          "ブックマークした作品はありません"</p>
         }    
 
         {/* <h3>非公開情報</h3>
@@ -294,7 +295,7 @@ const MyPage = () => {
             query: { hist : "mypage" },
           }} 
         >
-          <a>mypageを編集する</a>
+          mypageを編集する
         </Link>
 
         {/* <PrimaryButton

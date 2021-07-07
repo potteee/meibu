@@ -51,6 +51,7 @@ const handlerPostUserId = () => {
   const [workScore, setWorkScore] = useState("")
   const [workCategory, setWorkCategory] = useState([])
   const [workTag, setWorkTag] = useState([])
+  const [isLiked, setIsLiked] = useState(false)
   const [workComment ,setWorkComment] = useState("")
   const [workUpdateTime, setWorkUpdateTime] = useState("")
   const [assessmentComment, setAssessmentComment] = useState([""])
@@ -83,7 +84,7 @@ const handlerPostUserId = () => {
   
   const { data , error } = useSWR(
       () => postIdCheck() 
-        ? `../../api/firebase/assessmentSearchUser/${postWorkId}_${postUserId}`
+        ? `/api/firebase/assessmentSearchUser/${postWorkId}_${postUserId}`
         : null,
         fetcher,
       {
@@ -111,6 +112,7 @@ const handlerPostUserId = () => {
             setWorkScore(data.workScore)
             setWorkCategory(data.winfoCategory)
             setWorkTag(data.assessmentWorkTag)
+            data.isLiked ? setIsLiked(data.isLiked) : setIsLiked(false)
             setWorkComment(data.workComment)
             setWorkUpdateTime(new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
             // setWorkUpdateTime(new Date(data.updateTime._seconds * 1000).toLocaleString("ja"))
@@ -150,6 +152,8 @@ const handlerPostUserId = () => {
         </Link>
         {/* <h3>作品名(L)：{workName}</h3> */}
         <h4>メディア：{workMedia}</h4>
+
+        <h3>いいね：{isLiked ? "いいね" : "だめね"}</h3>
         <h3>採点：{workScore != -1 ? workScore : "採点なし"}</h3>
         <h3>カテゴリ：{
           workCategory.map(mapWorkCategory => (
@@ -181,11 +185,27 @@ const handlerPostUserId = () => {
             }}>
               <a>編集する</a>
             </Link>
-            <SpeedDialPosting workName={workName} workMedia={workMedia} workId={postWorkId} firstPostFlag="2"/>
+            <SpeedDialPosting 
+              workName={workName}
+              workMedia={workMedia}
+              workId={postWorkId}
+              isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
+              firstPostFlag="2"
+              uid= {postUserId}
+              hist={"assessment"}
+            />
           </>
         )
         : (
-            <SpeedDialPosting workName={workName} workMedia={workMedia} workId={postWorkId} firstPostFlag="0"/>
+            <SpeedDialPosting
+              workName={workName}
+              workMedia={workMedia}
+              workId={postWorkId}
+              isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
+              firstPostFlag="0"
+              uid= {postUserId}
+              hist={"assessment"}
+            />
         )
         
 

@@ -113,7 +113,7 @@ const WrappedApp = ({Component, pageProps}) => {
   if(isSignedIn == false && userID){
     if(faFinished == false){ //reload
       console.log("return loading...")
-      return (<>loading..._app.js...</>)
+      return (<div className={classes.appStyle} >loading..._app.js...</div>)
     } else { //ここは読み込まれないはず。
       console.log("return Comp")
       // return <Component {...pageProps} />

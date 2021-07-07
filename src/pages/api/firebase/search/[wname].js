@@ -2,7 +2,6 @@
 
 import React from 'react' 
 import firebase from 'firebase/app';
-// import { tokenize } from '../allStringSearch/text-processor';
 
 const handlerSearchWork = async({ query: { wname }, body: dBody}, res) => {
   console.log("apiStart");

@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
  },
  appBarPosition : {
    top: 'auto',
-   bottom: 0,
+   bottom: "-1px", //最下部がちらつくので-1しておく
    boxShadow : "none", //デフォルトで影がついてるので消す。
 
   //  height: "40px",
