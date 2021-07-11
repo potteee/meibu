@@ -57,6 +57,10 @@ const handlerPostUserId = () => {
   const [assessmentComment, setAssessmentComment] = useState([""])
   const [assessmentLike, setAssessmentLike] = useState(0)
   const [isPublic, setIsPublic] = useState(false)
+  const [loginUserData,setLoginUserData] = useState(0)
+
+  const [standbyState , setStandbyState] = useState(false)
+
 
   const postIdCheck = () => {
     console.log("postIdCheck start")
@@ -128,11 +132,33 @@ const handlerPostUserId = () => {
           console.log("data no exist")
         }
       }
+      setStandbyState(true)
     })()
   },[data])
 
+  useEffect(() => { // ログインユーザが評価しているか？
+    (async() => {
+      console.log("start useEffect2")
+      const res2 = await fetch(`/api/firebase/get/privateUsers/postedWorksId/${postWorkId}_${getUid}`)
+      const data2 = await res2.json()
+      console.log(data2+"+data2 of fetcher")
+      // console.log(data2.data()+"+data2.data() of fetcher")
+      console.log(JSON.stringify(data2)+"+data2@J of fetcher")
 
-  if(data && getUid != "initial uid"){
+      setLoginUserData(() => {
+        return data2.uid ? 1 : 2
+      })
+
+      if (res2.status !== 200) {
+        throw new Error(data2.message)
+
+      }
+    })()
+  },[])
+
+
+  if(loginUserData && standbyState && getUid != "initial uid"){
+  // if(loginUserData && data && getUid != "initial uid"){
     return (
       <>
         {/* <Header /> */}
@@ -172,7 +198,8 @@ const handlerPostUserId = () => {
         <h3>投稿日時：{workUpdateTime}</h3>
 
         {/* リダックスのユーザ情報と作品のユーザ情報が同一の場合 */}
-        {(postUserId == getUid) ? (
+        {(postUserId == getUid) 
+        ? (
           <>
             <Link href={{
               pathname: "/post/posting",
@@ -185,31 +212,19 @@ const handlerPostUserId = () => {
             }}>
               <a>編集する</a>
             </Link>
-            <SpeedDialPosting 
-              workName={workName}
-              workMedia={workMedia}
-              workId={postWorkId}
-              isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
-              firstPostFlag="2"
-              uid= {postUserId}
-              hist={"assessment"}
-            />
           </>
-        )
-        : (
-            <SpeedDialPosting
-              workName={workName}
-              workMedia={workMedia}
-              workId={postWorkId}
-              isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
-              firstPostFlag="0"
-              uid= {postUserId}
-              hist={"assessment"}
-            />
-        )
-        
+        ) : null }
 
-        }
+        <SpeedDialPosting
+          workName={workName}
+          workMedia={workMedia}
+          workId={postWorkId}
+          isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
+          uid= {getUid}
+          firstPostFlag = {(loginUserData === 1) ? 2 : 0}
+          hist={"assessment"}
+        />
+
         <br/>
         <h3>評価に対するコメント：{assessmentComment}</h3>
         <h3>いいね：{assessmentLike}</h3>
@@ -218,7 +233,7 @@ const handlerPostUserId = () => {
       </>
     )
   } else {
-    return <>loading...</>
+    return <>loading...loginUserData:{loginUserData} standbyState:{standbyState ? 1 : 0} getUid:{getUid}</>
   }
 }
 

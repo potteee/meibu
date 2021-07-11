@@ -17,6 +17,7 @@ import Header from '../../../components/header'
 import Footer from '../../../components/footer'
 import ApplicationBar from '../../../components/applicationBar'
 import SpeedDialPosting from '../../../components/speedDialPosting'
+import ObjectSort from '../../../components/objectSort'
 
 import {db} from '../../../firebase/index'
 import { parseCookies } from 'nookies'
@@ -117,11 +118,20 @@ const Post = () => {
 
     // let data = undefined
 
-  //useCallback => レンダリング葉されないが副作用(useEffect)は走るらしい。
-  const isLikedStateChange = useCallback((state) => {
+  //useCallback => レンダリング葉されないが副作用(useEffect)は走るらしい。　
+  //=>いや、レンダリングも走っちゃってるっぽいなぁ。。。
+  const isLikedStateChange = useCallback((state,isPublic) => {
+    console.log(state+"+isLikedStateChange")
+    console.log(isPublic+"+isPublic")
     setIsLiked(state)
-    console.log("isLikedStateChange")
-  },[isLiked]) 
+    setIsMyAssessmentPublic(isPublic)
+  },[isMyAssessmentPublic,isLiked])
+  // },[]) 
+  // },[isLiked]) 
+  const inputWinfoTag = useCallback((value) => {
+    console.log(JSON.stringify(value)+"+inputWinfoTag")
+    setWinfoTag(value)
+  },[winfoTag])
 
   const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
   console.log(query+"+query")
@@ -161,6 +171,53 @@ const Post = () => {
       if(workId != undefined) {
         console.log("useEffect Done")
         console.log(workId+"+workId effect")
+
+        //////これ上に持っていくことで　薄いいいねが表示されなくなるかも
+        await db.collection('privateUsers').doc(userId)
+        .collection('postedWorksId').doc(workId)
+        .get()
+        .then(async(postSnapshot) => {
+          console.log(postSnapshot+"+postSnapshot")
+          await db.collection('privateUsers').doc(userId)
+          .get()
+          .then((privateSnapshot) => {
+            console.log(privateSnapshot+"+privateSnapshot")
+            console.log(JSON.stringify(privateSnapshot.data())+"+privateSnapshot@J")
+
+            if(privateSnapshot.data()["userBookmark"]){//このifはいずれ消す。初期DBだとuserBookmarkのフィールドがないため、この分岐が必要
+              console.log(Object.keys(privateSnapshot.data()["userBookmark"])+"OBkey userBookmark")
+              if(Object.keys(privateSnapshot.data()["userBookmark"]).includes(workId)){
+                setIsBookmark(true)
+              }
+            }
+            
+            console.log(JSON.stringify(postSnapshot.data())+"+postSnapshot.data()@J")
+            if(postSnapshot.data()){
+              setIsAssessed(true)
+              console.log("setisassessed")
+              if(postSnapshot.data()["isPublic"] == true){
+                setIsMyAssessmentPublic(true)
+                console.log("setIsMyassessmentPublic true")
+              } else {
+                setIsMyAssessmentPublic(false)
+                console.log("setIsMyassessmentPublic true")
+              }
+              if(postSnapshot.data()["isLiked"] == true){
+                setIsLiked(true)
+                // isLikedStateChange(true)
+              } else {
+                // isLikedStateChange(false)
+                setIsLiked(false)
+              }
+            }
+          })
+          // console.log(JSON.stringify(postSnapshot)+"+postSnapshot@J")
+        })
+        .catch((error) => {
+          alert('privateUsers DB get fail')
+          throw new Error(error)
+        })
+
         await db.collection('wInfo').doc(workId).get()
         .then(doc => {
           let wInfoData = doc.data()
@@ -180,7 +237,11 @@ const Post = () => {
             setWorkInfo(wInfoData.winfoInfomation)
 
             setCheckBoxState(wInfoData.winfoCategory)
-            setWinfoTag(wInfoData.winfoTag)
+            // setWinfoTag(wInfoData.winfoTag)
+            // if(winfoTag.length == 0){
+            inputWinfoTag(ObjectSort(wInfoData.winfoTag,"asc"))
+            // inputWinfoTag(wInfoData.winfoTag)
+            // }
 
             setWorkCreator(wInfoData.winfoCreator)
 
@@ -221,47 +282,7 @@ const Post = () => {
           alert('works DB get fail')
           throw new Error(error)
         })
-        await db.collection('privateUsers').doc(userId)
-        .collection('postedWorksId').doc(workId)
-        .get()
-        .then(async(postSnapshot) => {
-          console.log(postSnapshot+"+postSnapshot")
-          await db.collection('privateUsers').doc(userId)
-          .get()
-          .then((privateSnapshot) => {
-            console.log(privateSnapshot+"+privateSnapshot")
-            console.log(JSON.stringify(privateSnapshot.data())+"+privateSnapshot@J")
 
-            if(privateSnapshot.data()["userBookmark"]){//このifはいずれ消す。初期DBだとuserBookmarkのフィールドがないため、この分岐が必要
-              console.log(Object.keys(privateSnapshot.data()["userBookmark"])+"OBkey userBookmark")
-              if(Object.keys(privateSnapshot.data()["userBookmark"]).includes(workId)){
-                setIsBookmark(true)
-              }
-            }
-            
-            console.log(JSON.stringify(postSnapshot.data())+"+postSnapshot.data()@J")
-            if(postSnapshot.data()){
-              setIsAssessed(true)
-              if(postSnapshot.data()["isPublic"] == true){
-                setIsMyAssessmentPublic(true)
-              } else {
-                setIsMyAssessmentPublic(false)
-              }
-              if(postSnapshot.data()["isLiked"] == true){
-                // setIsLiked(true)
-                isLikedStateChange(true)
-              } else {
-                isLikedStateChange(false)
-                // setIsLiked(false)
-              }
-            }
-          })
-          // console.log(JSON.stringify(postSnapshot)+"+postSnapshot@J")
-        })
-        .catch((error) => {
-          alert('privateUsers DB get fail')
-          throw new Error(error)
-        })
       }
 
       setStandbyState(true)
@@ -271,7 +292,7 @@ const Post = () => {
   },[data,isLiked])
    //isLikedが[]内にある理由いいねしたときに「評価投稿数」「いいね数」を更新するため
 
-  console.log(data+"+data")
+  console.log(JSON.stringify(data)+"+data@J")
   // console.log(workName+"+workName")
   console.log(standbyState+"+standbyStatesta")
 
@@ -399,7 +420,7 @@ const Post = () => {
                 <ul>
                   {assessmentData.map(mapAssessmentData => ( 
                     <>
-                      {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (////消えてくれねぇ
+                      {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (
                         <>
                           <li>
                             <Link href="/post/[id]/[postUserId]" 

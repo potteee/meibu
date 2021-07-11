@@ -84,6 +84,14 @@ export default function SpeedDialPosting(props) {
   // let actions = []
   const [actions,setActions] = useState([])
 
+  const [pworkName,setPworkName] = useState(props.workName)
+  const [pworkId,setPworkId] = useState(props.workId)
+  const [pworkMedia, setPworkMedia] =  useState(props.workMedia)
+  const [puid, setPuid] = useState(props.uid)
+  const [pfirstPostFlag,setPfirstPostFlag] = useState(props.firstPostFlag)
+  const [phist, setPhist] = useState(props.hist)
+  const [pliked, setPliked] =  useState(props.liked)
+
   // const [isLiked ,setIsLiked] = useState(true);
   let isLiked = false //初期値をfalseにしないと登録がなかったときに「いいね」が表示されない
   const [open, setOpen] = useState(false);
@@ -96,8 +104,8 @@ export default function SpeedDialPosting(props) {
   }
 
   const { data , error } = useSWR(
-    () => props.workId ? `/api/firebase/get/privateUsers/postedWorksId/${props.workId}_${props.uid}` : null, fetcher
-    // () => props.workId ? `../api/firebase/get/privateUsers/postedWorksId/${props.workId}_${uid}` : null, fetcher
+    () => pworkId ? `/api/firebase/get/privateUsers/postedWorksId/${pworkId}_${puid}` : null, fetcher
+    // () => pworkId ? `../api/firebase/get/privateUsers/postedWorksId/${pworkId}_${uid}` : null, fetcher
     ,{
       revalidateOnFocus: false,
       revalidateOnReconnect: false
@@ -105,50 +113,46 @@ export default function SpeedDialPosting(props) {
   )
 
   console.log(JSON.stringify(data)+"+data@J")
+  console.log("wN:"+pworkName+" wM:"+pworkMedia+" wI:"+pworkId+" fpf:"+pfirstPostFlag)
   console.log(error+"+error useSWR")
 
   //useEffect
   useEffect(() => {
     if(data){
       console.log(data.isLiked+"+data.isLiked")
-      console.log(props.firstPostFlag)
-      if(data.isLiked){ //いいねされていた場合、いいねボタンを消す
+      console.log(pfirstPostFlag)
+      if(data.isLiked || props.isLiked){ //いいねされていた場合、いいねボタンを消す
         // setIsLiked(true)
         isLiked = true
       } else {
         isLiked = false
       }
+    } else {
+      console.log("data undefined")
+      console.log(pfirstPostFlag)
+      if(props.isLiked){ //いいねされていた場合、いいねボタンを消す
+        // setIsLiked(true)
+        isLiked = true
+      } else {
+        isLiked = false
+      }
+
     }
     if(isLiked) {
       setActions([
-        { icon: <CreateIcon />, name: (props.firstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
+        { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
         { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
       ]);
       console.log(isLiked+"action defined")
     } else {
       setActions([
-        { icon: <CreateIcon />, name: (props.firstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
+        { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
         { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
         { icon: <FavoriteIcon />, name: 'いいね！' , function: like},
         { icon: <FavoriteTwoToneIcon />, name: 'いいね！(非公開)' , function: likeHikoukai},
       ]);
       console.log(isLiked+"action defined")
     }
-    // if(isLiked) {
-    //   actions = [
-    //     { icon: <CreateIcon />, name: (props.firstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
-    //     { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
-    //   ];
-    //   console.log(isLiked+"action defined")
-    // } else {
-    //   actions = [
-    //     { icon: <CreateIcon />, name: (props.firstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
-    //     { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
-    //     { icon: <FavoriteIcon />, name: 'いいね！' , function: like},
-    //     { icon: <FavoriteTwoToneIcon />, name: 'いいね！(非公開)' , function: likeHikoukai},
-    //   ];
-    //   console.log(isLiked+"action defined")
-    // }
   },[data])
 
 
@@ -162,23 +166,22 @@ export default function SpeedDialPosting(props) {
   
   const post = () => {
     console.log("投稿が押されました。")
-    console.log("wN:"+props.workName+" wM:"+props.workMedia+" wI:"+props.workId+" fpf:"+props.firstPostFlag)
+    console.log("wN:"+pworkName+" wM:"+pworkMedia+" wI:"+pworkId+" fpf:"+pfirstPostFlag)
     router.push({
-        pathname: "/post/posting",
-        query: {
-            searchWord: props.workName,
-            infoMedia : props.workMedia,
-            workId : props.workId,
-            firstPostFlag : props.firstPostFlag,
-        }
-    }
-    )
+      pathname: "/post/posting",
+      query: {
+        searchWord: pworkName,
+        infoMedia : pworkMedia,
+        workId : pworkId,
+        firstPostFlag : pfirstPostFlag,
+      }
+    })
   };
 
   const bookmark = () => {
     //   配列に追加しないとダメ
-    // privateUserData.userBookmark = [...privateUserData.userBookmark ,{workId: props.workId ,workName:props.workName ,workMedia:props.workMedia}]
-    privateUserData.userBookmark = { [props.workId] : { workName:props.workName ,workMedia:props.workMedia } }
+    // privateUserData.userBookmark = [...privateUserData.userBookmark ,{workId: pworkId ,workName:pworkName ,workMedia:pworkMedia}]
+    privateUserData.userBookmark = { [pworkId] : { workName:pworkName ,workMedia:pworkMedia } }
     // setOpen(true);
 
     if(uid != "uid initial"){
@@ -202,15 +205,15 @@ export default function SpeedDialPosting(props) {
     // setOpen(true);
     if(uid != "uid initial"){
       // //未評価ユーザの場合、評価済みユーザの場合。（このifいらなそう
-      // if(props.firstPostFlag == 0 || props.firstPostFlag == 2){
+      // if(pfirstPostFlag == 0 || pfirstPostFlag == 2){
       console.log("作品にいいねで評価しました。")
       const url = `/api/firebase/posting/${uid}`
       // const url = `../pages/api/firebase/posting/${uid}`
       const postingData = {
-        workName:props.workName,
-        workMedia:props.workMedia,
-        workId:props.workId,
-        firstPostFlag:props.firstPostFlag,
+        workName:pworkName,
+        workMedia:pworkMedia,
+        workId:pworkId,
+        firstPostFlag:pfirstPostFlag,
         isLiked:true,
         hist:"liked" ,
         userName:userName ,
@@ -248,51 +251,16 @@ export default function SpeedDialPosting(props) {
       }
 
       //親が再描写されることを期待。また、後にfalseにする昨日も追加する。
-      props.setIsLiked(true)
+      props.setIsLiked(true,isPublic)
 
       setActions([
-          { icon: <CreateIcon />, name: (props.firstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
+          { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
           { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
       ]);
       console.log(isLiked+"action defined in click")
 
-      // return true
-
-      // await dispatch(postWInfoCreate(
-      //     props.workName, // workName,
-      //     props.workMedia, // workMedia,
-      //     "",// workScore,
-      //     uid,// uid,
-      //     userName,// userName,
-      //     [],// goCheckBoxState,
-      //     [],// goTagCheckBoxState,
-      //     // workComment,
-      //     // isPublic,
-      //     // isSpoiler,
-      //     // isLiked,
-      //     // tokenMap,
-      //     // firstPostFlag,
-      //     // preWorkId,
-      //     // history)
-      // ).then( async(workId) => {
-      //     console.log(workId+"+workId posting m")
-      //     // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
-      //     await dispatch(addPostedWork(
-      //         uid,
-      //         workId,
-      //         workName,
-      //         isPublic,
-      //         isSpoiler,
-      //         isLiked,
-      //         workScore,
-      //         goCheckBoxState,
-      //         goTagCheckBoxState,
-      //         workComment,
-      //         firstPostFlag,
-      //     )
-      // )
     }
-    console.log(props.firstPostFlag)
+    console.log(pfirstPostFlag)
     console.log("いいねが押されました")
   };
 
@@ -304,7 +272,7 @@ export default function SpeedDialPosting(props) {
       isPublic = false
       like()
     }
-    console.log(props.firstPostFlag)
+    console.log(pfirstPostFlag)
     console.log("いいね(非公開)が押されました")
   };
 

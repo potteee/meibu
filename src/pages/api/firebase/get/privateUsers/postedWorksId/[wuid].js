@@ -39,8 +39,13 @@ const handlerGetPostWorksdId = async(req, res) => {
 
   await postedWorksIdRef.get()
   .then((snapshot) => {
-    console.log(JSON.stringify(snapshot)+"+++++snapshot@j")
-    res.status(200).json(snapshot.data())
+    console.log(JSON.stringify(snapshot)+"+++++get snapshot@j")
+    console.log(JSON.stringify(snapshot.data())+"+++++get snapshot.data()@j")
+    if(snapshot.data()){ // フィールドが存在しない場合undefined
+      res.status(200).json(snapshot.data())
+    } else {
+      res.status(200).json({uid:false})
+    }
   })
   .catch((error) => {
     throw new Error(error)
