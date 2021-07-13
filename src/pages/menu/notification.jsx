@@ -4,7 +4,6 @@ import ApplicationBar from '../../components/applicationBar'
 import SpeedDialPosting from '../../components/speedDialPosting'
 
 const Notification = () => (
-  
   <>
     {/* <Header /> */}
     <ApplicationBar title="通知"/>
