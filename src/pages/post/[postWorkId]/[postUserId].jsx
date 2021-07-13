@@ -125,6 +125,7 @@ const handlerPostUserId = () => {
 
             setIsPublic(data.isPublic)
 
+            setStandbyState(true)
           } else {
             console.log("data.userName no exist")
           }
@@ -132,7 +133,6 @@ const handlerPostUserId = () => {
           console.log("data no exist")
         }
       }
-      setStandbyState(true)
     })()
   },[data])
 

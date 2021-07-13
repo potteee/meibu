@@ -21,6 +21,10 @@ import Collapse from '@material-ui/core/Collapse';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 
+///material icon 
+import PublicIcon from '@material-ui/icons/Public';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Header from '../../components/header'
@@ -254,6 +258,12 @@ const useStyles = makeStyles((theme) => ({
   postingSubTypology : {
     fontSize : 11,
   },
+  isPublicSignal : {
+    position: 'fixed',
+    top : "2.4em",
+    right : "0.6em",
+  },
+
 }))
 
 const StyledCheckbox = (props) => {
@@ -375,14 +385,18 @@ const Posting = () => {
 
   const [checkBoxState, setCheckBoxState] = useState(cateResult)
 
-  // const [isPublic,setIsPublic] = isPublicuseState(true)
-  let isPublic = true
+  const [isPublic,setIsPublic] = useState(true)
+  // let isPublic = true
   const [isSpoiler,setIsSpoiler] = useState(false)
   // const [workInfo, setWorkInfo] = useState("")
   const [isLiked,setIsLiked] = useState(false)
   
   // console.log(id+"+id@post/index")
   
+  const changeIsPublic = useCallback((state) => {
+    setIsPublic(state)
+  }, [])
+
   const inputWorkName = useCallback((event) => {
     setWorkName(event.target.value)
   }, [])
@@ -488,8 +502,8 @@ const Posting = () => {
             })            
             setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
             setWorkComment(snapshot.data().workComment)
-            // setIsPublic(snapshot.data().isPublic)
-            isPublic = snapshot.data().isPublic
+            setIsPublic(snapshot.data().isPublic)
+            // isPublic = snapshot.data().isPublic
             setIsSpoiler(snapshot.data().isSpoiler)
             setIsLiked(snapshot.data().isLiked)
             console.log(snapshot.data().isLiked+"+setIsLiked")
@@ -549,7 +563,7 @@ const Posting = () => {
   console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J chuu")
   console.log(checkBoxState+"+checkBoxState chuu")
 
-  const postButtonClicked = async() => {
+  const postButtonClicked = async(pushIsPublic) => {
     //バリデーション
     if(workMedia == ""){
       alert("分類を入力してください！")
@@ -564,6 +578,8 @@ const Posting = () => {
       alert("100以下、0以上を入力してください！")
       return false
     }
+
+    console.log(pushIsPublic+"+pushIsPublic")
 
     //チェックされた項目だけを配列として抽出する
     let validCheckBosState = false
@@ -618,7 +634,8 @@ const Posting = () => {
       goCheckBoxState,
       goTagCheckBoxState,
       workComment,
-      isPublic,
+      pushIsPublic,
+      // setIsPublic((preIsPublic) => {return preIsPublic}),
       isSpoiler,
       isLiked,
       tokenMap,
@@ -631,7 +648,9 @@ const Posting = () => {
         uid,
         workId,
         workName,
-        isPublic,
+        // setIsPublic((preIsPublic) => {return preIsPublic}),
+        pushIsPublic,
+        // isPublic,
         isSpoiler,
         isLiked,
         workScore,
@@ -1059,7 +1078,7 @@ const Posting = () => {
 
               {/* <FormGroup row> */}
               {/* </FormGroup> */}
-  {/* 
+              {/* 
               <FormGroup row>
                 <FormControlLabel
                 control={
@@ -1092,8 +1111,10 @@ const Posting = () => {
                       // fullWidth="true"
                       classes={{root : classes.postingButton}}
                       onClick={() => {
-                        isPublic = false;
-                        postButtonClicked()
+                        // isPublic = false;
+                        // changeIsPublic(false)
+                        changeIsPublic((preIsPublic) => false)
+                        postButtonClicked(false)
                       }}
                     >
                       <Grid container item xs={12}>
@@ -1120,8 +1141,9 @@ const Posting = () => {
                       startIcon={<PublishIcon />}
                       classes={{root : classes.postingButton}}
                       onClick={() => {
-                        isPublic = true;
-                        postButtonClicked()
+                        // isPublic = true;
+                        changeIsPublic(true)
+                        postButtonClicked(true)
                       }}
                     >
                       <Grid container item xs={12}>
@@ -1173,6 +1195,9 @@ const Posting = () => {
             </ul>
           </>
         )}
+      {(firstPostFlag != 1 && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
+      {(firstPostFlag != 1 && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
+
       <Footer />
       </>
     )

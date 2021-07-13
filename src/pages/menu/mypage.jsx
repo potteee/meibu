@@ -15,6 +15,8 @@ import { useRouter } from 'next/router'
 // import { UsersReducer } from '../../reducks/users/reducers';
 import { db } from '../../firebase/index'
 
+import SpeedDialPosting from '../../components/speedDialPosting'
+
 import mypageEdit from './mypageEdit'
 
 //API
@@ -302,7 +304,7 @@ const MyPage = () => {
           label={"mypageを編集する"}
           onClick={ () => router.push('/menu/mypageEdit')}
         /> */}
-
+        <SpeedDialPosting />
         <Footer />
       </>
     )

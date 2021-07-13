@@ -101,11 +101,11 @@ const Post = () => {
   const [workFinish, setWorkFinish] = useState("")
   const [workImage, setWorkImage] = useState("")
 
-  const [assessmentData ,setAssessmentData] = useState([])
+  const [assessmentData ,setAssessmentData] = useState([]) //評価者一覧のデータ
   // const [assessmentData ,setAssessmentData] = useState([{userName : "ini" , uid: "ini"}])
 
   const [isAssessmenter, setIsAssessmenter] = useState(false)
-  const [isAssessed, setIsAssessed] = useState(false)
+  const [isAssessed, setIsAssessed] = useState(false) //ログインユーザ評価有無
   const [isMyAssessmentPublic, setIsMyAssessmentPublic] = useState(false)
 
   const [isBookmark ,setIsBookmark] = useState(false)
@@ -125,7 +125,21 @@ const Post = () => {
     console.log(isPublic+"+isPublic")
     setIsLiked(state)
     setIsMyAssessmentPublic(isPublic)
-  },[isMyAssessmentPublic,isLiked])
+
+    if(state){
+      setLikedCount((preLikedCount) => {
+        console.log("pre likedCount + 1")
+        return preLikedCount + 1
+      })
+    }
+    if(!isAssessed){
+      setInfoCount((preInfoCount) => {
+        return preInfoCount + 1
+      })
+      setIsAssessed(true)
+    }
+
+  },[isMyAssessmentPublic,isLiked,likedCount,infoCount,isAssessed])
   // },[]) 
   // },[isLiked]) 
   const inputWinfoTag = useCallback((value) => {
@@ -289,8 +303,9 @@ const Post = () => {
 
     })()
   // },[workId,data,userId])
-  },[data,isLiked])
+  // },[data,isLiked])
    //isLikedが[]内にある理由いいねしたときに「評価投稿数」「いいね数」を更新するため
+  },[data])//いや、ここでisLikedを立ててしまうと、speeddialでいいねになる旅にdbアクセスが走るので表示あ遅くなる
 
   console.log(JSON.stringify(data)+"+data@J")
   // console.log(workName+"+workName")

@@ -5,11 +5,13 @@ import {useDispatch,useSelector} from 'react-redux'
 import Header from '../components/header'
 import ApplicationBar from '../components/applicationBar'
 import Footer from '../components/footer'
+import SpeedDialPosting from '../components/speedDialPosting'
 
 const News = () => {
   const dispatch = useDispatch()
 
   const [worksData, setWorksData] = useState([]);
+  const [standbyState, setStandbyState] = useState(false);
 
   useEffect(() => {
     (async() => {
@@ -32,15 +34,14 @@ const News = () => {
         alert('works DB get fail')
         throw new Error(error)
       })
+      setStandbyState(true)
     })();
   },[]);
 
   console.log(JSON.stringify(worksData)+"+worksData@J");
   console.log(worksData+"+worksData");
 
-  if(worksData.length == 0) {
-    return <>loading posted works...</>
-  } else {
+  if(standbyState) {
     return (
     <>
       {/* <Header /> */}
@@ -63,10 +64,18 @@ const News = () => {
         </li>
       ))}
       </ul>
+      {worksData.length == 0 
+        ?  <p>投稿されている作品データは有りません</p>
+        : null
+      }
       検索機能へのリンクを目立つように
+      <SpeedDialPosting />
+
       <Footer />
     </>
     )
+  } else {
+    return <>loading posted works...</>
   }
 }
 

@@ -138,20 +138,27 @@ export default function SpeedDialPosting(props) {
       }
 
     }
-    if(isLiked) {
-      setActions([
-        { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
-        { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
-      ]);
-      console.log(isLiked+"action defined")
+    console.log(pworkName+"+pworkName+++")
+
+    if(!pworkName){
+      //クリックしてそのまま投稿画面に行けるようにする。
+      setActions([]);
     } else {
-      setActions([
-        { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
-        { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
-        { icon: <FavoriteIcon />, name: 'いいね！' , function: like},
-        { icon: <FavoriteTwoToneIcon />, name: 'いいね！(非公開)' , function: likeHikoukai},
-      ]);
-      console.log(isLiked+"action defined")
+      if(isLiked) {
+        setActions([
+          { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
+          { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
+        ]);
+        console.log(isLiked+"action defined")
+      } else {
+        setActions([
+          { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
+          { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
+          { icon: <FavoriteIcon />, name: 'いいね！' , function: like},
+          { icon: <FavoriteTwoToneIcon />, name: 'いいね！(非公開)' , function: likeHikoukai},
+        ]);
+        console.log(isLiked+"action defined")
+      }
     }
   },[data])
 
@@ -229,6 +236,8 @@ export default function SpeedDialPosting(props) {
 
       console.log(JSON.stringify(postingData)+"+postingData@J")
 
+      props.setIsLiked(true,isPublic)
+
       const res = await fetch(url, {
         // 送信先URL
         method: 'post', 
@@ -251,7 +260,6 @@ export default function SpeedDialPosting(props) {
       }
 
       //親が再描写されることを期待。また、後にfalseにする昨日も追加する。
-      props.setIsLiked(true,isPublic)
 
       setActions([
           { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
@@ -280,28 +288,46 @@ export default function SpeedDialPosting(props) {
     <div className={classes.root}>
       {/* <Button onClick={handleVisibility}>Toggle Speed Dial</Button> */}
       <Backdrop open={open} className={classes.backdropStyle}/>
-      <SpeedDial
-        ariaLabel="SpeedDial tooltip example"
-        className={classes.speedDial}
-        // hidden={hidden}
-        icon={<SpeedDialIcon />}
-        onClose={handleClose}
-        onOpen={handleOpen}
-        open={open}
-      >
-        {actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            tooltipOpen
-            onClick={() => {
-              action.function()
-              handleClose()
-            }}
-          />
-        ))}
-      </SpeedDial>
+      {actions.length >= 1  
+        ? (<SpeedDial
+          ariaLabel="SpeedDial tooltip example"
+          className={classes.speedDial}
+          // hidden={hidden}
+          icon={<SpeedDialIcon />}
+          onClose={handleClose}
+          onOpen={handleOpen}
+          open={open}
+        >
+          {actions.map((action) => (
+            <SpeedDialAction
+              key={action.name}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              tooltipOpen
+              onClick={() => {
+                action.function()
+                handleClose()
+              }}
+            />
+          ))}
+        </SpeedDial>)
+        : (<SpeedDial
+          ariaLabel="SpeedDial tooltip example"
+          className={classes.speedDial}
+          icon={<CreateIcon />}
+          onClick={() => {
+            router.push({
+              pathname: '/menu/search',
+              query: {
+                hist : "SpeadDial",
+              }
+            })
+          }}
+          open={false}
+        >
+        </SpeedDial>
+        )
+      }
     </div>
   );
 }
