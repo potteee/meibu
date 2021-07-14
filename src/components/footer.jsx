@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
  },
  appBarPosition : {
    top: 'auto',
+  //  top: '200px',
    bottom: "-1px", //最下部がちらつくので-1しておく
    boxShadow : "none", //デフォルトで影がついてるので消す。
 
@@ -129,7 +130,7 @@ const Footer = () => {
       <Box>
       {/* <Box className={classes.masterBox}> //スクロールが一番下までいくようになる設定 ...なの？ */}
       {/* <Box sx={{ flexGrow: 1 }}> //スクロールが一番下までいくようになる設定 */}
-        <React.Fragment>
+        {/* <React.Fragment> */}
           <CssBaseline />
           {/* <ElevationScroll> */}
             <AppBar position="fixed" className={classes.appBarPosition}> 
@@ -177,7 +178,7 @@ const Footer = () => {
               </Toolbar>
             </AppBar>
           {/* </ElevationScroll> */}
-        </React.Fragment>
+        {/* </React.Fragment> */}
       </Box>
     </>
   )
