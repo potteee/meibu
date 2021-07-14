@@ -28,28 +28,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 // import Container from '@material-ui/core/container';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
-const useStyles = makeStyles((theme) => ({
-  authdiv: {
-    // display: 'block', 
-    position : "relative",
-    // left : 8, 
-    left : "auto",
-    right : "6px",
-  },
-    title: {
-      // display: 'block', 
-      position : "relative",
-      // left : "0.5em", 
-  },
-  appBarPositionHeader: {
-    boxShadow : "none", //デフォルトで影がついてるので消す。
-
-  },
-  masterBox : {
-    flexGrow: 10,
-    minHeight : "0.0rem",
-  },
-}))
 
 // function ElevationScroll(props) {
 //   const { children, window } = props;
@@ -73,6 +51,27 @@ const useStyles = makeStyles((theme) => ({
 
 const ApplicationBar = (props) => {
   const router = useRouter();
+  const useStyles = makeStyles((theme) => ({
+    authdiv: {
+      // display: 'block', 
+      position : "relative",
+      // left : 8, 
+      left : "auto",
+      right : "6px",
+    },
+      title: {
+        // display: 'block', 
+        position : "relative",
+        // left : "0.5em", 
+    },
+    appBarPositionHeader: {
+      boxShadow : "none", //デフォルトで影がついてるので消す
+    },
+    masterBox : {
+      flexGrow: 10,
+      minHeight : "0.0rem",
+    },
+  }))
   const classes = useStyles();
   // export default function MenuAppBar() {
   // const [auth, setAuth] = useState(true);
