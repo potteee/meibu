@@ -41,58 +41,22 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
 
 const useStyles = makeStyles((theme) => ({
-  authdiv: {
-    // display: 'block', 
-    position : "relative",
-    left : 8, 
- },
-  title: {
-    // display: 'block', 
-    position : "relative",
-    left : 12, 
- },
  appBarPosition : {
+  //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
    top: 'auto',
   //  top: '200px',
    bottom: "-1px", //最下部がちらつくので-1しておく
    boxShadow : "none", //デフォルトで影がついてるので消す。
-
   //  height: "40px",
  },
- footerToolBar:{
+ footerToolBar : {
    height : "2.3rem", //親要素のrem倍
    minHeight : "2.3rem",
  },
  masterBox : {
-  flexGrow: 1,
+   flexGrow: 1,
  },
 }))
-
-// function ElevationScroll(props) {
-//   const { children, window } = props;
-//   // Note that you normally won't need to set the window ref as useScrollTrigger
-//   // will default to window.
-//   // This is only being set here because the demo is in an iframe.
-//   const trigger = useScrollTrigger({
-//     disableHysteresis: true,
-//     threshold: 30,
-//     target: window ? window() : undefined,
-//   });
-
-//   return React.cloneElement(children, {
-//     elevation: trigger ? 10 : 0,
-//   });
-// }
-
-// ElevationScroll.propTypes = {
-//   children: PropTypes.element.isRequired,
-//   /**
-//    * Injected by the documentation to work in an iframe.
-//    * You won't need it on your project.
-//    */
-//   // window: PropTypes.func,
-// };
-
 
 const Footer = () => {
   const router = useRouter();
@@ -121,7 +85,6 @@ const Footer = () => {
         hist : "Search",
       }
     })
-
   }
 
   return (
@@ -133,7 +96,8 @@ const Footer = () => {
         {/* <React.Fragment> */}
           <CssBaseline />
           {/* <ElevationScroll> */}
-            <AppBar position="fixed" className={classes.appBarPosition}> 
+            <AppBar className={classes.appBarPosition}> 
+            {/* <AppBar position="fixed" className={classes.appBarPosition}>  */}
             {/* 下記のsxはなぜか効かない */}
             {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}> */}
               <Toolbar variant="dense" className={classes.footerToolBar}>
