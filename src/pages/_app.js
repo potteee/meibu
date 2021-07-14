@@ -141,7 +141,8 @@ const WrappedApp = ({Component, pageProps}) => {
   } else {//no login 
     console.log("return Comp nologin userr")
     return (
-      <div className={classes.appStyle} >
+      // <div className={classes.appStyle} >
+      <div classes={{root:classes.appStyle}} >
         <Component {...pageProps} />
       </div>
     )
