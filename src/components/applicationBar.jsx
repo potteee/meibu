@@ -35,20 +35,20 @@ const useStyles = makeStyles((theme) => ({
     // left : 8, 
     left : "auto",
     right : "6px",
- },
-  title: {
-    // display: 'block', 
-    position : "relative",
-    // left : "0.5em", 
- },
- appBarPositionHeader: {
-   boxShadow : "none", //デフォルトで影がついてるので消す。
+  },
+    title: {
+      // display: 'block', 
+      position : "relative",
+      // left : "0.5em", 
+  },
+  appBarPositionHeader: {
+    boxShadow : "none", //デフォルトで影がついてるので消す。
 
- },
+  },
   masterBox : {
-  flexGrow: 10,
-  minHeight : "0.0rem",
- },
+    flexGrow: 10,
+    minHeight : "0.0rem",
+  },
 }))
 
 // function ElevationScroll(props) {

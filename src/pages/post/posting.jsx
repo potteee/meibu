@@ -172,7 +172,7 @@ const useStyles = makeStyles((theme) => ({
     // color : "#203744", //褐返かちかえし
     // color : "#aacf53", //萌黄
   },
-  h3WorksName: {
+  h3WorksNamePosting: {
     margin : "0px 4px",
   },
   inputHissu: {
@@ -683,7 +683,7 @@ const Posting = () => {
             <Typography>
               <h5 className={classes.h5WorksTitle}>{"作品名"}</h5>
             </Typography>
-            <h3 className={classes.h3WorksName}>            
+            <h3 className={classes.h3WorksNamePosting}>            
               <Link
                 href="/post/[postWorkId]/"
                 as={`/post/${preWorkId}/`}
@@ -694,7 +694,7 @@ const Posting = () => {
             <Typography>
               <h5 className={classes.h5WorksTitle}>{"分類"}</h5>
             </Typography>
-            <h3 className={classes.h3WorksName}>{workMedia}</h3>
+            <h3 className={classes.h3WorksNamePosting}>{workMedia}</h3>
             </>
           )}
 
@@ -766,7 +766,7 @@ const Posting = () => {
               {"作品名"}
             </Typography>
 
-            <h3 className={classes.h3WorksName}>            
+            <h3 className={classes.h3WorksNamePosting}>            
               <Link
                 href="/post/[postWorkId]/"
                 as={`/post/${preWorkId}/`}
@@ -777,7 +777,7 @@ const Posting = () => {
             <Typography className={classes.h5WorksTitle}>
               {"分類"}
             </Typography>
-            <h3 className={classes.h3WorksName}>{workMedia}</h3>
+            <h3 className={classes.h3WorksNamePosting}>{workMedia}</h3>
             </>
           )}
 
@@ -786,7 +786,7 @@ const Posting = () => {
             <Typography className={classes.h5WorksTitle}>
               {"カテゴリ"}
             </Typography>
-            <h3 className={classes.h3WorksName}>
+            <h3 className={classes.h3WorksNamePosting}>
               {Object.keys(checkBoxState).map((map) => (
                 <>{checkBoxState[map] == true && (
                   <a>{categoryMap[map]} </a>
