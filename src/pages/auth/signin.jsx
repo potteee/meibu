@@ -86,7 +86,7 @@ const SignIn = () => {
         )}
         {/* <div className="c-section-container"> */}
           {/* <h2 className="u-text-center u-text__headline">ログイン画面</h2> */}
-        <div className="module-spacer--medium" />
+        {/* <div className="module-spacer--medium" /> */}
         {qStatus == "requiredMail" 
         ?(
           <>
@@ -107,7 +107,7 @@ const SignIn = () => {
             fullWidth={true} label={"パスワード"} multiline={false} required={true}
             rows={1} value={password} type={"password"} onChange={inputPassword}
         />
-        <div className="module-spacer--medium" />
+        {/* <div className="module-spacer--medium" /> */}
         <div className="center">
             <PrimaryButton label={"ログイン"} onClick={loginButtonClicked} />
             <div className="module-spacer--small" />
@@ -115,7 +115,7 @@ const SignIn = () => {
             <p className="u-text-small" onClick={() => dispatch(router.push('/auth/signup'))}>アカウント登録がまだですか？</p>
         </div>
           {/* </div> */}
-        <Footer />
+        {/* <Footer /> */}
       </>
     )
   }

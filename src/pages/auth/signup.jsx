@@ -63,7 +63,7 @@ const SignUp = () => {
         {/* <Header /> */}
         {/* <div className="c-section-container"> */}
         <h2 className="u-text__headline u-text-center">アカウント登録</h2>
-        <div className="module-spacer--medium" />
+        {/* <div className="module-spacer--medium" /> */}
         <TextInput
           fullWidth={true} label={"ユーザー名(記号は _ のみ)"} multiline={false} required={true}
           rows={1} value={userName} type={"text"} onChange={inputUserName}
