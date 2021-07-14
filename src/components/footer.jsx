@@ -110,7 +110,7 @@ const Footer = () => {
           {/* <div className={classes.appBarPosition}> */}
           {/* <ThemeProvider theme={appBarTheme}> */}
             {/* <AppBar>  */}
-            <AppBar classes={{root: classes.appBarPosition}}> 
+            <AppBar classes={{positionFixed: classes.appBarPosition}}> 
             {/* <AppBar className={classes.appBarPosition}>  */}
             {/* <AppBar position="fixed" className={classes.appBarPosition}>  */}
             {/* 下記のsxはなぜか効かない */}

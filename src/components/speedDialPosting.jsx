@@ -27,32 +27,6 @@ import { addPostedWork } from '../reducks/users/operations'
 import useSWR,{ mutate } from 'swr'
 
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    // height: 380,
-    transform: 'translateZ(0px)',
-    flexGrow: 1,
-    
-    position: 'fixed',
-    top : "auto",
-    bottom : "30em",
-    left : "auto",
-    right : "25em",
-  },
-  speedDial: {
-    position: 'fixed',
-    // position: 'absolute',
-    // position: 'relative',
-    bottom : "-26em",
-    right : "-24em",
-    // left : "60em"
-    // bottom: theme.spacing(2),
-    // right: theme.spacing(2),
-  },
-  backdropStyle: {
-
-  }
-}));
 
 const fetcher = async (url) => {
   console.log("fetcher start")
@@ -75,6 +49,32 @@ export default function SpeedDialPosting(props) {
   const uid = getUserId(selector)
   const userName = getUserName(selector);
 
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      // height: 380,
+      transform: 'translateZ(0px)',
+      flexGrow: 1,
+      
+      position: 'fixed',
+      top : "auto",
+      bottom : "30em",
+      left : "auto",
+      right : "25em",
+    },
+    speedDial: {
+      position: 'fixed',
+      // position: 'absolute',
+      // position: 'relative',
+      bottom : "-26em",
+      right : "-24em",
+      // left : "60em"
+      // bottom: theme.spacing(2),
+      // right: theme.spacing(2),
+    },
+    backdropStyle: {
+
+    }
+  }));
   const classes = useStyles();
   const router = useRouter()
 
@@ -286,12 +286,14 @@ export default function SpeedDialPosting(props) {
 
   return (
     <div className={classes.root}>
+    {/* // <div classes={{root:classes.root}}> */}
       {/* <Button onClick={handleVisibility}>Toggle Speed Dial</Button> */}
       <Backdrop open={open} className={classes.backdropStyle}/>
       {actions.length >= 1  
         ? (<SpeedDial
           ariaLabel="SpeedDial tooltip example"
-          className={classes.speedDial}
+          classes={{root:classes.speedDial}}
+          // className={classes.speedDial}
           // hidden={hidden}
           icon={<SpeedDialIcon />}
           onClose={handleClose}
@@ -313,7 +315,8 @@ export default function SpeedDialPosting(props) {
         </SpeedDial>)
         : (<SpeedDial
           ariaLabel="SpeedDial tooltip example"
-          className={classes.speedDial}
+          classes={{root:classes.speedDial}}
+          // className={classes.speedDial}
           icon={<CreateIcon />}
           onClick={() => {
             router.push({
