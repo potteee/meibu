@@ -43,7 +43,7 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 const useStyles = makeStyles((theme) => ({
  appBarPosition : {
   //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
-   top: 'auto',
+   top: "auto",
   //  top: '200px',
    bottom: "-1px", //最下部がちらつくので-1しておく
    boxShadow : "none", //デフォルトで影がついてるので消す。
