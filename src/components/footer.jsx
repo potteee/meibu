@@ -94,7 +94,7 @@ const Footer = () => {
       {/* <Box className={classes.masterBox}> //スクロールが一番下までいくようになる設定 ...なの？ */}
       {/* <Box sx={{ flexGrow: 1 }}> //スクロールが一番下までいくようになる設定 */}
         {/* <React.Fragment> */}
-          <CssBaseline />
+          {/* <CssBaseline /> */}
           {/* <ElevationScroll> */}
             <AppBar className={classes.appBarPosition}> 
             {/* <AppBar position="fixed" className={classes.appBarPosition}>  */}

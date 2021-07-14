@@ -85,7 +85,7 @@ const SignIn = () => {
           <p>MyPageを見るにはログインしてね！</p>
         )}
         {/* <div className="c-section-container"> */}
-          {/* <h2 className="u-text-center u-text__headline">ログイン画面</h2> */}
+        {/* <h2 className="u-text-center u-text__headline">ログイン画面</h2> */}
         {/* <div className="module-spacer--medium" /> */}
         {qStatus == "requiredMail" 
         ?(
