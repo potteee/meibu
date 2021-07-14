@@ -11,7 +11,7 @@ import {useDispatch,useSelector} from 'react-redux'
 import {getUserId,getUserName} from "../reducks/users/selectors";
 
 //material UI
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles ,createMuiTheme,ThemeProvider} from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -40,25 +40,25 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
 
-const useStyles = makeStyles((theme) => ({
- appBarPosition : {
-  //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
-   top: "auto",
-  //  top: '200px',
-   bottom: "-1px", //最下部がちらつくので-1しておく
-   boxShadow : "none", //デフォルトで影がついてるので消す。
-  //  height: "40px",
- },
- footerToolBar : {
-   height : "2.3rem", //親要素のrem倍
-   minHeight : "2.3rem",
- },
- masterBox : {
-   flexGrow: 1,
- },
-}))
 
 const Footer = () => {
+  const useStyles = makeStyles((theme) => ({
+    appBarPosition : {
+      //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
+      //  top: "auto",
+      top: "auto",
+      bottom: "-1px", //最下部がちらつくので-1しておく
+      boxShadow : "none", //デフォルトで影がついてるので消す。
+      //  height: "40px",
+    },
+    footerToolBar : {
+      height : "2.3rem", //親要素のrem倍
+      minHeight : "2.3rem",
+    },
+    masterBox : {
+      flexGrow: 1,
+    },
+  }))
   const router = useRouter();
   const classes = useStyles();
   // export default function MenuAppBar() {
@@ -87,6 +87,19 @@ const Footer = () => {
     })
   }
 
+  const appBarTheme = createMuiTheme({
+  // const appBarTheme = createMuiTheme({
+    overrides: {
+      MuiAppBar: {
+        positionFixed: {
+          top: "auto",
+          bottom: "-1px", //最下部がちらつくので-1しておく
+          boxShadow : "none", //デフォルトで影がついてるので消す。
+        }
+      }
+    }
+  })
+
   return (
     <>
       {/* <a>aaa</a> */}
@@ -96,8 +109,11 @@ const Footer = () => {
         {/* <React.Fragment> */}
           {/* <CssBaseline /> */}
           {/* <ElevationScroll> */}
-            <AppBar classes={{root: classes.appBarPosition}} > 
-            {/* <AppBar className={classes.appBarPosition}>  */}
+          {/* <div className={classes.appBarPosition}> */}
+          {/* <ThemeProvider theme={appBarTheme}> */}
+            {/* <AppBar>  */}
+            {/* <AppBar>  */}
+            <AppBar className={classes.appBarPosition}> 
             {/* <AppBar position="fixed" className={classes.appBarPosition}>  */}
             {/* 下記のsxはなぜか効かない */}
             {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}> */}
@@ -142,6 +158,8 @@ const Footer = () => {
                 </Grid>
               </Toolbar>
             </AppBar>
+          {/* </ThemeProvider> */}
+          {/* </div> */}
           {/* </ElevationScroll> */}
         {/* </React.Fragment> */}
       {/* </Box> */}
