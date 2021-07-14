@@ -33,6 +33,8 @@ const WrappedApp = ({Component, pageProps}) => {
   let faFinished = false
   // const [faFinished,setFaFinished] = useState(false)
 
+  const [renderTriger, setRenderTriger] = useState(true)
+
   //ログイン状態の確認
   // リロード時にログイン状態を保持する為の処理
   // リロード時に
@@ -102,21 +104,23 @@ const WrappedApp = ({Component, pageProps}) => {
   }
 
   useEffect(() => {
-    // const jssStyles = document.querySelector('#jss-server-side');
-    // if (jssStyles) {
-    //   jssStyles.parentElement.removeChild(jssStyles);
-    //   console.log("delete jss")
-    // }
-    firstAction()
-  },[])
-
-  useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');
+    console.log(jssStyles+"+jssStyles")
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
       console.log("delete jss")
     }
-  })
+    firstAction()
+    setRenderTriger(!renderTriger)
+  },[])
+
+  // useEffect(() => {
+  //   const jssStyles = document.querySelector('#jss-server-side');
+  //   if (jssStyles) {
+  //     jssStyles.parentElement.removeChild(jssStyles);
+  //     console.log("delete jss")
+  //   }
+  // })
 
   if(isSignedIn == false && userID){
     if(faFinished == false){ //reload
