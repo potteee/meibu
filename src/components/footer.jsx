@@ -39,8 +39,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 // import Container from '@material-ui/core/container';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
-
-
 const Footer = () => {
   const useStyles = makeStyles((theme) => ({
     appBarPosition : {
@@ -55,9 +53,9 @@ const Footer = () => {
       height : "2.3rem", //親要素のrem倍
       minHeight : "2.3rem",
     },
-    masterBox : {
-      flexGrow: 1,
-    },
+    // masterBox : {
+    //   flexGrow: 1,
+    // },
   }))
   const router = useRouter();
   const classes = useStyles();
