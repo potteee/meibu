@@ -90,7 +90,7 @@ const Footer = () => {
   return (
     <>
       {/* <a>aaa</a> */}
-      <Box>
+      {/* <Box> */}
       {/* <Box className={classes.masterBox}> //スクロールが一番下までいくようになる設定 ...なの？ */}
       {/* <Box sx={{ flexGrow: 1 }}> //スクロールが一番下までいくようになる設定 */}
         {/* <React.Fragment> */}
@@ -143,7 +143,7 @@ const Footer = () => {
             </AppBar>
           {/* </ElevationScroll> */}
         {/* </React.Fragment> */}
-      </Box>
+      {/* </Box> */}
     </>
   )
 }
