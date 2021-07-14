@@ -138,7 +138,8 @@ const ApplicationBar = (props) => {
         {/* <ElevationScroll> */}
         {/* <ElevationScroll {...props}> */}
           {/* <AppBar position="static"> */}
-      <AppBar position="fixed" className={classes.appBarPositionHeader}>
+      {/* <AppBar position="fixed" className={classes.appBarPositionHeader}> */}
+      <AppBar classes={{positionFixed:classes.appBarPositionHeader}}>
         <Toolbar variant="dense">
           <Grid container item xs={12} justify="space-between" direction="row">
             <Grid container item xs={1}>
