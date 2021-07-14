@@ -110,23 +110,18 @@ const WrappedApp = ({Component, pageProps}) => {
   }
 
   useEffect(() => {
-    const jssStyles = document.querySelector('#jss-server-side');
-    console.log(jssStyles+"+jssStyles")
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-      console.log("delete jss")
-    }
-    firstAction()
-    setRenderTriger(!renderTriger)
-  },[])
 
-  // useEffect(() => {
-  //   const jssStyles = document.querySelector('#jss-server-side');
-  //   if (jssStyles) {
-  //     jssStyles.parentElement.removeChild(jssStyles);
-  //     console.log("delete jss")
-  //   }
-  // })
+   //どこかで補完してくれているのか、removeしなくてもエラーにならない。
+
+    // const jssStyles = document.querySelector('#jss-server-side');
+    // console.log(jssStyles+"+jssStyles")
+    // if (jssStyles) {
+    //   jssStyles.parentElement.removeChild(jssStyles);
+    //   console.log("delete jss")
+    // }
+    firstAction()
+    // setRenderTriger(!renderTriger)
+  },[])
 
   if(isSignedIn == false && userID){
     if(faFinished == false){ //reload
