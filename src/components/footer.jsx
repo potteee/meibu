@@ -96,7 +96,8 @@ const Footer = () => {
         {/* <React.Fragment> */}
           {/* <CssBaseline /> */}
           {/* <ElevationScroll> */}
-            <AppBar className={classes.appBarPosition}> 
+            <AppBar classes={{root: classes.appBarPosition}} > 
+            {/* <AppBar className={classes.appBarPosition}>  */}
             {/* <AppBar position="fixed" className={classes.appBarPosition}>  */}
             {/* 下記のsxはなぜか効かない */}
             {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}> */}
