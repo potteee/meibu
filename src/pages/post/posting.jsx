@@ -680,8 +680,9 @@ const Posting = () => {
             <ApplicationBar title="新規登録"/>
             {/* <ApplicationBar title="新規登録" auth={uid} /> */}
             {/* <h2>新規評価</h2> */}
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"作品名"}</h5>
+            <Typography className={classes.h5WorksTitle}>
+              {"作品名"}
+              {/* <h5 className={classes.h5WorksTitle}>{"作品名"}</h5> */}
             </Typography>
             <h3 className={classes.h3WorksNamePosting}>            
               <Link
@@ -691,8 +692,9 @@ const Posting = () => {
                 {workName}
               </Link>
             </h3>
-            <Typography>
-              <h5 className={classes.h5WorksTitle}>{"分類"}</h5>
+            {/* <Typography> */}
+            <Typography className={classes.h5WorksTitle}>
+              {"分類"}
             </Typography>
             <h3 className={classes.h3WorksNamePosting}>{workMedia}</h3>
             </>
@@ -1166,6 +1168,9 @@ const Posting = () => {
 
               <h2>作品情報を入力(オプション)</h2>
               <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
+
+              {(firstPostFlag != 1 && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
+              {(firstPostFlag != 1 && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
             </div>
           )
         : (
@@ -1194,8 +1199,6 @@ const Posting = () => {
             </ul>
           </>
         )}
-      {(firstPostFlag != 1 && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
-      {(firstPostFlag != 1 && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
 
       <Footer />
       </>

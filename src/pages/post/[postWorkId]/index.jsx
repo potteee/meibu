@@ -42,30 +42,6 @@ const fetcher = async (url) => {
   return data
 }
 
-const useStyles = makeStyles((thema) => ({
-  h5WorksTitle: {
-    margin : "0px 0px 0px 0px",
-    color : "#393e4f", //青褐あおかち
-    fontSize : "0.8em",
-    // marginBlockStart: "0.0em",
-    // marginBlockEnd: "0.0em",
-  },
-  h3WorksName: {
-    margin : "0px 4px 9px 4px",
-  },
-  boxTotalStyle : {
-    position : "relative",
-    top : "-1.3rem",
-  },
-  isLikedSignal : {
-    position: 'fixed',
-    top : "2.4em",
-    right : "0.6em",
-  },
-
-}))
-
-
 //作品情報閲覧ページ
 const Post = () => {
   const [standbyState,setStandbyState] = useState(false)
@@ -78,6 +54,30 @@ const Post = () => {
   // const [workData, setWorkData] = useState({})
   const userId = getUserId(selector)
   const userName = getUserName(selector)
+
+  const useStyles = makeStyles((thema) => ({
+    h5WorksTitle: {
+      margin : "0px 0px 0px 0px",
+      color : "#393e4f", //青褐あおかち
+      fontSize : "0.8em",
+      // marginBlockStart: "0.0em",
+      // marginBlockEnd: "0.0em",
+    },
+    h3WorksName: {
+      margin : "0px 4px 9px 4px",
+    },
+    boxTotalStyle : {
+      position : "relative",
+      top : "-1.3rem",
+    },
+    isLikedSignal : {
+      position: 'fixed',
+      top : "2.4em",
+      right : "0.6em",
+    },
+
+  }))
+
   const classes = useStyles();
 
 
@@ -186,51 +186,55 @@ const Post = () => {
         console.log("useEffect Done")
         console.log(workId+"+workId effect")
 
-        //////これ上に持っていくことで　薄いいいねが表示されなくなるかも
-        await db.collection('privateUsers').doc(userId)
-        .collection('postedWorksId').doc(workId)
-        .get()
-        .then(async(postSnapshot) => {
-          console.log(postSnapshot+"+postSnapshot")
+        if(userId != "uid initial"){
+          //////これ上に持っていくことで　薄いいいねが表示されなくなるかも
           await db.collection('privateUsers').doc(userId)
+          .collection('postedWorksId').doc(workId)
           .get()
-          .then((privateSnapshot) => {
-            console.log(privateSnapshot+"+privateSnapshot")
-            console.log(JSON.stringify(privateSnapshot.data())+"+privateSnapshot@J")
+          .then(async(postSnapshot) => {
+            console.log(postSnapshot+"+postSnapshot")
+            await db.collection('privateUsers').doc(userId)
+            .get()
+            .then((privateSnapshot) => {
+              console.log(privateSnapshot+"+privateSnapshot")
+              console.log(privateSnapshot.data()+"+privateSnapshot.data()")
+              console.log(JSON.stringify(privateSnapshot.data())+"+privateSnapshot.data()@J")
 
-            if(privateSnapshot.data()["userBookmark"]){//このifはいずれ消す。初期DBだとuserBookmarkのフィールドがないため、この分岐が必要
-              console.log(Object.keys(privateSnapshot.data()["userBookmark"])+"OBkey userBookmark")
-              if(Object.keys(privateSnapshot.data()["userBookmark"]).includes(workId)){
-                setIsBookmark(true)
+              if(privateSnapshot.data()["userBookmark"]){//このifはいずれ消す。初期DBだとuserBookmarkのフィールドがないため、この分岐が必要
+                console.log(Object.keys(privateSnapshot.data()["userBookmark"])+"OBkey userBookmark")
+                if(Object.keys(privateSnapshot.data()["userBookmark"]).includes(workId)){
+                  setIsBookmark(true)
+                }
               }
-            }
-            
-            console.log(JSON.stringify(postSnapshot.data())+"+postSnapshot.data()@J")
-            if(postSnapshot.data()){
-              setIsAssessed(true)
-              console.log("setisassessed")
-              if(postSnapshot.data()["isPublic"] == true){
-                setIsMyAssessmentPublic(true)
-                console.log("setIsMyassessmentPublic true")
-              } else {
-                setIsMyAssessmentPublic(false)
-                console.log("setIsMyassessmentPublic true")
+              
+              console.log(JSON.stringify(postSnapshot.data())+"+postSnapshot.data()@J")
+              if(postSnapshot.data()){
+                setIsAssessed(true)
+                console.log("setisassessed")
+                if(postSnapshot.data()["isPublic"] == true){
+                  setIsMyAssessmentPublic(true)
+                  console.log("setIsMyassessmentPublic true")
+                } else {
+                  setIsMyAssessmentPublic(false)
+                  console.log("setIsMyassessmentPublic true")
+                }
+                if(postSnapshot.data()["isLiked"] == true){
+                  setIsLiked(true)
+                  // isLikedStateChange(true)
+                } else {
+                  // isLikedStateChange(false)
+                  setIsLiked(false)
+                }
               }
-              if(postSnapshot.data()["isLiked"] == true){
-                setIsLiked(true)
-                // isLikedStateChange(true)
-              } else {
-                // isLikedStateChange(false)
-                setIsLiked(false)
-              }
-            }
+            })
+            // console.log(JSON.stringify(postSnapshot)+"+postSnapshot@J")
           })
-          // console.log(JSON.stringify(postSnapshot)+"+postSnapshot@J")
-        })
-        .catch((error) => {
-          alert('privateUsers DB get fail')
-          throw new Error(error)
-        })
+          .catch((error) => {
+            alert('privateUsers DB get fail')
+            throw new Error(error)
+          })
+        }
+
 
         await db.collection('wInfo').doc(workId).get()
         .then(doc => {

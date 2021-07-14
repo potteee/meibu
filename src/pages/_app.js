@@ -8,6 +8,8 @@ import { auth, db, FirebaseTimestamp } from "../firebase/index"
 import SignIn from './auth/signin';
 
 import { makeStyles } from '@material-ui/core/styles';
+// import useStyles from '../styles/overRide'
+import useStyles from "src/styles/overRide"
 import Box from '@material-ui/core/Box';
 
 // const useStyles = makeStyles((theme) => ({
@@ -25,12 +27,12 @@ const WrappedApp = ({Component, pageProps}) => {
   console.log(isSignedIn+"+isSignedIn")
 
   const dispatch = useDispatch();
-  const useStyles = makeStyles((theme) => ({
-    appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
-      margin : "3.4rem 0.3rem 2.8rem 0.3rem",
-      // margin : "40px 5px 52px 5px",
-    },
-  }))
+  // const useStyles = makeStyles((theme) => ({
+  //   appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
+  //     margin : "3.4rem 0.3rem 2.8rem 0.3rem",
+  //     // margin : "40px 5px 52px 5px",
+  //   },
+  // }))
   const classes = useStyles();
 
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_app")

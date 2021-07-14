@@ -10,6 +10,9 @@ import { useRouter } from 'next/router'
 import {useDispatch,useSelector} from 'react-redux'
 import {getUserId,getUserName} from "../reducks/users/selectors";
 
+//makeStyles
+import useStyles from "src/styles/overRide"
+
 //material UI
 import { makeStyles ,createMuiTheme,ThemeProvider} from '@material-ui/core/styles';
 
@@ -40,23 +43,18 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
 const Footer = () => {
-  const useStyles = makeStyles((theme) => ({
-    appBarPosition : {
-      //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
-      //  top: "auto",
-      top: "auto",
-      bottom: "-1px", //最下部がちらつくので-1しておく
-      boxShadow : "none", //デフォルトで影がついてるので消す。
-      //  height: "40px",
-    },
-    footerToolBar : {
-      height : "2.3rem", //親要素のrem倍
-      minHeight : "2.3rem",
-    },
-    // masterBox : {
-    //   flexGrow: 1,
-    // },
-  }))
+  // const useStyles = makeStyles((theme) => ({
+  //   appBarPosition : {
+  //     //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
+  //     top: "auto",
+  //     bottom: "-1px", //最下部がちらつくので-1しておく
+  //     boxShadow : "none", //デフォルトで影がついてるので消す。
+  //   },
+  //   footerToolBar : {
+  //     height : "2.3rem", //親要素のrem倍
+  //     minHeight : "2.3rem",
+  //   },
+  // }))
   const router = useRouter();
   const classes = useStyles();
   // export default function MenuAppBar() {
