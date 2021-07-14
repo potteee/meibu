@@ -111,16 +111,17 @@ const WrappedApp = ({Component, pageProps}) => {
 
   useEffect(() => {
 
-   //どこかで補完してくれているのか、removeしなくてもエラーにならない。
-
-    // const jssStyles = document.querySelector('#jss-server-side');
-    // console.log(jssStyles+"+jssStyles")
-    // if (jssStyles) {
-    //   jssStyles.parentElement.removeChild(jssStyles);
-    //   console.log("delete jss")
-    // }
+   //どこかで補完してくれているのか、removeしなくてもエラーにならない。　→してくれてなかった。
+    const jssStyles = document.querySelector('#jss-server-side');
+    console.log(jssStyles+"+jssStyles")
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+      console.log("delete jss")
+    }
     firstAction()
-    // setRenderTriger(!renderTriger)
+
+    //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
+    setRenderTriger(!renderTriger)
   },[])
 
   if(isSignedIn == false && userID){
