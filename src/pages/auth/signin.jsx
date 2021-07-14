@@ -1,4 +1,7 @@
 import React, {useState, useCallback,useMemo} from 'react';
+import Header from '../../components/header'
+import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
 import { PrimaryButton, TextInput } from "../../styles/UIkit"
 
 import {useDispatch,useSelector} from "react-redux";
@@ -7,9 +10,6 @@ import {signIn} from "../../reducks/users/operations";
 
 import { useRouter } from 'next/router'
 
-import Header from '../../components/header'
-import Footer from '../../components/footer'
-import ApplicationBar from '../../components/applicationBar'
 import MyPage from '../menu/mypage'
 
 const SignIn = () => {

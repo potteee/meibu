@@ -1,5 +1,8 @@
 //ユーザー作成処理
 import React,{useCallback, useState} from "react";
+import Header from '../../components/header'
+import Footer from '../../components/footer'
+import ApplicationBar from '../../components/applicationBar'
 import { TextInput,PrimaryButton } from "../../styles/UIkit"
 import { signUp } from "../../reducks/users/operations"
 import {useDispatch} from "react-redux";
@@ -9,9 +12,6 @@ import { useRouter } from 'next/router'
 // import { auth } from '../../firebase'
 // import firebase from 'firebase/app'
 
-import Header from '../../components/header'
-import Footer from '../../components/footer'
-import ApplicationBar from '../../components/applicationBar'
 
 const SignUp = () => {
 

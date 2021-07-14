@@ -674,7 +674,6 @@ const Posting = () => {
       <>
         {/* <Header /> */}
         {/* <div className="c-section-container">
-          <div className="module-spacer--medium" /> */}
           {/* // 他人が登録した作品を評価 */}
           {firstPostFlag == 0 && (
             <>
