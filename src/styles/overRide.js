@@ -1,3 +1,5 @@
+import React from 'react'
+import styled from 'styled-components'
 import { makeStyles } from '@material-ui/core/styles';
 
 // Create a overRide styles.
@@ -9,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
 
   appBarPosition : {
     //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
-    top: "auto",
+    top: "auto" !important,
     bottom: "-1px", //最下部がちらつくので-1しておく
     boxShadow : "none", //デフォルトで影がついてるので消す。
   },
