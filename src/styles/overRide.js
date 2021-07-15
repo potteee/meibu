@@ -17,8 +17,6 @@ const useStyles = makeStyles((theme) => ({
     height : "2.3rem", //親要素のrem倍
     minHeight : "2.3rem",
   },
-
-  
 }))
 
 export default useStyles;
