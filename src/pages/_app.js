@@ -125,7 +125,7 @@ const WrappedApp = ({Component, pageProps}) => {
     firstAction()
 
     //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
-    // setRenderTriger(!renderTriger)
+    setRenderTriger(!renderTriger)
   },[])
 
   if(isSignedIn == false && userID){
@@ -151,9 +151,9 @@ const WrappedApp = ({Component, pageProps}) => {
     return (
       <div className={classes.appStyle} >
         {/* <div classes={{root:classes.appStyle}} > */}
-          {/* <StylesProvider injectFirst> */}
-        <Component {...pageProps} />
-        {/* </StylesProvider> */}
+        <StylesProvider injectFirst>
+          <Component {...pageProps} />
+        </StylesProvider>
       </div>
     )
   }
