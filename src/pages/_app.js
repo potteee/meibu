@@ -98,7 +98,6 @@ const WrappedApp = ({Component, pageProps}) => {
         console.log(error)
         alert("_app error")
         throw new Error(error)
-        return false
       }
     } else {
       console.log(userID+"+userID@Cookie else")
@@ -109,6 +108,10 @@ const WrappedApp = ({Component, pageProps}) => {
       //   // userName: data.userName,
       //   // userImage: data.userImage
       // }))
+
+      //これやらないとstyled-componentsが適用されない？
+      setRenderTriger(!renderTriger)
+      console.log("setRenderTriger")
       return true
     }
   }
