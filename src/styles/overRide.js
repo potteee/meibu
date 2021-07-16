@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
 
   appBarPosition : {
     //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
-    top: "auto" !important,
+    top: "auto" ,
     bottom: "-1px", //最下部がちらつくので-1しておく
     boxShadow : "none", //デフォルトで影がついてるので消す。
   },

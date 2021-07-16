@@ -13,6 +13,8 @@ import {getUserId,getUserName} from "../reducks/users/selectors";
 //makeStyles
 import useStyles from "src/styles/overRide"
 
+import styled from "styled-components"
+
 //material UI
 import { makeStyles ,createMuiTheme,ThemeProvider} from '@material-ui/core/styles';
 
@@ -41,6 +43,12 @@ import PropTypes from 'prop-types';
 import CssBaseline from '@material-ui/core/CssBaseline';
 // import Container from '@material-ui/core/container';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+
+const SCAppBar = styled(AppBar)`
+  top: auto;
+  bottom: -1px;
+  box-shadow : none;
+`;
 
 const Footer = () => {
   // const useStyles = makeStyles((theme) => ({
@@ -108,7 +116,8 @@ const Footer = () => {
           {/* <div className={classes.appBarPosition}> */}
           {/* <ThemeProvider theme={appBarTheme}> */}
             {/* <AppBar>  */}
-            <AppBar classes={{positionFixed: classes.appBarPosition}}> 
+            <SCAppBar> 
+            {/* <AppBar classes={{positionFixed: classes.appBarPosition}}>  */}
             {/* <AppBar className={classes.appBarPosition}>  */}
             {/* <AppBar position="fixed" className={classes.appBarPosition}>  */}
             {/* 下記のsxはなぜか効かない */}
@@ -153,7 +162,7 @@ const Footer = () => {
                   </Grid>
                 </Grid>
               </Toolbar>
-            </AppBar>
+            </SCAppBar>
           {/* </ThemeProvider> */}
           {/* </div> */}
           {/* </ElevationScroll> */}

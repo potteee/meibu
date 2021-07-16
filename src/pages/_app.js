@@ -7,7 +7,9 @@ import {getIsSignedIn} from "../reducks/users/selectors";
 import { auth, db, FirebaseTimestamp } from "../firebase/index"
 import SignIn from './auth/signin';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
+;
+import { StylesProvider } from '@material-ui/styles';
 // import useStyles from '../styles/overRide'
 import useStyles from "src/styles/overRide"
 import Box from '@material-ui/core/Box';
@@ -138,17 +140,21 @@ const WrappedApp = ({Component, pageProps}) => {
   } else if(isSignedIn == true && userID) {
     console.log("return Comp isSignedIn")
     return (
-      <div className={classes.appStyle} >
-        <Component {...pageProps} />
-      </div>
+      <StylesProvider injectFirst>
+        <div className={classes.appStyle} >
+          <Component {...pageProps} />
+        </div>
+      </StylesProvider>
     )
   } else {//no login 
     console.log("return Comp nologin userr")
     return (
-      <div className={classes.appStyle} >
-      {/* <div classes={{root:classes.appStyle}} > */}
-        <Component {...pageProps} />
-      </div>
+      <StylesProvider injectFirst>
+        <div className={classes.appStyle} >
+        {/* <div classes={{root:classes.appStyle}} > */}
+          <Component {...pageProps} />
+        </div>
+      </StylesProvider>
     )
   }
 }
