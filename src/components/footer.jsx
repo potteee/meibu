@@ -44,11 +44,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 // import Container from '@material-ui/core/container';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
-const SCAppBar = styled(AppBar)`
-  top: auto;
-  bottom: -1px;
-  box-shadow : none;
-`;
+  const SCAppBar = styled(AppBar)`
+    && {
+      top: auto;
+      bottom: -1px;
+      box-shadow : none;
+    }
+  `;
 
 const Footer = () => {
   // const useStyles = makeStyles((theme) => ({
@@ -163,6 +165,7 @@ const Footer = () => {
                 </Grid>
               </Toolbar>
             </SCAppBar>
+            {/* </AppBar> */}
           {/* </ThemeProvider> */}
           {/* </div> */}
           {/* </ElevationScroll> */}

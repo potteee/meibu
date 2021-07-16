@@ -116,12 +116,12 @@ const WrappedApp = ({Component, pageProps}) => {
   useEffect(() => {
 
    //どこかで補完してくれているのか、removeしなくてもエラーにならない。　→してくれてなかった。
-    // const jssStyles = document.querySelector('#jss-server-side');
-    // console.log(jssStyles+"+jssStyles")
-    // if (jssStyles) {
-    //   jssStyles.parentElement.removeChild(jssStyles);
-    //   console.log("delete jss")
-    // }
+    const jssStyles = document.querySelector('#jss-server-side');
+    console.log(jssStyles+"+jssStyles")
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+      console.log("delete jss")
+    }
     firstAction()
 
     //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
@@ -140,21 +140,21 @@ const WrappedApp = ({Component, pageProps}) => {
   } else if(isSignedIn == true && userID) {
     console.log("return Comp isSignedIn")
     return (
-      <StylesProvider injectFirst>
+      // <StylesProvider injectFirst>
         <div className={classes.appStyle} >
           <Component {...pageProps} />
         </div>
-      </StylesProvider>
+      // </StylesProvider>
     )
   } else {//no login 
     console.log("return Comp nologin userr")
     return (
-      <StylesProvider injectFirst>
-        <div className={classes.appStyle} >
+      <div className={classes.appStyle} >
         {/* <div classes={{root:classes.appStyle}} > */}
-          <Component {...pageProps} />
-        </div>
-      </StylesProvider>
+          {/* <StylesProvider injectFirst> */}
+        <Component {...pageProps} />
+        {/* </StylesProvider> */}
+      </div>
     )
   }
 }
