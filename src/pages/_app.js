@@ -42,17 +42,18 @@ const WrappedApp = ({Component, pageProps}) => {
 
   let faFinished = false
   // const [faFinished,setFaFinished] = useState(false)
-
+  
   const [renderTriger, setRenderTriger] = useState(true)
-
+  
   //ログイン状態の確認
   // リロード時にログイン状態を保持する為の処理
   // リロード時に
   // cookieにuserIDが保存されていれば、データをディスパッチ
-
-
+  
+  
   const firstAction = async() => {
     if((isSignedIn == false) && userID){
+      console.log("login & reloaded")
       try{
         console.log("firstAction start")
         console.log(userID+"+userID@Cookie true")
@@ -99,30 +100,34 @@ const WrappedApp = ({Component, pageProps}) => {
         alert("_app error")
         throw new Error(error)
       }
-    } else {
-      console.log(userID+"+userID@Cookie else")
+    } else if ((isSignedIn == false) && !userID){ //
+      console.log("no login & reloaded")
       // await dispatch(signInAction({
       //   isSignedIn: false,
-      //   // role: data.role,
-      //   // uid:userID,
-      //   // userName: data.userName,
-      //   // userImage: data.userImage
+      //     // role: data.role,
+      //     // uid:userID,
+      //     // userName: data.userName,
+      //     // userImage: data.userImage
       // }))
-
-      //これやらないとstyled-componentsが適用されない？
       setRenderTriger(!renderTriger)
       console.log("setRenderTriger")
+    } else {
+      console.log(userID+"+userID@Cookie else")
+        
+        //これやらないとstyled-componentsが適用されない？
+        // setRenderTriger(!renderTriger)
+        // console.log("setRenderTriger")
       return true
     }
   }
-
+    
   useEffect(() => {
-   //どこかで補完してくれているのか、removeしなくてもエラーにならない。　→してくれてなかった。
-    // const jssStyles = document.querySelector('#jss-server-side');
-    // console.log(jssStyles+"+jssStyles")
-    // if (jssStyles) {
-    //   jssStyles.parentElement.removeChild(jssStyles);
-    //   console.log("delete jss")
+      //どこかで補完してくれているのか、removeしなくてもエラーにならない。　→してくれてなかった。
+      // const jssStyles = document.querySelector('#jss-server-side');
+      // console.log(jssStyles+"+jssStyles")
+      // if (jssStyles) {
+        //   jssStyles.parentElement.removeChild(jssStyles);
+        //   console.log("delete jss")
     // }
     firstAction()
     //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
