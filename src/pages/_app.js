@@ -149,9 +149,9 @@ const WrappedApp = ({Component, pageProps}) => {
     return (
       <div className={classes.appStyle} >
         {/* <div classes={{root:classes.appStyle}} > */}
-        <StylesProvider injectFirst>
+        {/* <StylesProvider injectFirst> */}
           <Component {...pageProps} />
-        </StylesProvider>
+        {/* </StylesProvider> */}
       </div>
     )
   }
