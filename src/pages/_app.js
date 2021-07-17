@@ -148,23 +148,22 @@ const WrappedApp = ({Component, pageProps}) => {
   } else if(isSignedIn == true && userID) {
     console.log("return Comp isSignedIn")
     return (
-      <div className={classes.appStyle} >
         <StylesProvider injectFirst>
+          <div className={classes.appStyle} >
           <CssBaseline/>
           <Component {...pageProps} />
-        </StylesProvider>
       </div>
+        </StylesProvider>
     )
   } else {//no login 
     console.log("return Comp nologin userr")
     return (
-      <div className={classes.appStyle} >
-        {/* <div classes={{root:classes.appStyle}} > */}
         <StylesProvider injectFirst>
-          <CssBaseline/>
-          <Component {...pageProps} />
+          <div className={classes.appStyle} >
+            <CssBaseline/>
+            <Component {...pageProps} />
+          </div>
         </StylesProvider>
-      </div>
     )
   }
 }
