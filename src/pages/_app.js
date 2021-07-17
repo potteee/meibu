@@ -14,8 +14,10 @@ import { StylesProvider } from '@material-ui/styles';
 // import useStyles from '../styles/overRide'
 // import useStyles from "src/styles/overRide"
 
-import {SCmargin} from 'src/styles/SC/app/margin/'
+import {SCmargin} from 'src/styles/SC/app/margin'
 import Box from '@material-ui/core/Box';
+
+// import styled from 'styled-components'
 
 // const useStyles = makeStyles((theme) => ({
 //   appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
