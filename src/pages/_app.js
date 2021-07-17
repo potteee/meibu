@@ -149,18 +149,18 @@ const WrappedApp = ({Component, pageProps}) => {
     console.log("return Comp isSignedIn")
     return (
         <StylesProvider injectFirst>
-          <div className={classes.appStyle} >
           <CssBaseline/>
+          <div className={classes.appStyle} >
           <Component {...pageProps} />
-      </div>
+          </div>
         </StylesProvider>
     )
   } else {//no login 
     console.log("return Comp nologin userr")
     return (
         <StylesProvider injectFirst>
-          <div className={classes.appStyle} >
             <CssBaseline/>
+          <div className={classes.appStyle} >
             <Component {...pageProps} />
           </div>
         </StylesProvider>
