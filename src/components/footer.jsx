@@ -12,6 +12,7 @@ import {getUserId,getUserName} from "../reducks/users/selectors";
 
 //makeStyles
 import useStyles from "src/styles/overRide"
+import {SCAppBar} from "src/styles/SC/components/footer/position.js"
 
 import styled from "styled-components"
 
@@ -44,13 +45,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 // import Container from '@material-ui/core/container';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
-  const SCAppBar = styled(AppBar)`
-    && {
-      top: auto;
-      bottom: -1px;
-      box-shadow : none;
-    }
-  `;
+  // const SCAppBar = styled(AppBar)`
+  //   && {
+  //     top: auto;
+  //     bottom: -1px;
+  //     box-shadow : none;
+  //   }
+  // `;
 
 const Footer = () => {
   // const useStyles = makeStyles((theme) => ({

@@ -12,7 +12,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { StylesProvider } from '@material-ui/styles';
 // import useStyles from '../styles/overRide'
-import useStyles from "src/styles/overRide"
+// import useStyles from "src/styles/overRide"
+
+import {SCmargin} from 'src/styles/SC/app/margin/'
 import Box from '@material-ui/core/Box';
 
 // const useStyles = makeStyles((theme) => ({
@@ -36,7 +38,7 @@ const WrappedApp = ({Component, pageProps}) => {
   //     // margin : "40px 5px 52px 5px",
   //   },
   // }))
-  const classes = useStyles();
+  // const classes = useStyles();
 
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_app")
   const userID = parseCookies().userID
@@ -150,19 +152,23 @@ const WrappedApp = ({Component, pageProps}) => {
     return (
         <StylesProvider injectFirst>
           <CssBaseline/>
-          <div className={classes.appStyle} >
-          <Component {...pageProps} />
-          </div>
+          {/* <div className={classes.appStyle} > */}
+          <SCmargin>
+            <Component {...pageProps} />
+          </SCmargin>
+          {/* </div> */}
         </StylesProvider>
     )
   } else {//no login 
     console.log("return Comp nologin userr")
     return (
         <StylesProvider injectFirst>
-            <CssBaseline/>
-          <div className={classes.appStyle} >
+          <CssBaseline/>
+          {/* <div className={classes.appStyle} > */}
+          <SCmargin>
             <Component {...pageProps} />
-          </div>
+          </SCmargin>
+          {/* </div> */}
         </StylesProvider>
     )
   }
