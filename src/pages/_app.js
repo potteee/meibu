@@ -8,7 +8,8 @@ import { auth, db, FirebaseTimestamp } from "../firebase/index"
 import SignIn from './auth/signin';
 
 import { makeStyles } from '@material-ui/core/styles'
-;
+import CssBaseline from '@material-ui/core/CssBaseline';
+
 import { StylesProvider } from '@material-ui/styles';
 // import useStyles from '../styles/overRide'
 import useStyles from "src/styles/overRide"
