@@ -57,7 +57,6 @@ const WrappedApp = ({Component, pageProps}) => {
       try{
         console.log("firstAction start")
         console.log(userID+"+userID@Cookie true")
-
         //Cookie偽装対策
         //Cookieに有効なuidが登録されていても、ログインしている状態でないと
         //ブラウザリロード時にログイン状態が自動継続しない。
@@ -75,7 +74,6 @@ const WrappedApp = ({Component, pageProps}) => {
           }
         });
         unsubscribe() //これやらないとずっとここだけ回り続ける
-
         const snapshot = await db.collection('users').doc(userID).get()
         console.log(snapshot+"+snapshot")
         const data = snapshot.data()
@@ -103,20 +101,23 @@ const WrappedApp = ({Component, pageProps}) => {
     } else if ((isSignedIn == false) && !userID){ //
       console.log("no login & reloaded")
       // await dispatch(signInAction({
-      //   isSignedIn: false,
-      //     // role: data.role,
-      //     // uid:userID,
-      //     // userName: data.userName,
-      //     // userImage: data.userImage
-      // }))
+        //   isSignedIn: false,
+        //     // role: data.role,
+        //     // uid:userID,
+        //     // userName: data.userName,
+        //     // userImage: data.userImage
+        // }))
+        ///////////////ここがレンダリングされても意味ない？
+        //footerの方がレンダリングされないと。
       setRenderTriger(!renderTriger)
       console.log("setRenderTriger")
     } else {
+      alert("_app error 2s")
+      //else if作ったからここは動かないはず
       console.log(userID+"+userID@Cookie else")
-        
-        //これやらないとstyled-componentsが適用されない？
-        // setRenderTriger(!renderTriger)
-        // console.log("setRenderTriger")
+      //これやらないとstyled-componentsが適用されない？
+      // setRenderTriger(!renderTriger)
+      // console.log("setRenderTriger")
       return true
     }
   }
@@ -146,20 +147,20 @@ const WrappedApp = ({Component, pageProps}) => {
   } else if(isSignedIn == true && userID) {
     console.log("return Comp isSignedIn")
     return (
-      // <StylesProvider injectFirst>
-        <div className={classes.appStyle} >
+      <div className={classes.appStyle} >
+        <StylesProvider injectFirst>
           <Component {...pageProps} />
-        </div>
-      // </StylesProvider>
+        </StylesProvider>
+      </div>
     )
   } else {//no login 
     console.log("return Comp nologin userr")
     return (
       <div className={classes.appStyle} >
         {/* <div classes={{root:classes.appStyle}} > */}
-        {/* <StylesProvider injectFirst> */}
+        <StylesProvider injectFirst>
           <Component {...pageProps} />
-        {/* </StylesProvider> */}
+        </StylesProvider>
       </div>
     )
   }
