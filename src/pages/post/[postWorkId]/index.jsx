@@ -159,8 +159,8 @@ const Post = () => {
       return false 
     } else {
       if(workId == "[postWorkId]"){
-         console.log(workId+"false postWorkId")
-         return false
+        console.log(workId+"false postWorkId")
+        return false
       } else {
         console.log("return true")
         return true

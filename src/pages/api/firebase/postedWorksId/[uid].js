@@ -49,7 +49,7 @@ const handler = async({ query: { uid } }, res) => { //{}内はファイルの[]�
     // console.log(JSON.stringify(snapshot)+"snapshot")
 
     const worksData = snapshot.docs.map(map => ({
-       workName : map.data()["workName"], workId :map.data()["workId"] 
+      workName : map.data()["workName"], workId :map.data()["workId"] 
     }))
 
     console.log(worksData+"+worksData")

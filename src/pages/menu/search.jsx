@@ -50,7 +50,7 @@ const Search = () => {
     {/* <Header /> */}
     <ApplicationBar title="作品検索画面"/>
     {/* <h2>作品検索画面</h2> */}
-    {hist == "Posting" && (
+    {(hist == "Posting" ||hist == "SpeadDial")&& (
         <p>記録する作品を検索しましょう！</p>
     )}
     {hist == "Search" && (

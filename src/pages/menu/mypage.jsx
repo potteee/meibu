@@ -91,22 +91,22 @@ const MyPage = () => {
   }
   // useSWR start
   
-  //　ここにapiで作品名を検索する機能を入れたい。→入れた
-  //  ★初期ログイン直後に読み込んでくれるようにしないと。
+  //　そもそもuseSWRをここでやる意味はそんなにない。→reduxで状態を持ちたい。
+  //ログイン直後にバックグラウンドで取得してreduxに状態を持たせておく方が良さそう？
+　//ただ、Reduxで管理するほどの情報か？（そこまで使い回すか？）というのもある。
+  //→最初は、そこまで使いまわさなくても「検索」という操作に不可がかかるから
+  //持っておいた方がいいと思ったが、ここは検索じゃなくて普通に「取得」で撮ってこれる。
+  //(今はほとんど利用価値がないだろうという方法で検索をしているが・・。)
+
+  //また、各要素はstateで管理しないで普通の変数で良いと思う
+  //無駄にレンダリング回数増えるし、頁ないでの値の変更がないから
   const { data , error } = useSWR(
-    // () => query.id ? `../api/firebase/postedWorksId/${query.id}` : null, fetcher
     () => uid ? `/api/firebase/postedWorksId/${uid}` : null, fetcher
-    // const {data, error } = useSWR(['../api/firebase',22], (url,id) => fetcher(url, {id}),
-    // イニシャル値を設定してしまうと、レンダリング直後に読みに行ってくれない。
-    // ,{ initialData: {names: 'SWRinitialWorksName',id: '99'}},
-    // { revalidateOnMount: true },
-    // { refreshWhenOffline: true }
     ,{
       revalidateOnFocus: false,
       revalidateOnReconnect: false
     }
   )
-  // const tmpWorkName = data
 
   console.log(error+"+api error")
   console.log(JSON.stringify(data)+"+api tmpWorkName")
@@ -159,7 +159,8 @@ const MyPage = () => {
         })
       }
     })()
-  },[data])
+  },[])
+  // },[data])
 
   if (error) return <div>Failed to load</div>
   // if (!data) return <div>Loading...</div>

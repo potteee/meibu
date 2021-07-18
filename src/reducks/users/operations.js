@@ -438,6 +438,7 @@ export const addPostedWork = (
     }
 }
 
+//MypageEditでユーザ情報が編集された場合
 export const updateUsers = (uid,role,userName,userImage) => {
     console.log(userName+"+userName")
     return async(dispatch) => {

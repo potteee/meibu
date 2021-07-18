@@ -12,7 +12,7 @@ import {getUserId,getUserName} from "../reducks/users/selectors";
 
 //makeStyles
 import useStyles from "src/styles/overRide"
-import {SCAppBar} from "src/styles/SC/components/footer/position.js"
+import {SCAppBar,SCToolBar} from "src/styles/SC/components/footer/position"
 
 import styled from "styled-components"
 
@@ -125,7 +125,7 @@ const Footer = () => {
             {/* <AppBar position="fixed" className={classes.appBarPosition}>  */}
             {/* 下記のsxはなぜか効かない */}
             {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}> */}
-              <Toolbar variant="dense" className={classes.footerToolBar}>
+              <SCToolBar variant="dense">
                 <Grid container item xs={12} justify="space-between" direction="row">
                   <Grid container item xs={2} justify="center" alignItems="center">
                     {/* <a>マイページ</a> */}
@@ -164,7 +164,7 @@ const Footer = () => {
                     </IconButton>
                   </Grid>
                 </Grid>
-              </Toolbar>
+              </SCToolBar>
             </SCAppBar>
             {/* </AppBar> */}
           {/* </ThemeProvider> */}
