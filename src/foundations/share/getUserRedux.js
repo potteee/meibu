@@ -3,10 +3,18 @@ import React from 'react'
 import { db } from "../../firebase/index"
 
 const GetUserRedux = async(userID) => {
-    const snapshotUsers = await db.collection('users').doc(userID).get()
-    const snapshotPrivate = await db.collection('privateUsers').doc(userID).get()
-    const snapshotPosted = await db.collection('privateUsers').doc(userID)
-                            .collection('postedWorksId').where("workId","!=","99").get()
+    const snapshots = await Promise.all([
+        db.collection('users').doc(userID).get(),
+        db.collection('privateUsers').doc(userID).get(),
+        db.collection('privateUsers').doc(userID)
+            .collection('postedWorksId').where("workId","!=","99").get()
+    ])
+
+    console.log(snapshots+"+snapshots")
+        
+    const snapshotUsers = snapshots[0]
+    const snapshotPrivate = snapshots[1]
+    const snapshotPosted = snapshots[2]
 
     const usersData = snapshotUsers.data()
     console.log(JSON.stringify(usersData)+"+usersData@app")
