@@ -23,19 +23,42 @@ export const getUserImage = createSelector(
     state => state.userImage
 )
 
+export const getUserSex = createSelector(
+    [usersSelector],
+    state => state.userSex
+)
 
-// export const getUserEmail = createSelector(
-//     [usersSelector],
-//     state => state.userEmail
-// )
+export const getUserProfile = createSelector(
+    [usersSelector],
+    state => state.userProfile
+)
 
-// export const getUserProfile = createSelector(
-//     [usersSelector],
-//     state => state.userProfile
-// )
+export const getUserEmail = createSelector(
+    [usersSelector],
+    state => state.userEmail
+)
 
+export const getUserLiveIn = createSelector(
+    [usersSelector],
+    state => state.userLiveIn
+)
 
-// export const getPostWorksId = createSelector(
-//     [usersSelector],
-//     state => state.postNumber
-// )
+export const getUserWebsite = createSelector(
+    [usersSelector],
+    state => state.userWebsite
+)
+
+export const getUserBirthday = createSelector(
+    [usersSelector],
+    state => state.userBirthday
+)
+
+export const getUserAssessmentWorks = createSelector(
+    [usersSelector],
+    state => state.userAssessmentWorks
+)
+
+export const getUserBookmarkWorks = createSelector(
+    [usersSelector],
+    state => state.userBookmarkWorks
+)

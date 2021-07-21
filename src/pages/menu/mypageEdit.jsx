@@ -166,15 +166,55 @@ const mypageEdit = () => {
 
   const changeButtonClicked = async() => {
     if(publicChangeFlag == true){
-      db.collection('users').doc(uid2).update(
-        {userName: userName,
-         userSex: userSex,
-         userProfile: userProfile,
-         userImage: userImage
-        }
-      ).then(() => {
+      db.collection('users').doc(uid2).update({
+        userName: userName,
+        userSex: userSex,
+        userProfile: userProfile,
+        userImage: userImage,
+      }).then(() => {
           console.log("users update db success!!!")
-          dispatch(updateUsers(uid,role,userName,userImage))
+          if(privateChangeFlag == true){
+            const timestamp = FirebaseTimestamp.now()
+            db.collection('privateUsers').doc(uid2).update(
+              {
+                email: userEmail,
+                userLiveIn: userLiveIn,
+                userWebsite: userWebsite,
+                userBirthday: userBirthday,
+                userBookmark : userBookmark,
+                // created_at: timestamp,
+                updated_at: timestamp,  
+              }
+              ).then(() => {
+                console.log("priveteUsers update db success!!!")
+                
+                const userRedux = {
+                  userName: usersData.userName,
+                  userImage: usersData.userImage,
+                  userSex: usersData.userSex,
+                  userProfile: usersData.userProfile, // プロフィール : 未登録
+                  userEmail: privateData.email, // メール : kanoko2@example.com
+                  userLiveIn: privateData.userLiveIn,// お住まい : 未登録
+                  userWebsite: privateData.userWebsite, // Web/SNS : 未登録
+                  userBirthday: privateData.userBirthday,// 誕生日 : 未登録
+                  userAssessmentWorks: postedWorksIds,// 評価を投稿した作品：
+                  userBookmarkWorks: privateData.userBookmark,// ブックマークした作品
+                }
+
+                console.log(JSON.stringify(userRedux)+"+usrRedux@J")
+
+                // dispatch(updateUsers(uid,role,userName,userImage))
+              　// updateデータ形式変更予定　→　変更後にここ記載。
+
+              router.push('/menu/mypage')
+            }).catch((error) => {
+              alert('PrivateUsers update DB fail')
+              throw new Error(error)
+            })
+          } else {
+              console.log("Didnt update privateUserdata ")
+              router.push('/menu/mypage')
+          }
       }).catch((error) => {
           alert('users update DB fail')
           throw new Error(error)
@@ -184,33 +224,6 @@ const mypageEdit = () => {
         // router.push('/menu/mypage')
     }
 
-    if(privateChangeFlag == true){
-      const timestamp = FirebaseTimestamp.now()
-      db.collection('privateUsers').doc(uid2).update(
-        {email: userEmail,
-         userLiveIn: userLiveIn,
-         userWebsite: userWebsite,
-         userBirthday: userBirthday,
-         userBookmark : userBookmark,
-         created_at: timestamp,
-         updated_at: timestamp,  
-        }
-      ).then(() => {
-        //　大した情報保存してないから確認画面は廃止
-        // mypageConfirm(userName,userSex,userProfile,userImage,
-        // userLiveIn,userWebsite,userBirthday)
-
-        console.log("priveteUsers update db success!!!")
-
-        router.push('/menu/mypage')
-      }).catch((error) => {
-        alert('PrivateUsers update DB fail')
-        throw new Error(error)
-      })
-    } else {
-        console.log("Didnt update privateUserdata ")
-        router.push('/menu/mypage')
-    }
   }
 
   return(

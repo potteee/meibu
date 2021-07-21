@@ -3,10 +3,11 @@ import React, {useMemo} from 'react';
 
 import {signInAction ,signOutAction, updateUsersAction} from "./actions";
 import { auth, db, FirebaseTimestamp } from "../../firebase/index";
-import {isValidEmailFormat, isValidRequiredInput} from "../../components/common";
+import {isValidEmailFormat, isValidRequiredInput} from "../../foundations/share/common";
 
 import { parseCookies, setCookie } from 'nookies'
 import { AddAlarmOutlined } from "@material-ui/icons";
+import GetUserRedux from '../../foundations/share/getUserRedux';
 
 const usersRef = db.collection('users')
 const privateUserRef = db.collection('privateUsers')
@@ -153,45 +154,92 @@ export const signIn = (email,password,router) => {
                 console.log(userID+'+userID@signin')
                 console.log(email+'+email')
 
-                return await db.collection('users').doc(userID).get()
-                .then(async (snapshot) => {
-                    const data = snapshot.data()
-                    if (!data) {
-                        throw new Error('ユーザーデータが存在しません');
-                        // return false  
-                        signInFail = true
-                    }
+                // return await db.collection('users').doc(userID).get()
+                // .then(async (snapshotUsers) => {
+                //     const dataUsers = snapshotUsers.data()
+                //     console.log(JSON.stringify(dataUsers)+"+dataUsers@J")
+                //     if (!dataUsers) {
+                //         throw new Error('ユーザーデータが存在しません');
+                //         // return false  
+                //         signInFail = true
+                //     }
 
-                    await setCookie(null, 'userID', userID, {
-                        maxAge: 30 * 24 * 60 * 60,
-                        path: '/',
-                    })
-                    const cookiesParse = parseCookies()
-                    const cookiesDocument = document.cookie
+                //     console.log(dataUsers.uid+"dataUsers.uid")
+                //     return await db.collection('privateUsers').doc(dataUsers.uid).get()
+                //     .then(async (snapshotPrivateUsers) => {
+                //         const dataPrivateUsers = snapshotPrivateUsers.data()
+                //         console.log(JSON.stringify(dataPrivateUsers)+"+dataPrivateUsers@J")
+                //         if(!dataPrivateUsers){
+                //             throw new Error('プライベードユーザが存在しません');
+                //             // return false  
+                //             signInFail = true
+                //         }
+                //         return await db.collection('privateUsers').doc(dataPrivateUsers.uid)
+                //         .collection('postedWorksId')
+                //         .where("workId","!=","99")
+                //         .get()
+                //         .then(async(snapshotPostedWorksId) => {
+                //             const dataPostedWorksId = snapshotPostedWorksId
+                //             if(!dataPostedWorksId){
+                //                 throw new Error('ユーザ投稿が存在しません');
+                //                 // return false  
+                //                 signInFail = true
+                //             }
+                //             let postedWorksIds = {}
+                //             dataPostedWorksId.forEach((doc) => {
+                //                 postedWorksIds = {...postedWorksIds , [doc.id] : { workName : doc.data().workName , workMedia : doc.data().workMedia } }
+                //             }) 
+                //             console.log(postedWorksIds+"+postedWorksIds")
+                //             // console.log((dataPostedWorksId[1]).id+"dataPostedWorksId[1].id")
+                            
+                //             const cookiesParse = parseCookies()
+                //             const cookiesDocument = document.cookie
+                //             console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin before")
+                //             console.log(cookiesDocument+"+cookiesDocument@operations@signin aft2")
+                //             console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin after")
+                //             // await dispatch(signInAction({
+                //                 //解決前にpushしてしまった方がいい。これを待ってしまうと、signInのページで再レンダリングされてしまう場合がある。
 
-                    console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin before")
-                    console.log(cookiesDocument+"+cookiesDocument@operations@signin aft2")
-                    console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin after")
-
-                    // await dispatch(signInAction({
-                    //解決前にpushしてしまった方がいい。これを待ってしまうと、signInのページで再レンダリングされてしまう場合がある。
-                    dispatch(signInAction({
-                        isSignedIn: true,
-                        role: data.role,
-                        uid:userID,
-                        // userEmail: userState.email,
-                        userName: data.userName,
-                        userImage: ""
-                    }))
-
-                    //Someoneもう使ってないかも...?
-                    router.push({
-                        pathname: '/menu/mypage',
-                        query: { name: 'Someone' }
-                    })
-
-                    return true
-                })
+                //                 const userRedux = 
+                //             {
+                //                 isSignedIn: true,
+                //                 role: dataUsers.role,
+                //                 uid:userID,
+                //                 // userEmail: userState.email,
+                //                 userName: dataUsers.userName,
+                //                 userImage: snapshotUsers.userImage,
+                //                 //  ここから新規追加
+                //                 userSex: snapshotUsers.userSex,
+                //                 userProfile: snapshotUsers.userProfile, // プロフィール : 未登録
+                //                 userEmail: dataPrivateUsers.userEmail, // メール : kanoko2@example.com
+                //                 userLiveIn: dataPrivateUsers.userLiveIn,// お住まい : 未登録
+                //                 userWebsite: dataPrivateUsers.userWebsite, // Web/SNS : 未登録
+                //                 userBirthday: dataPrivateUsers.userBirthday,// 誕生日 : 未登録
+                //                 userAssessmentWorks: postedWorksIds,// 評価を投稿した作品：
+                //                 userBookmarkWorks: dataPrivateUsers.userBookmark,// ブックマークした作品
+                //             }
+                            
+                            const userRedux = await GetUserRedux(userID)
+                            
+                            await setCookie(null, 'userID', userID, {
+                                maxAge: 30 * 24 * 60 * 60,
+                                path: '/',
+                            })
+                            console.log(JSON.stringify(userRedux)+"+usrRedux@J")
+                            
+                            dispatch(signInAction(userRedux))
+                            
+                            //Someoneもう使ってないかも...?
+                            router.push({
+                                pathname: '/menu/mypage',
+                                query: { name: 'Someone' }
+                            })
+                            
+                            return true
+                //         })
+                        
+                //     })
+                // })
             }
         })
     }
@@ -256,6 +304,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                     const timestamp = FirebaseTimestamp.now()
                     const workId = "99"
                     const workName = "dummyData"
+                    const workMedia = "dummyData"
 
                     const userInitialData = {
                         uid: uid,
@@ -281,6 +330,7 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                     const postedWorksId = {
                         workId : workId, //ダミー値(99)
                         workName : workName, //dummyData
+                        workMedia : workMedia, //dummyData
                         uid : uid,
                         created_at: timestamp,
                         updated_at: timestamp,
@@ -333,10 +383,12 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
     }
 }
 
+//なんでこれここにあるんだろう。actionsにアクセスしていないのでapi配下で良さそう
 export const addPostedWork = (
     uid,
     workId,
     workName,
+    workMedia,
     isPublic,
     isSpoiler,
     isLiked,
@@ -361,6 +413,7 @@ export const addPostedWork = (
             postedWorksId = {
                 workId : workId,
                 workName : workName,
+                workMedia : workMedia,
                 uid : uid,
                 created_at: timestamp,
                 updated_at:timestamp,
@@ -439,15 +492,14 @@ export const addPostedWork = (
 }
 
 //MypageEditでユーザ情報が編集された場合
-export const updateUsers = (uid,role,userName,userImage) => {
-    console.log(userName+"+userName")
+// export const updateUsers = (uid,role,userName,userImage) => {
+export const updateUsers = (userRedux) => {
     return async(dispatch) => {
-        await dispatch(updateUsersAction({
-            isSignedIn: true,
-            role: role,
-            uid: uid,
-            userName: userName,
-            userImage: userImage
-        }))
+        await dispatch(updateUsersAction(userRedux))
+    }
+}
+export const updateUsersWithSignIn = (userRedux) => {
+    return async(dispatch) => {
+        await dispatch(signInAction(userRedux))
     }
 }

@@ -1,4 +1,4 @@
-import {storage} from "../firebase/index";
+import {storage} from "../../firebase/index";
 import HTMLReactParser from "html-react-parser";
 
 /**

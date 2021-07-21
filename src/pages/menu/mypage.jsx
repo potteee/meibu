@@ -7,45 +7,22 @@ import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
 
 import {useDispatch, useSelector} from "react-redux";
-import {getIsSignedIn, getUserId, getUserName, getRole} from '../../reducks/users/selectors'
-// import {getUserId, getUserProfile} from '
+import {getIsSignedIn, getUserId, getUserName, getRole, getUserSex,getUserImage,getUserEmail, getUserProfile, getUserWebsite,getUserLiveIn, getUserBirthday, getUserBookmarkWorks, getUserAssessmentWorks} from '../../reducks/users/selectors'
 import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
-// import {useLocation} from 'react-router-dom'
-// import { UsersReducer } from '../../reducks/users/reducers';
-import { db } from '../../firebase/index'
 
 import SpeedDialPosting from '../../components/speedDialPosting'
 
-import mypageEdit from './mypageEdit'
-
 //API
-import useSWR,{ mutate } from 'swr'
 
 
-const fetcher = async (url) => {
-  const res = await fetch(url)
-  const data = await res.json()
-
-  if (res.status !== 200) {
-    throw new Error(data.message)
-  }
-
-  console.log("got data")
-  console.log(data)
-  return data
-}
 const MyPage = () => {
-// export default function MyPage() {
   const selector = useSelector((state) => state)
   const userID = parseCookies().userID
   const router = useRouter()
   const { query } = useRouter()
 
-  // const { name,id } = router.query
   const dispatch = useDispatch()
-  // var queryNameFlag = 0
-  // const location = useLocation();
 
   //// from Redux
   const userName = getUserName(selector)
@@ -54,131 +31,58 @@ const MyPage = () => {
   const isSignedIn = getIsSignedIn(selector)
 
   //// from DataBase
-  /// users
-  const [userSex, setUserSex] = useState("")
-  const [userProfile, setUserProfile] = useState("")
-  const [userImage, setUserImage] = useState("")
+  const userSex = getUserSex(selector)
+  const userProfile = getUserProfile(selector)
+  const userImage = getUserImage(selector)
 
   /// privateUsers
-  const [userEmail ,setUserEmail] = useState("")
-  const [userLiveIn ,setUserLiveIn] = useState("")
-  const [userWebsite ,setUserWebsite] = useState("")
-  const [userBirthday ,setUserBirthday] = useState("")
-  const [userBookmark, setUserBookmark] = useState({})
-
+  const userEmail = getUserEmail(selector)
+  const userLiveIn = getUserLiveIn(selector)
+  const userWebsite = getUserWebsite(selector)
+  const userBirthday = getUserBirthday(selector)
+  let userBookmark = getUserBookmarkWorks(selector)
+  let userAssessment = getUserAssessmentWorks(selector)
 
   /// postedWorkId
-  const [workIds ,setWorkIds] = useState([])
-
-  /// display worksData
-  // const [worksData ,setWorksData] = useState([])
-  let worksData
-
-
   let noWorkFlag = true
 
-  // let uid = "uid initial"
-
-  // const users = getUserId(selector)
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
   console.log(JSON.stringify(selector)+"+selector@mypage")
-  // console.log(name+"+query.name@mypage")
   console.log(query.id+"+query.id@mypage")
   
   const noLoginState = () => {
     console.log("start noLoginState")
     router.push('/')
   }
-  // useSWR start
-  
-  //　そもそもuseSWRをここでやる意味はそんなにない。→reduxで状態を持ちたい。
-  //ログイン直後にバックグラウンドで取得してreduxに状態を持たせておく方が良さそう？
-　//ただ、Reduxで管理するほどの情報か？（そこまで使い回すか？）というのもある。
-  //→最初は、そこまで使いまわさなくても「検索」という操作に不可がかかるから
-  //持っておいた方がいいと思ったが、ここは検索じゃなくて普通に「取得」で撮ってこれる。
-  //(今はほとんど利用価値がないだろうという方法で検索をしているが・・。)
 
-  //また、各要素はstateで管理しないで普通の変数で良いと思う
-  //無駄にレンダリング回数増えるし、頁ないでの値の変更がないから
-  const { data , error } = useSWR(
-    () => uid ? `/api/firebase/postedWorksId/${uid}` : null, fetcher
-    ,{
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false
-    }
-  )
+  // useEffect(() => {
+  //   (async() => {    
+  //   })()
+  // },[])
 
-  console.log(error+"+api error")
-  console.log(JSON.stringify(data)+"+api tmpWorkName")
-
-  // useSWR end
-    
-  // setUid(getUserId(selector))
-  // useEffectの中でdb呼び出すときはこの書き方（ifをつかう）
-  // if使わないとapp呼び出されたときにレンダリングされてuidがないからエラーになる。
-  // 手前でreturnsしてもダメ
-  useEffect(() => {
-    (async() => {    
-      console.log(JSON.stringify(selector)+"+selector2@mypage")
-      console.log(uid+"+uid useEffect out")
-      // console.log(uid+"+uid useEffect out")
-      
-      //DB
-      if(uid && uid != "uid initial"){
-        // await setUid(await getUserId(selector))
-        console.log(uid+"+uid useEffect in")
-        
-        await db.collection('users').doc(uid).get()
-        .then(snapshot => {
-          let dbData = snapshot.data()
-          console.log(dbData+"+data collection email")
-          setUserSex(dbData.userSex)
-          setUserProfile(dbData.userProfile)
-          setUserImage(dbData.userImage)
-        })
-        .catch((error) => {
-          alert('Get users DB fail')
-          throw new Error(error)
-        })
-        
-        await db.collection('privateUsers').doc(uid).get()
-        .then(snapshot => {
-          let dbData = snapshot.data()
-          console.log(dbData+"+data collection email")
-          setUserEmail(dbData.email)
-          setUserLiveIn(dbData.userLiveIn)
-          setUserWebsite(dbData.userWebsite)
-          setUserBirthday(dbData.userBirthday)
-          if(dbData.userBookmark) {
-            setUserBookmark(dbData.userBookmark)
-          }
-        })
-        .catch((error) => {
-          alert('Get privateUsers DB fail')
-          throw new Error(error)
-        })
-      }
-    })()
-  },[])
-  // },[data])
-
-  if (error) return <div>Failed to load</div>
-  // if (!data) return <div>Loading...</div>
-
-  // let tmpWorksId = []
   let dataFlag = false
 
-  if(data) {
-    if(data.worksData.length != 0){
+  console.log(userAssessment+"+userAssessment")
+
+  if(userAssessment){
+    if(Object.keys(userAssessment).length != 0) {
       dataFlag = true
-      console.log(JSON.stringify(data.worksData)+"+data.worksData@J")
+      // console.log(JSON.stringify(data.worksData)+"+data.worksData@J")
       noWorkFlag = false // 一度trueになってしまっているのでfalseに戻す。
-      worksData = data.worksData
+      // worksData = userAssessment
       console.log("登録した作品がありました。")
-    } 
-  } 
+    }
+  } else {
+    userAssessment = {initialId : {workName:"initialWorkName",workMedia:"initalWorkMedia"}}
+  }
+
+  if(userBookmark){
+    console.log(userBookmark+"+userBookmark")
+  } else {
+    userBookmark = {initialId : {workName:"initialWorkName",workMedia:"initalWorkMedia"}}
+  }
+
   if(dataFlag == false){
-    worksData = ["投稿したデータはありませんんん"]
     noWorkFlag = true
     console.log("投稿した作品はありません！")
   }
@@ -210,10 +114,9 @@ const MyPage = () => {
     console.log("isSignedIn true")
   }
 
-  // if(data && userSex != ""){
-
     // 最後にsetしているuseBirthdayをチェック
-  if(isSignedIn && data && userBirthday != ""){
+  if(isSignedIn){
+  // if(isSignedIn && data && userBirthday != ""){
     return (
       <>
       {/* {myInfo} */}
@@ -248,16 +151,19 @@ const MyPage = () => {
         {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
         
         <p>評価を投稿した作品：</p>
-        {worksData.length != 0 
+        {(userAssessment != undefined && Object.keys(userAssessment).length != 0 )
+        // {worksData.length != 0 
           ? <>{!noWorkFlag 
             ? <>
-              {worksData.map((map) => (
+              {Object.keys(userAssessment).map((map) => (
+              // {worksData.map((map) => (
                 <>
                 <Link
                   href="/post/[postWorkId]/[postUserId]"
-                  as={`/post/${map.workId}/${uid}/`}
+                  // as={`/post/${map.workId}/${uid}/`}
+                  as={`/post/${map}/${uid}/`}
                 >
-                  {map.workName}
+                  {userAssessment.[map].workName}
                 </Link>
                 <br/>
                 </>

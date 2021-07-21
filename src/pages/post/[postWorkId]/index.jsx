@@ -17,7 +17,7 @@ import Header from '../../../components/header'
 import Footer from '../../../components/footer'
 import ApplicationBar from '../../../components/applicationBar'
 import SpeedDialPosting from '../../../components/speedDialPosting'
-import ObjectSort from '../../../components/objectSort'
+import ObjectSort from '../../../foundations/share/objectSort'
 
 import {db} from '../../../firebase/index'
 import { parseCookies } from 'nookies'

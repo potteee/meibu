@@ -368,7 +368,6 @@ const Posting = () => {
     // tagResult = {...tagResult, [tagMap.[map].key] : false}
     // console.log(tagMap.map+"+inMap")
   )
-   
   // console.log(tagResult)
   // console.log(JSON.stringify(tagResult))
   // console.log("++tagResult")
@@ -625,7 +624,7 @@ const Posting = () => {
 
     // 作品の固有データをDBに登録
     // 新規登録なのでScoreは入力値のまま　*-*- (wInfo)
-    await dispatch(postWInfoCreate(
+    await dispatch(postWInfoCreate( //セキュアなでーたがあるならapi下でやった方がいい。
       workName,
       workMedia,
       workScore,
@@ -644,10 +643,11 @@ const Posting = () => {
     )).then( async(workId) => {
       console.log(workId+"+workId posting m")
       // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
-      await dispatch(addPostedWork(
+      await dispatch(addPostedWork( //これ上野とまとめて良さそ。
         uid,
         workId,
         workName,
+        workMedia,
         // setIsPublic((preIsPublic) => {return preIsPublic}),
         pushIsPublic,
         // isPublic,

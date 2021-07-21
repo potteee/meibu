@@ -9,8 +9,16 @@ export const signInAction = (userState) => {
             role: userState.role,
             uid: userState.uid,
             userName: userState.userName,
-            userImage: userState.userImage
+            userImage: userState.userImage,
             // userEmail: userState.userEmail,
+            userSex: userState.userSex, // 性別：未登録
+            userProfile: userState.userProfile, // プロフィール : 未登録
+            userEmail: userState.userEmail, // メール : kanoko2@example.com
+            userLiveIn: userState.userLiveIn,// お住まい : 未登録
+            userWebsite: userState.userWebsite, // Web/SNS : 未登録
+            userBirthday: userState.userBirthday,// 誕生日 : 未登録
+            userAssessmentWorks: userState.userAssessmentWorks,// 評価を投稿した作品：
+            userBookmarkWorks: userState.userBookmarkWorks,// ブックマークした作品
         }
     }
 };
@@ -30,11 +38,19 @@ export const updateUsersAction = (userState) => {
     return {
         type: "UPDATE_USERS",
         payload: {
-            isSignedIn: true,
-            role: userState.role,
-            uid: userState.uid,
-            userName: userState.userName,
-            userImage: userState.userImage
+            // isSignedIn: true,
+            // role: userState.role,
+            // uid: userState.uid,
+            // userName: userState.userName,
+            userImage: userState.userImage,
+            userSex: userState.userSex, // 性別：未登録
+            userProfile: userState.userProfile, // プロフィール : 未登録
+            userEmail: userState.userEmail, // メール : kanoko2@example.com
+            userLiveIn: userState.userLiveIn,// お住まい : 未登録
+            userWebsite: userState.userWebsite, // Web/SNS : 未登録
+            userBirthday: userState.userBirthday,// 誕生日 : 未登録
+            userAssessmentWorks: userState.userAssessmentWorks,// 評価を投稿した作品：
+            userBookmarkWorks: userState.userBookmarkWorks,// ブックマークした作品
         }
     }
 }

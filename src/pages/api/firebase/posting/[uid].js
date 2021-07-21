@@ -83,6 +83,7 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
     updated_at : timestamp,
     workId : ODB.workId,
     workName : ODB.workName,
+    workMedia : ODB.workMedia,
     uid : uid,
     isLiked : ODB.isLiked,
     isSpoiler: ODB.isSpoiler,
@@ -166,7 +167,7 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
               //// 初期状態と公開/秘密によって処理が異なる
               
               if(privateUserSnapshot.data()["isPublic"] != undefined && 
-                 privateUserSnapshot.data()["isPublic"] == true) {
+                privateUserSnapshot.data()["isPublic"] == true) {
                 //データ有　公開　→　公開
                 if(ODB.isPublic){
                   console.log("Dari k -> k")
@@ -197,7 +198,7 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
                 }
 
               } else if (privateUserSnapshot.data()["isPublic"] != undefined && 
-                         privateUserSnapshot.data()["isPublic"] == false){
+                        privateUserSnapshot.data()["isPublic"] == false){
                 //データ有　秘密　→　公開
                 if(ODB.isPublic) {
                   console.log("Dari h -> k")
@@ -236,28 +237,6 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
                 //   )
                 // }              
               }
-
-              //よくわからない残りカス。
-              // if(ODB.isPublic == true) {
-              //   await assessmentRef.update({
-              //     isLiked : ODB.isLiked,
-              //   })
-              //   console.log("fin assessmentRef")
-              // } else {
-              //   console.log("skip assessmentRef")
-              //   //assessment削除処理必要・・・？
-              // }
-
-              // await privateUserRef.update({
-              //   isLiked : ODB.isLiked,
-              // })
-
-              // console.log("fin privateUserRef")
-              // await pubPostedRef.update({
-              //   isLiked : ODB.isLiked,
-              //   isPublic: ODB.isPublic,
-              // })
-              // console.log("fin pubPostedRef")
               console.log("finish FPF:0 liked")
 
               res.status(200).json({status:"succeed"})

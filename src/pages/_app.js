@@ -16,6 +16,8 @@ import { StylesProvider } from '@material-ui/styles';
 
 import {SCmargin} from 'src/styles/SC/app/margin'
 import Box from '@material-ui/core/Box';
+import { updateUsersWithSignIn } from '../reducks/users/operations'
+import GetUserRedux　from 'src/foundations/share/getUserRedux'
 
 // import styled from 'styled-components'
 
@@ -79,22 +81,13 @@ const WrappedApp = ({Component, pageProps}) => {
           }
         });
         unsubscribe() //これやらないとずっとここだけ回り続ける
-        const snapshot = await db.collection('users').doc(userID).get()
-        console.log(snapshot+"+snapshot")
-        const data = snapshot.data()
-        console.log(JSON.stringify(data)+"+data@app")
-        if (!data) {
-          throw new Error('ユーザーデータが存在しません');
-        }
-        console.log("dispatch signInAction")
-        await dispatch(signInAction({
-          isSignedIn: true,
-          role: data.role,
-          uid:userID,
-          // userEmail: data.email,
-          userName: data.userName,
-          userImage: data.userImage
-        }))
+        // まずはここをupdateにする。（少なくとも直接actionsは呼ばないようにする。→ここはisSignedInの更新も必要なので、
+        // updateではなくactionsでなくてはならない
+        // await dispatch(signInAction(userRedux))
+        // const temp = 
+        // console.log(JSON.stringify(temp)+"+GetUserRedux@J")
+        await dispatch(updateUsersWithSignIn(await GetUserRedux(userID)))
+
         faFinished = true
         // setFaFinished(true)
         return true
@@ -107,17 +100,20 @@ const WrappedApp = ({Component, pageProps}) => {
       console.log("no login & reloaded")
       // await dispatch(signInAction({
         //   isSignedIn: false,
-        //     // role: data.role,
+        //     // role: usersData.role,
         //     // uid:userID,
-        //     // userName: data.userName,
-        //     // userImage: data.userImage
+        //     // userName: usersData.userName,
+        //     // userImage: usersData.userImage
         // }))
         ///////////////ここがレンダリングされても意味ない？
         //footerの方がレンダリングされないと。
       setRenderTriger(!renderTriger)
       console.log("setRenderTriger")
     } else {
-      alert("_app error 2s")
+      //初回レンダリング時はサインインしていないはずだから、
+      //ここに入ることはないはずだけど１回入った（なぜ？）
+      //　→　いや、りろーどしなければ遷移時に普通に入るか
+      // alert("_app error 2s")
       //else if作ったからここは動かないはず
       console.log(userID+"+userID@Cookie else")
       //これやらないとstyled-componentsが適用されない？
@@ -150,7 +146,6 @@ const WrappedApp = ({Component, pageProps}) => {
       )
     } else { //ここは読み込まれないはず。
       console.log("return Comp")
-      // return <Component {...pageProps} />
       return null
     }
   } else if(isSignedIn == true && userID) {
@@ -158,11 +153,9 @@ const WrappedApp = ({Component, pageProps}) => {
     return (
         <StylesProvider injectFirst>
           <CssBaseline/>
-          {/* <div className={classes.appStyle} > */}
           <SCmargin>
             <Component {...pageProps} />
           </SCmargin>
-          {/* </div> */}
         </StylesProvider>
     )
   } else {//no login 
@@ -170,11 +163,9 @@ const WrappedApp = ({Component, pageProps}) => {
     return (
         <StylesProvider injectFirst>
           <CssBaseline/>
-          {/* <div className={classes.appStyle} > */}
           <SCmargin>
             <Component {...pageProps} />
           </SCmargin>
-          {/* </div> */}
         </StylesProvider>
     )
   }

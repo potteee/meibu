@@ -9,13 +9,15 @@ const initialState = {
         role: "initialRole",
         uid: "uid initial",
         userName: "username initial",
-        userImage: "pngjpgFile"
-        // userEmail: "example@example.ccccom",
-        // userProfile: "InitialProfileSample. i like ...",
-        // postWorksId: 999,
-        // loveWorks: ["loveWorks001","loveWorks002","loveWorks003"],
-        // likeWorks:  ["likeWorks001","likeWorks002","likeWorks003"],
-        // likePost: ["likePost001","likePost002","likePost003"],
+        userImage: "pngjpgFile",
+        userSex: "sex initial", // 性別：未登録
+        userProfile: "profile initial", // プロフィール : 未登録
+        userEmail: "email initial", // メール : kanoko2@example.com
+        userLiveIn: "liveIn initial",// お住まい : 未登録
+        userWebsite: "website initial", // Web/SNS : 未登録
+        userBirthday: "birthday initial",// 誕生日 : 未登録
+        userAssessmentWorks: {},// 評価を投稿した作品：
+        userBookmarkWorks: {},// ブックマークした作品
     }
 }
 
