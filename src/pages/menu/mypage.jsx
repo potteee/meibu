@@ -29,8 +29,6 @@ const MyPage = () => {
   const role = getRole(selector)
   const uid = getUserId(selector)  
   const isSignedIn = getIsSignedIn(selector)
-
-  //// from DataBase
   const userSex = getUserSex(selector)
   const userProfile = getUserProfile(selector)
   const userImage = getUserImage(selector)
@@ -43,12 +41,12 @@ const MyPage = () => {
   let userBookmark = getUserBookmarkWorks(selector)
   let userAssessment = getUserAssessmentWorks(selector)
 
-  /// postedWorkId
+  // postedWorkId
   let noWorkFlag = true
 
-  console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
-  console.log(JSON.stringify(selector)+"+selector@mypage")
-  console.log(query.id+"+query.id@mypage")
+  // console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
+  // console.log(JSON.stringify(selector)+"+selector@mypage")
+  // console.log(query.id+"+query.id@mypage")
   
   const noLoginState = () => {
     console.log("start noLoginState")

@@ -13,7 +13,7 @@ const RadioButton = (props) => {
             value={props.value}
             // color={props.color}
         >
-            {props.lavel}
+            {props.label}
 
         </RadioGroup>
     )

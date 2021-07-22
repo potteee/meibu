@@ -152,94 +152,24 @@ export const signIn = (email,password,router) => {
             } else {
                 const userID = userState.uid
                 console.log(userID+'+userID@signin')
-                console.log(email+'+email')
-
-                // return await db.collection('users').doc(userID).get()
-                // .then(async (snapshotUsers) => {
-                //     const dataUsers = snapshotUsers.data()
-                //     console.log(JSON.stringify(dataUsers)+"+dataUsers@J")
-                //     if (!dataUsers) {
-                //         throw new Error('ユーザーデータが存在しません');
-                //         // return false  
-                //         signInFail = true
-                //     }
-
-                //     console.log(dataUsers.uid+"dataUsers.uid")
-                //     return await db.collection('privateUsers').doc(dataUsers.uid).get()
-                //     .then(async (snapshotPrivateUsers) => {
-                //         const dataPrivateUsers = snapshotPrivateUsers.data()
-                //         console.log(JSON.stringify(dataPrivateUsers)+"+dataPrivateUsers@J")
-                //         if(!dataPrivateUsers){
-                //             throw new Error('プライベードユーザが存在しません');
-                //             // return false  
-                //             signInFail = true
-                //         }
-                //         return await db.collection('privateUsers').doc(dataPrivateUsers.uid)
-                //         .collection('postedWorksId')
-                //         .where("workId","!=","99")
-                //         .get()
-                //         .then(async(snapshotPostedWorksId) => {
-                //             const dataPostedWorksId = snapshotPostedWorksId
-                //             if(!dataPostedWorksId){
-                //                 throw new Error('ユーザ投稿が存在しません');
-                //                 // return false  
-                //                 signInFail = true
-                //             }
-                //             let postedWorksIds = {}
-                //             dataPostedWorksId.forEach((doc) => {
-                //                 postedWorksIds = {...postedWorksIds , [doc.id] : { workName : doc.data().workName , workMedia : doc.data().workMedia } }
-                //             }) 
-                //             console.log(postedWorksIds+"+postedWorksIds")
-                //             // console.log((dataPostedWorksId[1]).id+"dataPostedWorksId[1].id")
-                            
-                //             const cookiesParse = parseCookies()
-                //             const cookiesDocument = document.cookie
-                //             console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin before")
-                //             console.log(cookiesDocument+"+cookiesDocument@operations@signin aft2")
-                //             console.log(JSON.stringify(cookiesParse)+"+cookiesParse@operations@signin after")
-                //             // await dispatch(signInAction({
-                //                 //解決前にpushしてしまった方がいい。これを待ってしまうと、signInのページで再レンダリングされてしまう場合がある。
-
-                //                 const userRedux = 
-                //             {
-                //                 isSignedIn: true,
-                //                 role: dataUsers.role,
-                //                 uid:userID,
-                //                 // userEmail: userState.email,
-                //                 userName: dataUsers.userName,
-                //                 userImage: snapshotUsers.userImage,
-                //                 //  ここから新規追加
-                //                 userSex: snapshotUsers.userSex,
-                //                 userProfile: snapshotUsers.userProfile, // プロフィール : 未登録
-                //                 userEmail: dataPrivateUsers.userEmail, // メール : kanoko2@example.com
-                //                 userLiveIn: dataPrivateUsers.userLiveIn,// お住まい : 未登録
-                //                 userWebsite: dataPrivateUsers.userWebsite, // Web/SNS : 未登録
-                //                 userBirthday: dataPrivateUsers.userBirthday,// 誕生日 : 未登録
-                //                 userAssessmentWorks: postedWorksIds,// 評価を投稿した作品：
-                //                 userBookmarkWorks: dataPrivateUsers.userBookmark,// ブックマークした作品
-                //             }
-                            
-                            const userRedux = await GetUserRedux(userID)
-                            
-                            await setCookie(null, 'userID', userID, {
-                                maxAge: 30 * 24 * 60 * 60,
-                                path: '/',
-                            })
-                            console.log(JSON.stringify(userRedux)+"+usrRedux@J")
-                            
-                            dispatch(signInAction(userRedux))
-                            
-                            //Someoneもう使ってないかも...?
-                            router.push({
-                                pathname: '/menu/mypage',
-                                query: { name: 'Someone' }
-                            })
-                            
-                            return true
-                //         })
-                        
-                //     })
-                // })
+                console.log(email+'+email')         
+                const userRedux = await GetUserRedux(userID)
+                
+                await setCookie(null, 'userID', userID, {
+                    maxAge: 30 * 24 * 60 * 60,
+                    path: '/',
+                })
+                console.log(JSON.stringify(userRedux)+"+usrRedux@J")
+                
+                dispatch(signInAction(userRedux))
+                
+                //Someoneもう使ってないかも...?
+                router.push({
+                    pathname: '/menu/mypage',
+                    query: { name: 'Someone' }
+                })
+                
+                return true
             }
         })
     }

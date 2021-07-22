@@ -49,7 +49,7 @@ export const updateUsersAction = (userState) => {
             userLiveIn: userState.userLiveIn,// お住まい : 未登録
             userWebsite: userState.userWebsite, // Web/SNS : 未登録
             userBirthday: userState.userBirthday,// 誕生日 : 未登録
-            userAssessmentWorks: userState.userAssessmentWorks,// 評価を投稿した作品：
+            // userAssessmentWorks: userState.userAssessmentWorks,// 評価を投稿した作品：
             userBookmarkWorks: userState.userBookmarkWorks,// ブックマークした作品
         }
     }
