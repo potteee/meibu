@@ -7,34 +7,34 @@ import ApplicationBar from '../components/applicationBar'
 import Footer from '../components/footer'
 import SpeedDialPosting from '../components/speedDialPosting'
 
-const News = () => {
-  const [worksData, setWorksData] = useState(false);
+const News = ({worksData}) => {
+  // const [worksData, setWorksData] = useState(false);
 
-  const getWInfo = () => {
-    db.collection('wInfo').get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        console.log("doc.data()")
-        console.log(doc.data())
-        setWorksData(prevWorksData => {
-          if(prevWorksData == false) {
-            return [doc.data()]
-          } else {
-            return [...prevWorksData , doc.data()]
-          }
-        })
-      });
-      return true
-    })
-    .catch((error) => {
-      alert('works DB get fail')
-      throw new Error(error)
-    })
-  }
+  // const getWInfo = () => {
+  //   db.collection('wInfo').get()
+  //   .then((snapshot) => {
+  //     snapshot.forEach((doc) => {
+  //       console.log("doc.data()")
+  //       console.log(doc.data())
+  //       setWorksData(prevWorksData => {
+  //         if(prevWorksData == false) {
+  //           return [doc.data()]
+  //         } else {
+  //           return [...prevWorksData , doc.data()]
+  //         }
+  //       })
+  //     });
+  //     return true
+  //   })
+  //   .catch((error) => {
+  //     alert('works DB get fail')
+  //     throw new Error(error)
+  //   })
+  // }
 
-  useEffect(() => {
-    getWInfo()
-  },[]);
+  // useEffect(() => {
+  //   getWInfo()
+  // },[]);
 
   console.log(JSON.stringify(worksData,null ,2)+"+worksData@J");
 
@@ -71,6 +71,39 @@ const News = () => {
   } else {
     return <>loading...</>
   }
+}
+
+export async function getStaticProps(context) {
+  // const [worksData, setWorksData] = useState(false);
+
+  let worksData = false;
+
+  await db.collection('wInfo').get()
+  .then((snapshot) => {
+    snapshot.forEach((doc) => {
+      console.log("doc.data()")
+      console.log(doc.data())
+      if(worksData == false) {
+        worksData = [doc.data()]
+      } else {
+        worksData = [...worksData , doc.data()]
+      }
+    })
+      // setWorksData(prevWorksData => {
+      //   if(prevWorksData == false) {
+      //     return [doc.data()]
+      //   } else {
+      //     return [...prevWorksData , doc.data()]
+      //   }
+      // })
+
+    return {props : {worksData} }// {worksData : [...worksData]}
+  })
+  .catch((error) => {
+    alert('works DB get fail')
+    throw new Error(error)
+  })
+  return {props : {worksData}}
 }
 
 export default News

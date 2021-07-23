@@ -64,15 +64,15 @@ const MyPage = () => {
 
   if(userAssessment){
     if(Object.keys(userAssessment).length != 0) {
-      dataFlag = true
-      // console.log(JSON.stringify(data.worksData)+"+data.worksData@J")
-      noWorkFlag = false // 一度trueになってしまっているのでfalseに戻す。
-      // worksData = userAssessment
-      console.log("登録した作品がありました。")
+      // dataFlag = true
+      // // console.log(JSON.stringify(data.worksData)+"+data.worksData@J")
+      // noWorkFlag = false // 一度trueになってしまっているのでfalseに戻す。
+      // // worksData = userAssessment
+      // console.log("登録した作品がありました。")
+    } else {
+      userAssessment = {initialId : {workName:"initialWorkName",workMedia:"initalWorkMedia"}}
     }
-  } else {
-    userAssessment = {initialId : {workName:"initialWorkName",workMedia:"initalWorkMedia"}}
-  }
+  } 
 
   if(userBookmark){
     console.log(userBookmark+"+userBookmark")
@@ -80,10 +80,10 @@ const MyPage = () => {
     userBookmark = {initialId : {workName:"initialWorkName",workMedia:"initalWorkMedia"}}
   }
 
-  if(dataFlag == false){
-    noWorkFlag = true
-    console.log("投稿した作品はありません！")
-  }
+  // if(dataFlag == false){
+  //   noWorkFlag = true
+  //   console.log("投稿した作品はありません！")
+  // }
 
   if(isSignedIn === false){
     //ブラウザ更新時orログインから飛んできたときに'/'に行かないように。
@@ -149,11 +149,10 @@ const MyPage = () => {
         {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
         
         <p>評価を投稿した作品：</p>
-        {(userAssessment != undefined && Object.keys(userAssessment).length != 0 )
+        {(Object.keys(userAssessment)[0] != "initialId")
+        // {(userAssessment != undefined && Object.keys(userAssessment).length != 0 )
         // {worksData.length != 0 
-          ? <>{!noWorkFlag 
-            ? <>
-              {Object.keys(userAssessment).map((map) => (
+          ? <> {Object.keys(userAssessment).map((map) => (
               // {worksData.map((map) => (
                 <>
                 <Link
@@ -167,9 +166,7 @@ const MyPage = () => {
                 </>
               ))}
             </>
-            : <>"投稿した作品はありません"</>
-          }</> 
-          : <>"読み込み中・・・"</>
+          : <>"投稿した作品はありません"</>
         }
         
 
