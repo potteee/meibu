@@ -1,8 +1,11 @@
-
-props.workName
-props.workId
-props.workMedia
-props.uid
-props.firstPostFlag
-props.hist
-props.liked
+    setUserBookmark((preUserBookmark) => {
+      if(!preUserBookmark[e.currentTarget.value]["deleteFlag"]){
+        preUserBookmark[e.currentTarget.value]["deleteFlag"] = true
+      } else if(preUserBookmark[e.currentTarget.value]["deleteFlag"] == false){
+        preUserBookmark[e.currentTarget.value]["deleteFlag"] = true
+      } else {
+        preUserBookmark[e.currentTarget.value]["deleteFlag"] = false
+      }
+      return {...preUserBookmark}
+    })
+  },[userBookmark])
