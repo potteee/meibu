@@ -2,7 +2,7 @@ import React ,{useState ,useEffect} from 'react';
 import { useRouter } from 'next/router'
 //redux
 import {useDispatch,useSelector} from "react-redux"
-import {getUserId ,getUserName} from '../reducks/users/selectors'
+import {getuserBookmark, getUserId ,getUserName} from '../reducks/users/selectors'
 //FireStore
 import { auth, db, FirebaseTimestamp } from "../firebase/index";
 //material-UI
@@ -22,7 +22,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 
 import postWInfoCreate from '../foundations/wInfo'
-import { addPostedWork } from '../reducks/users/operations'
+import { addPostedWork, updateUsers } from '../reducks/users/operations'
 
 import useSWR,{ mutate } from 'swr'
 
@@ -197,6 +197,19 @@ export default function SpeedDialPosting(props) {
         {merge : true } // 有効　→　指定しないフィールドを消さない
         ).then(() => {
         console.log("workBookmark set DB")
+
+        privateUserData = {...selector.users,...privateUserData}
+
+        const selectorsUserBookmark = getuserBookmark(selector)
+        Object.keys(selectorsUserBookmark).map((map) => {
+          privateUserData.userBookmark = {...privateUserData.userBookmark , [map] : selectorsUserBookmark[map]} 
+        })
+
+        console.log(JSON.stringify(privateUserData,null,2)+"privateUserData@J")
+        console.dir(privateUserData+"privateUserData@J")
+
+        dispatch(updateUsers(privateUserData))
+
         }).catch((error) => {
         alert('assesworkBookmark set DB fail')
         throw new Error(error)

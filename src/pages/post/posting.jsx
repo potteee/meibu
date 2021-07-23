@@ -494,7 +494,7 @@ const Posting = () => {
             snapshot.data().assessmentWorkTag.map((tag) => {
               console.log(tag+"+tags")
               Object.keys(tagMap).map((map) => {
-                if([tagMap.[map].key] == tag){
+                if([tagMap[map].key] == tag){
                   setTagCheckBox(tagCheckBox => ({...tagCheckBox , [map]:true}))
                 }
               })
@@ -609,8 +609,8 @@ const Posting = () => {
     Object.keys(tagCheckBox).map((map,index) => {
       if(tagCheckBox[map] == true){
         console.log(map+"+map+"+index)
-        console.log(tagMap.[map].key+"+tagMap")
-        goTagCheckBoxState = [...goTagCheckBoxState,tagMap.[map].key]
+        console.log(tagMap[map].key+"+tagMap")
+        goTagCheckBoxState = [...goTagCheckBoxState,tagMap[map].key]
       }
     })
 
@@ -901,7 +901,7 @@ const Posting = () => {
                                       />
                                     }
                                     label = {
-                                      [tagMap.[Object.keys(tagMap)[j]].key]
+                                      [tagMap[Object.keys(tagMap)[j]].key]
                                     }
                                     // className = {classes.formControlLabel}
                                     

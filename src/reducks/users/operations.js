@@ -8,9 +8,11 @@ import {isValidEmailFormat, isValidRequiredInput} from "../../foundations/share/
 import { parseCookies, setCookie } from 'nookies'
 import { AddAlarmOutlined } from "@material-ui/icons";
 import GetUserRedux from '../../foundations/share/getUserRedux';
+import { useSelector } from 'react-redux';
 
 const usersRef = db.collection('users')
 const privateUserRef = db.collection('privateUsers')
+// const selector = useSelector((state) => state)
 
 export const signIn = (email,password,router) => {
     // const router = useRouter()    
@@ -424,7 +426,10 @@ export const addPostedWork = (
 //MypageEditでユーザ情報が編集された場合
 // export const updateUsers = (uid,role,userName,userImage) => {
 export const updateUsers = (userRedux) => {
+    // const selector = useSelector((state) => state) //dispatchされてるからここでは呼べない（多分）
     return async(dispatch) => {
+        // userRedux = {...selector.users,...userRedux}
+        // console.log(userRedux+"userRedux")
         await dispatch(updateUsersAction(userRedux))
     }
 }

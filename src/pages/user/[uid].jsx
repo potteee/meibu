@@ -11,8 +11,6 @@ import {getUserId, getUserName, getRole} from '../../reducks/users/selectors'
 // import {getUserId, getUserProfile} from '
 import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
-// import {useLocation} from 'react-router-dom'
-// import { UsersReducer } from '../../reducks/users/reducers';
 import { db } from '../../firebase/index'
 
 //API

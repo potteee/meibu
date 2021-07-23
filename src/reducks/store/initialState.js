@@ -17,7 +17,7 @@ const initialState = {
         userWebsite: "website initial", // Web/SNS : 未登録
         userBirthday: "birthday initial",// 誕生日 : 未登録
         userAssessmentWorks: {},// 評価を投稿した作品：
-        userBookmarkWorks: {},// ブックマークした作品
+        userBookmark: {},// ブックマークした作品
     }
 }
 

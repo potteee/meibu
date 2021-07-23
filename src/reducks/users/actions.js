@@ -1,3 +1,5 @@
+import { useSelector } from "react-redux";
+
 export const SIGN_IN = "SIGN_IN";
 export const signInAction = (userState) => {
     console.log(JSON.stringify(userState.uid)+"+usrState.uid@actions@signin head")
@@ -18,7 +20,7 @@ export const signInAction = (userState) => {
             userWebsite: userState.userWebsite, // Web/SNS : 未登録
             userBirthday: userState.userBirthday,// 誕生日 : 未登録
             userAssessmentWorks: userState.userAssessmentWorks,// 評価を投稿した作品：
-            userBookmarkWorks: userState.userBookmarkWorks,// ブックマークした作品
+            userBookmark: userState.userBookmark,// ブックマークした作品
         }
     }
 };
@@ -41,7 +43,7 @@ export const updateUsersAction = (userState) => {
             // isSignedIn: true,
             // role: userState.role,
             // uid: userState.uid,
-            // userName: userState.userName,
+            userName: userState.userName,
             userImage: userState.userImage,
             userSex: userState.userSex, // 性別：未登録
             userProfile: userState.userProfile, // プロフィール : 未登録
@@ -50,7 +52,7 @@ export const updateUsersAction = (userState) => {
             userWebsite: userState.userWebsite, // Web/SNS : 未登録
             userBirthday: userState.userBirthday,// 誕生日 : 未登録
             // userAssessmentWorks: userState.userAssessmentWorks,// 評価を投稿した作品：
-            userBookmarkWorks: userState.userBookmarkWorks,// ブックマークした作品
+            userBookmark: userState.userBookmark,// ブックマークした作品
         }
     }
 }

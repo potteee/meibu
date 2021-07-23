@@ -2,12 +2,32 @@ import React from 'react'
 
 import { db } from "../../firebase/index"
 
+//DBからReduxで使用するデータを取得する。
+//ランディング時、リロード時のみ通る。
 const GetUserRedux = async(userID) => {
     const snapshots = await Promise.all([
-        db.collection('users').doc(userID).get(),
-        db.collection('privateUsers').doc(userID).get(),
+        db.collection('users').doc(userID).get()
+        .then((snapshot) => {
+            return snapshot
+        }).catch((error) => {
+            alert('usersの取得に失敗しました')
+            throw new Error(error)
+        }),
+        db.collection('privateUsers').doc(userID).get()
+        .then((snapshot) => {
+            return snapshot
+        }).catch((error) => {
+            alert('privateUsersの取得に失敗しました')
+            throw new Error(error)
+        }),
         db.collection('privateUsers').doc(userID)
-            .collection('postedWorksId').where("workId","!=","99").get()
+        .collection('postedWorksId').where("workId","!=","99").get()
+        .then((snapshot) => {
+            return snapshot
+        }).catch((error) => {
+            alert('postedWorksIdの取得に失敗しました')
+            throw new Error(error)
+        })
     ])
 
     console.log(snapshots+"+snapshots")
@@ -50,7 +70,7 @@ const GetUserRedux = async(userID) => {
         userWebsite: privateData.userWebsite, // Web/SNS : 未登録
         userBirthday: privateData.userBirthday,// 誕生日 : 未登録
         userAssessmentWorks: postedWorksIds,// 評価を投稿した作品：
-        userBookmarkWorks: privateData.userBookmark,// ブックマークした作品
+        userBookmark: privateData.userBookmark,// ブックマークした作品
     }
 
     console.log(JSON.stringify(userRedux)+"+usrRedux@J")

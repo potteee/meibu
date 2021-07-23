@@ -7,7 +7,7 @@ import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
 
 import {useDispatch, useSelector} from "react-redux";
-import {getIsSignedIn, getUserId, getUserName, getRole, getUserSex,getUserImage,getUserEmail, getUserProfile, getUserWebsite,getUserLiveIn, getUserBirthday, getUserBookmarkWorks, getUserAssessmentWorks} from '../../reducks/users/selectors'
+import {getIsSignedIn, getUserId, getUserName, getRole, getUserSex,getUserImage,getUserEmail, getUserProfile, getUserWebsite,getUserLiveIn, getUserBirthday, getuserBookmark, getUserAssessmentWorks} from '../../reducks/users/selectors'
 import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
 
@@ -38,7 +38,7 @@ const MyPage = () => {
   const userLiveIn = getUserLiveIn(selector)
   const userWebsite = getUserWebsite(selector)
   const userBirthday = getUserBirthday(selector)
-  let userBookmark = getUserBookmarkWorks(selector)
+  let userBookmark = getuserBookmark(selector)
   let userAssessment = getUserAssessmentWorks(selector)
 
   // postedWorkId
@@ -161,7 +161,7 @@ const MyPage = () => {
                   // as={`/post/${map.workId}/${uid}/`}
                   as={`/post/${map}/${uid}/`}
                 >
-                  {userAssessment.[map].workName}
+                  {userAssessment[map].workName}
                 </Link>
                 <br/>
                 </>
