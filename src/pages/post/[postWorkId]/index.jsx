@@ -43,7 +43,7 @@ const fetcher = async (url) => {
 }
 
 //作品情報閲覧ページ
-const Post = () => {
+const Post = ({params}) => {
   const [standbyState,setStandbyState] = useState(false)
 
   const router = useRouter()
@@ -510,6 +510,48 @@ const Post = () => {
       ...loading...
       </>
     )
+  }
+}
+
+export async function getStaticPaths() {
+  // const response = await fetch(
+  //   process.env.HOST + '/api/pages'
+  // )
+
+  let postWorkId = false
+  const snapshot = await db.collection('wInfo').get()
+
+  snapshot.forEach((doc) => {
+    if(postWorkId == false) {
+      postWorkId = [doc.data().workId]
+    } else {
+      postWorkId = [...postWorkId , doc.data().workId]
+    }
+  })
+
+  console.log("postWorkId")
+  console.table(postWorkId)
+  
+  const paths = postWorkId.map((map) => (
+    { params: { postWorkId: map }}
+  ))
+  
+  console.log("paths")
+  console.table(paths)
+  
+  // return {paths:[],fallback : true}
+  return {paths: paths,fallback : true}
+
+}
+
+export async function getStaticProps({ params }) {
+  // 受け取ったパスパラーメータをもとに処理を行う
+  console.log("params@staticProps")
+  console.table(params)
+
+  return {
+    props: {params},
+    revalidate: 10,
   }
 }
 

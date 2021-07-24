@@ -54,8 +54,6 @@ export async function getStaticProps(context) {
   await db.collection('wInfo').get()
   .then((snapshot) => {
     snapshot.forEach((doc) => {
-      console.log("doc.data()")
-      console.log(doc.data())
       if(worksData == false) {
         worksData = [doc.data()]
       } else {
@@ -63,12 +61,13 @@ export async function getStaticProps(context) {
       }
     })
 
-    return {props : {worksData} }// {worksData : [...worksData]}
+    // return {props : {worksData} }// {worksData : [...worksData]}
   })
   .catch((error) => {
     alert('works DB get fail')
     throw new Error(error)
   })
+
   return {
     props : {worksData},
     revalidate: 3,
