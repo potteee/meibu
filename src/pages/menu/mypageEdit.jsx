@@ -10,7 +10,7 @@ import Radio from '@material-ui/core/Radio';
 import Link from 'next/link'
 
 import {useDispatch,useSelector} from "react-redux"
-import {getUserId, getUserName, getRole, getUserImage, getUserLiveIn, getuserBookmark, getUserSex,getUserProfile,getUserWebsite, getUserEmail, getUserBirthday} from '../../reducks/users/selectors'
+import {getUserId, getUserName, getRole, getUserImage, getUserLiveIn, getUserBookmark, getUserSex,getUserProfile,getUserWebsite, getUserEmail, getUserBirthday} from '../../reducks/users/selectors'
 import {updateUsers} from '../../reducks/users/operations'
 
 import { useRouter } from 'next/router'
@@ -47,9 +47,9 @@ const mypageEdit = () => {
   const [userLiveIn ,setUserLiveIn] = useState(getUserLiveIn(selector)),
         [userWebsite ,setUserWebsite] = useState(getUserWebsite(selector)),
         [userBirthday, setUserBirthday] = useState(getUserBirthday(selector)),
-        [userBookmark, setUserBookmark] = useState(getuserBookmark(selector))
+        [userBookmark, setUserBookmark] = useState(getUserBookmark(selector))
 
-  const userBookmarkOrigin = getuserBookmark(selector)
+  const userBookmarkOrigin = getUserBookmark(selector)
 
   const [privateChangeFlag, setPrivateChangeFlag] = useState(false),
         [publicChangeFlag, setPublicChangeFlag] = useState(false)
@@ -132,6 +132,9 @@ const mypageEdit = () => {
         userBookmark: updateUserBookmark,// ブックマークした作品
       }
 
+      console.log("userRedux")
+      console.log(JSON.stringify(userRedux,null,2))
+
       await Promise.all([
         db.collection('users').doc(uid).update({
           userName: userName,
@@ -152,7 +155,7 @@ const mypageEdit = () => {
             userBirthday: userBirthday,
             userBookmark : updateUserBookmark,
             // created_at: timestamp,
-            updated_at: timestamp,  
+            updated_at: timestamp,
           }
         ).then((snapshot) => {
           return snapshot

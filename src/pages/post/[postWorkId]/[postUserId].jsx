@@ -144,21 +144,17 @@ const handlerPostUserId = () => {
       console.log(data2+"+data2 of fetcher")
       // console.log(data2.data()+"+data2.data() of fetcher")
       console.log(JSON.stringify(data2)+"+data2@J of fetcher")
-
       setLoginUserData(() => {
         return data2.uid ? 1 : 2
       })
-
       if (res2.status !== 200) {
         throw new Error(data2.message)
-
       }
     })()
   },[])
 
 
-  if(loginUserData && standbyState && getUid != "initial uid"){
-  // if(loginUserData && data && getUid != "initial uid"){
+  if(loginUserData && standbyState && getUid != "uid initial"){
     return (
       <>
         {/* <Header /> */}

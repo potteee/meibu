@@ -58,7 +58,7 @@ export const getUserAssessmentWorks = createSelector(
     state => state.userAssessmentWorks
 )
 
-export const getuserBookmark = createSelector(
+export const getUserBookmark = createSelector(
     [usersSelector],
     state => state.userBookmark
 )

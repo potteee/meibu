@@ -135,8 +135,7 @@ const userPage = () => {
     })()
   },[data])
 
-  // if(data && uid != "initial uid" && worksName.length != 0){
-  if(data && uid != "initial uid" && useEffectFin){
+  if(data && uid != "uid initial" && useEffectFin){
     return (
       <>
       {/* {myInfo} */}

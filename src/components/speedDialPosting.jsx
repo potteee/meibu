@@ -2,7 +2,8 @@ import React ,{useState ,useEffect} from 'react';
 import { useRouter } from 'next/router'
 //redux
 import {useDispatch,useSelector} from "react-redux"
-import {getuserBookmark, getUserId ,getUserName} from '../reducks/users/selectors'
+import {getUserBirthday, getUserBookmark, getUserId ,getUserName} from '../reducks/users/selectors'
+
 //FireStore
 import { auth, db, FirebaseTimestamp } from "../firebase/index";
 //material-UI
@@ -20,41 +21,24 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteTwoToneIcon from '@material-ui/icons/FavoriteTwoTone';
 import CreateIcon from '@material-ui/icons/Create';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import CollectionsBookmarkOutlinedIcon from '@material-ui/icons/CollectionsBookmarkOutlined';
 
 import postWInfoCreate from '../foundations/wInfo'
 import { addPostedWork, updateUsers } from '../reducks/users/operations'
 
-import useSWR,{ mutate } from 'swr'
-
-
-
-const fetcher = async (url) => {
-  console.log("fetcher start")
-  const res = await fetch(url)
-  const data = await res.json()
-
-  if (res.status !== 200) {
-    throw new Error(data.message)
-  }
-
-  console.log("got data")
-  console.log(data)
-  return data
-}
-
 export default function SpeedDialPosting(props) {
+  console.log("SpeedDialPosting Start")
   const selector = useSelector((state) => state)
   const dispatch = useDispatch()
   
   const uid = getUserId(selector)
+  let userBookmarks =getUserBookmark(selector)
   const userName = getUserName(selector);
 
   const useStyles = makeStyles((theme) => ({
     root: {
-      // height: 380,
       transform: 'translateZ(0px)',
       flexGrow: 1,
-      
       position: 'fixed',
       top : "auto",
       bottom : "30em",
@@ -63,13 +47,8 @@ export default function SpeedDialPosting(props) {
     },
     speedDial: {
       position: 'fixed',
-      // position: 'absolute',
-      // position: 'relative',
       bottom : "-26em",
       right : "-24em",
-      // left : "60em"
-      // bottom: theme.spacing(2),
-      // right: theme.spacing(2),
     },
     backdropStyle: {
 
@@ -78,90 +57,76 @@ export default function SpeedDialPosting(props) {
   const classes = useStyles();
   const router = useRouter()
 
-
+  const [actions,setActions] = useState([])
+  
+  const [open, setOpen] = useState(false);
+  
+  let isPublic = true
+  
   const privateUserRef = db.collection('privateUsers').doc(uid)
 
-  // let actions = []
-  const [actions,setActions] = useState([])
-
-  const [pworkName,setPworkName] = useState(props.workName)
-  const [pworkId,setPworkId] = useState(props.workId)
-  const [pworkMedia, setPworkMedia] =  useState(props.workMedia)
-  const [puid, setPuid] = useState(props.uid)
-  const [pfirstPostFlag,setPfirstPostFlag] = useState(props.firstPostFlag)
-  const [phist, setPhist] = useState(props.hist)
-  const [pliked, setPliked] =  useState(props.liked)
-
-  // const [isLiked ,setIsLiked] = useState(true);
-  let isLiked = false //初期値をfalseにしないと登録がなかったときに「いいね」が表示されない
-  const [open, setOpen] = useState(false);
-
-  // const [isPublic , setIsPublic] = useState(true)
-  let isPublic = true
-
-  let privateUserData = {
-    userBookmark: []
-  }
-
-  const { data , error } = useSWR(
-    () => pworkId ? `/api/firebase/get/privateUsers/postedWorksId/${pworkId}_${puid}` : null, fetcher
-    // () => pworkId ? `../api/firebase/get/privateUsers/postedWorksId/${pworkId}_${uid}` : null, fetcher
-    ,{
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false
+  const inputSetActions = (action) => {
+    console.log(props.isLiked+"+props.isLiked")
+    console.log(props.isBookmark+"+props.isBookmark")
+    if (uid == "uid initial"){
+      console.log("uid initial")
+      return false
     }
-  )
-
-  console.log(JSON.stringify(data)+"+data@J")
-  console.log("wN:"+pworkName+" wM:"+pworkMedia+" wI:"+pworkId+" fpf:"+pfirstPostFlag)
-  console.log(error+"+error useSWR")
-
-  //useEffect
-  useEffect(() => {
-    if(data){
-      console.log(data.isLiked+"+data.isLiked")
-      console.log(pfirstPostFlag)
-      if(data.isLiked || props.isLiked){ //いいねされていた場合、いいねボタンを消す
-        // setIsLiked(true)
-        isLiked = true
-      } else {
-        isLiked = false
-      }
-    } else {
-      console.log("data undefined")
-      console.log(pfirstPostFlag)
-      if(props.isLiked){ //いいねされていた場合、いいねボタンを消す
-        // setIsLiked(true)
-        isLiked = true
-      } else {
-        isLiked = false
-      }
-
-    }
-    console.log(pworkName+"+pworkName+++")
-
-    if(!pworkName){
-      //クリックしてそのまま投稿画面に行けるようにする。
+    if(action == 0){
+      console.log("setActions 0")
       setActions([]);
-    } else {
-      if(isLiked) {
+    }
+    else if(action == 1){
+      console.log("setActions 1")
+      props.setIsBookmark((prevIsBookmark) => {
+        console.log(prevIsBookmark+"+prevIsBookmark")
         setActions([
-          { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
-          { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
+          { icon: <CreateIcon />, name: (props.pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
+          { icon: (prevIsBookmark) ? <CollectionsBookmarkOutlinedIcon /> : <CollectionsBookmarkIcon />, name: (prevIsBookmark) ? 'ブックマーク解除' : 'ブックマーク' , function: bookmark},
         ]);
-        console.log(isLiked+"action defined")
-      } else {
+        return prevIsBookmark
+      });
+    }
+    else if(action == 2){
+      console.log("setActions 2")
+      props.setIsBookmark((prevIsBookmark) => {
+        console.log(prevIsBookmark+"+prevIsBookmark")
         setActions([
-          { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
-          { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
+          { icon: <CreateIcon />, name: (props.pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
+          { icon: (prevIsBookmark) ? <CollectionsBookmarkOutlinedIcon /> : <CollectionsBookmarkIcon />, name: (prevIsBookmark) ? 'ブックマーク解除' : 'ブックマーク' , function: bookmark},
           { icon: <FavoriteIcon />, name: 'いいね！' , function: like},
           { icon: <FavoriteTwoToneIcon />, name: 'いいね！(非公開)' , function: likeHikoukai},
         ]);
-        console.log(isLiked+"action defined")
+        return prevIsBookmark
+      });
+    }
+    else if(action == 3){
+      console.log("setActions 3")
+      setActions([
+        { icon: <CreateIcon />, name: (props.pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
+      ]);
+    }
+  }
+
+  useEffect(() => {
+    console.log(props.workName+"+props.workName+++")
+
+    if(!props.workName){
+      inputSetActions(0)
+    } else {
+      if(props.hist == "work"){
+        if(props.isLiked) {
+          inputSetActions(1)
+          console.log(props.isLiked+"action defined")
+        } else {
+          inputSetActions(2)
+          console.log(props.isLiked+"action defined")
+        }
+      } else if(props.hist == "assessment"){
+        inputSetActions(3)
       }
     }
-  },[data])
-
+  },[props.isBookmark,props.isLiked])
 
   const handleOpen = () => {
     setOpen(true);
@@ -173,67 +138,123 @@ export default function SpeedDialPosting(props) {
   
   const post = () => {
     console.log("投稿が押されました。")
-    console.log("wN:"+pworkName+" wM:"+pworkMedia+" wI:"+pworkId+" fpf:"+pfirstPostFlag)
+    console.log("wN:"+props.workName+" wM:"+props.workMedia+" wI:"+props.workId+" fpf:"+props.pfirstPostFlag)
     router.push({
       pathname: "/post/posting",
       query: {
-        searchWord: pworkName,
-        infoMedia : pworkMedia,
-        workId : pworkId,
-        firstPostFlag : pfirstPostFlag,
+        searchWord: props.workName,
+        infoMedia : props.workMedia,
+        workId : props.workId,
+        firstPostFlag : props.pfirstPostFlag,
       }
     })
   };
-
-  const bookmark = () => {
-    //   配列に追加しないとダメ
-    // privateUserData.userBookmark = [...privateUserData.userBookmark ,{workId: pworkId ,workName:pworkName ,workMedia:pworkMedia}]
-    privateUserData.userBookmark = { [pworkId] : { workName:pworkName ,workMedia:pworkMedia } }
-    // setOpen(true);
-
-    if(uid != "uid initial"){
-        privateUserRef
-        .set(privateUserData,
-        {merge : true } // 有効　→　指定しないフィールドを消さない
-        ).then(() => {
-        console.log("workBookmark set DB")
-
-        privateUserData = {...selector.users,...privateUserData}
-
-        const selectorsUserBookmark = getuserBookmark(selector)
+  
+  const bookmark = async() => {
+    let privateUserData = {}
+    let privateUserReduxData = {}
+    
+    const urlBookmarkDelete = `/api/firebase/userBookmark/${props.workId}_${uid}`
+    
+    props.setIsBookmark( async(prevIsBookmark) => {
+      //ブックマーク解除
+      if(prevIsBookmark){
+        console.log("ブックマーク解除が押されました")
+        privateUserData = {...selector.users}
+        privateUserReduxData = {...selector.users}
+        
+        console.log("before privateUserData")
+        console.dir(privateUserData)
+        console.dir(props.workId)
+        console.log(delete privateUserData.userBookmark[props.workId])
+        console.log("after privateUserData")
+        console.dir(privateUserData)
+  
+        //DB
+        await Promise.all([
+          fetch(urlBookmarkDelete)
+          .then(async(res)=> {
+            console.log("fetcher finish")
+            const data = await res.json()
+  
+            if (res.status !== 200) {
+              throw new Error(data.message)
+            }
+          }).catch((error) => {
+            alert('Couldnt delete Bookmark')
+            throw new Error(error)
+          }),
+          
+          //Redux
+          dispatch(updateUsers(privateUserReduxData)),
+          
+          //Display
+          props.setIsBookmark(false)
+          ])
+          
+      //ブックマーク登録
+      } else {
+        console.log("ブックマーク登録が押されました")
+        privateUserData = {
+          userBookmark: { [props.workId] : { workName:props.workName ,workMedia:props.workMedia }}
+        }
+  
+        privateUserReduxData = {...selector.users,...privateUserData}
+        
+        const selectorsUserBookmark = getUserBookmark(selector)
+          
         Object.keys(selectorsUserBookmark).map((map) => {
           privateUserData.userBookmark = {...privateUserData.userBookmark , [map] : selectorsUserBookmark[map]} 
         })
-
+        
         console.log(JSON.stringify(privateUserData,null,2)+"privateUserData@J")
         console.dir(privateUserData+"privateUserData@J")
-
-        dispatch(updateUsers(privateUserData))
-
-        }).catch((error) => {
-        alert('assesworkBookmark set DB fail')
-        throw new Error(error)
-        })
-    } else {
-        console.log("ログインしてください")
-    }
         
-    console.log("ブックマークが押されました")
-  };
+        await Promise.all([
+          //DB
+          privateUserRef
+          .set(
+            privateUserData,
+            {merge : true } // 有効　→　指定しないフィールドを消さない
+          ).then(()=>{
+            console.log("workBookmark set DB")
+          }).catch((error) => {
+            alert('assesworkBookmark set DB fail')
+            throw new Error(error)
+          }),
 
+          //Redux
+          dispatch(updateUsers(privateUserData)),
+            
+          //display
+          props.setIsBookmark(true)
+        ])
+      }
+      console.log(props.isBookmark+"+props.isBookmark@sdp")
+      console.log(prevIsBookmark+"+prevIsBookmark@sdp")
+
+      return prevIsBookmark
+    })
+
+    if(props.isLiked == true){
+      console.log("inputSetActions 1")
+      // inputSetActions(1)
+    } else{
+      console.log("inputSetActions 2")
+      // inputSetActions(2)
+    }
+  };
+    
   const like = async() => {
-    // setOpen(true);
     if(uid != "uid initial"){
       // //未評価ユーザの場合、評価済みユーザの場合。（このifいらなそう
-      // if(pfirstPostFlag == 0 || pfirstPostFlag == 2){
       console.log("作品にいいねで評価しました。")
-      const url = `/api/firebase/posting/${uid}`
-      // const url = `../pages/api/firebase/posting/${uid}`
+      const urlPosting = `/api/firebase/posting/${uid}`
       const postingData = {
-        workName:pworkName,
-        workMedia:pworkMedia,
-        workId:pworkId,
-        firstPostFlag:pfirstPostFlag,
+        workName:props.workName,
+        workMedia:props.workMedia,
+        workId:props.workId,
+        firstPostFlag:props.pfirstPostFlag,
         isLiked:true,
         hist:"liked" ,
         userName:userName ,
@@ -251,7 +272,7 @@ export default function SpeedDialPosting(props) {
 
       props.setIsLiked(true,isPublic)
 
-      const res = await fetch(url, {
+      const res = await fetch(urlPosting, {
         // 送信先URL
         method: 'post', 
         // 通信メソッド    
@@ -266,34 +287,25 @@ export default function SpeedDialPosting(props) {
       const data = await res.json()
       console.log("res.json() finish")
       console.log(data)
-      // console.log(JSON.parse(data))
 
       if (res.status !== 200) {
         throw new Error(data.message)
       }
-
-      //親が再描写されることを期待。また、後にfalseにする昨日も追加する。
-
-      setActions([
-          { icon: <CreateIcon />, name: (pfirstPostFlag == 0) ? '評価投稿' : '評価を編集', function: post},
-          { icon: <CollectionsBookmarkIcon />, name: 'ブックマーク' , function: bookmark},
-      ]);
-      console.log(isLiked+"action defined in click")
+      
+      inputSetActions(1)
 
     }
-    console.log(pfirstPostFlag)
+    console.log(props.pfirstPostFlag)
     console.log("いいねが押されました")
   };
 
   const likeHikoukai = () => {
-    // setOpen(true);
     if(uid != "uid initial"){
       console.log("作品にいいねで評価しました。")
-      // setIsPublic(false)
       isPublic = false
       like()
     }
-    console.log(pfirstPostFlag)
+    console.log(props.pfirstPostFlag)
     console.log("いいね(非公開)が押されました")
   };
 
@@ -302,7 +314,7 @@ export default function SpeedDialPosting(props) {
     {/* // <div classes={{root:classes.root}}> */}
       {/* <Button onClick={handleVisibility}>Toggle Speed Dial</Button> */}
       <Backdrop open={open} className={classes.backdropStyle}/>
-      {actions.length >= 1  
+      {actions.length >= 1
         ? (<SpeedDial
           ariaLabel="SpeedDial tooltip example"
           classes={{root:classes.speedDial}}
