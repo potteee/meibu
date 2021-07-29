@@ -9,7 +9,7 @@ import SpeedDialPosting from '../components/speedDialPosting'
 
 const News = ({worksData}) => {
 
-  console.log(JSON.stringify(worksData,null ,2)+"+worksData@J");
+  // console.log(JSON.stringify(worksData,null ,2)+"+worksData@J");
 
   if(worksData){
     return (

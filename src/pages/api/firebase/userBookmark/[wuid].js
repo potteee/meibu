@@ -52,9 +52,7 @@ const userBookmarkHandler = async(req, res) => { //{}内はファイルの[]内�
     res.status(200).json({result : "success"})
   }    
   ).catch((error) => {
-    alert('assesworkBookmark set DB fail')
-    throw new Error(error)
-    res.json({ error });
+    res.status(599).json({ error : "error" });
   })
 
 

@@ -10,9 +10,14 @@ import SpeedDialPosting from '../../../components/speedDialPosting'
 import {useDispatch, useSelector} from "react-redux";
 import {getUserId} from '../../../reducks/users/selectors'
 
+import CreateIcon from '@material-ui/icons/Create';
+
 import Link from 'next/link'
 
 import useSWR,{ mutate } from 'swr'
+
+import post from 'src/components/speedDial/post'
+
 
 //ユーザごとの作品ページを検索
 const fetcher = async (url) => {
@@ -145,7 +150,7 @@ const handlerPostUserId = () => {
       // console.log(data2.data()+"+data2.data() of fetcher")
       console.log(JSON.stringify(data2)+"+data2@J of fetcher")
       setLoginUserData(() => {
-        return data2.uid ? 1 : 2
+        return data2.uid ? 1 : 2 //評価している１：していない２
       })
       if (res2.status !== 200) {
         throw new Error(data2.message)
@@ -217,8 +222,16 @@ const handlerPostUserId = () => {
           workId={postWorkId}
           isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
           uid= {getUid}
-          firstPostFlag = {(loginUserData === 1) ? 2 : 0}
+          pfirstPostFlag = {(loginUserData === 1) ? 2 : 0}
           hist={"assessment"}
+          sdpActions = {[{
+            icon: <CreateIcon />,
+            name: (loginUserData === 2) 
+              ? '評価投稿' 
+              : '評価を編集',
+            function: post,
+          }]}
+          // router={router}
         />
 
         <br/>

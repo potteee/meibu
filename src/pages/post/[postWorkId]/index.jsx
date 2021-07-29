@@ -2,51 +2,39 @@ import React, {useState, useEffect, useCallback,useReducer} from 'react'
 import { PrimaryButton, TextInput ,CheckIconBox} from "../../../styles/UIkit"
 
 //MaterialUi
-import FormGroup from '@material-ui/core/FormGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import FavoriteTwoToneIcon from '@material-ui/icons/FavoriteTwoTone';
-import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import Header from '../../../components/header'
 import Footer from '../../../components/footer'
 import ApplicationBar from '../../../components/applicationBar'
 import SpeedDialPosting from '../../../components/speedDialPosting'
+// import SpeedDialPosting , {bookmark ,post, like , likeHikoukai} from '../../../components/speedDialPosting'
 import ObjectSort from '../../../foundations/share/objectSort'
 
 import { SCTypografyh5 } from 'src/styles/SC/shared/typografy/h5'
 
 import {db} from '../../../firebase/index'
-import { parseCookies } from 'nookies'
-import { set } from 'immutable'
-import {useDispatch,useSelector} from 'react-redux'
+import {useSelector} from 'react-redux'
 
 import {getUserId,getUserName} from "../../../reducks/users/selectors";
 // import { postWorkCreate } from '../../../reducks/works/operations'
-import { addPostedWork } from '../../../reducks/users/operations'
 
-//API
-// import useSWR,{ mutate } from 'swr'
-// import { actionTypes } from 'redux-localstorage';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteTwoToneIcon from '@material-ui/icons/FavoriteTwoTone';
+import CreateIcon from '@material-ui/icons/Create';
+import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import CollectionsBookmarkOutlinedIcon from '@material-ui/icons/CollectionsBookmarkOutlined';
 
-// const fetcher = async (url) => {
-//   const res = await fetch(url)
-//   const data = await res.json()
-//   console.log(data+"+data of fetcher")
+import GLoading from 'src/components/GLoading'
+import like ,{likeHikoukai} from 'src/components/speedDial/like'
+import bookmark from 'src/components/speedDial/bookmark'
+import post from 'src/components/speedDial/post'
 
-//   if (res.status !== 200) {
-//     throw new Error(data.message)
-//   }
-//   return data
-// }
 
 const initialState = {
+  isLoading : true,
   workName : "not definded",
   infoCount : 0,
   likedCount : 0,
@@ -61,54 +49,129 @@ const initialState = {
   workStart : "",
   workFinish : "",
   workImage : "",
-  winfoTag　: []
-  
-  // assessmentData : [], //評価者一覧のデータ
-  // isAssessmenter : false,
-  // isAssessed : false, //ログインユーザ評価有無
-  // isMyAssessmentPublic : false,
+  winfoTag　: [],
+  isLiked : false,
+  isBookmark : false,
+  sdpActions : [],
+  isAssessed : false,
+  isAssessmenter : false,
+  isMyAssessmentPublic : false,
+  assessmentData : [], //評価者一覧のデータ
 }
 
 const reducer = (state, action) => {
+
+  //更新データがあればそれに書き換える。
+  let putState = {...state,...action.payload} ///宣言的に書くっていう観点で言うとこれほんとに意味ない。
+  //ただ、再描写はしなくなっているからそれの恩恵は受けられている。
+
+  let sdpActions = []
+
+  console.log("putState")
+  console.dir(putState)
+  // console.log(JSON.stringify(putState,null,2)+"+putState") //なぜかブックマーク登録時にエラーになる
+
+  if(putState.isLiked){
+    sdpActions = [
+      { icon: <CreateIcon />, 
+        name: (!putState.isAssessed) 
+          ? '評価投稿' 
+          : '評価を編集',
+        function : post,
+
+      },
+      { icon: (putState.isBookmark) 
+          ? <CollectionsBookmarkOutlinedIcon /> 
+          : <CollectionsBookmarkIcon />,
+        name: (putState.isBookmark)
+          ? 'ブックマーク解除' 
+          : 'ブックマーク' ,
+        function : bookmark ,
+      }
+    ]
+  } else{
+    sdpActions = [
+      { 
+        icon: <CreateIcon />,
+        name: (!putState.isAssessed) ? '評価投稿' : '評価を編集',
+        function: post,
+      },
+      {
+        icon: (putState.isBookmark) 
+          ? <CollectionsBookmarkOutlinedIcon /> 
+          : <CollectionsBookmarkIcon />,
+        name: (putState.isBookmark) 
+          ? 'ブックマーク解除' 
+          : 'ブックマーク' ,
+        function: bookmark
+      },
+      { 
+        icon: <FavoriteTwoToneIcon />,
+        name: 'いいね！(非公開)' ,
+        function: likeHikoukai
+      },
+      { 
+        icon: <FavoriteIcon />,
+        name: 'いいね！' ,
+        function: like
+      },
+    ]
+  }
+
+  putState = { ...putState ,sdpActions : sdpActions }
+
   switch (action.type){
+    // case "isLoadingChange" : {
+    //   return {
+    //     ...putState,
+    //     // sdpActions : sdpActions,
+    //   }
+    // }
     case "loadDB": {
       return {
-        ...state,
-        ...action.payload,
+        ...putState,
+        // sdpActions : sdpActions,
+        isLoading : false
       }
     }
-    case "likedCountChange" : {
-      return {
-        ...state,
-        likedCount : action.likedCount,
-      }
-    }
+
     case "infoCountChange" : {
       return {
-        ...state,
-        infoCount : action.infoCount,
+        ...putState,
+        // sdpActions : sdpActions,
+      }
+    }
+    case "setIsBookmark" : {
+      return {
+        ...putState,
+        // sdpActions : sdpActions,
+      }
+    }
+
+    case "isLikeChange" : {
+      return {
+        ...putState,
       }
     }
 
     default :{
-      throw new ERROR("not exect action")
+      throw new Error("not exect action")
     }
   }
 }
 
 //作品情報閲覧ページ
 const Post = () => {
-// const Post = ({params}) => {
-  // const [standbyState,setStandbyState] = useState(false)
-  const [state,dispatch] = useReducer(reducer, initialState)
+  const selector = useSelector((state) => state)
+  const userId = getUserId(selector)
 
   const router = useRouter()
-  // const dispatch = useDispatch()
-  const selector = useSelector((state) => state)
-  // const { id, onework ,workId} = router.query
+  const { isReady } = useRouter()
+  const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
+  const workId = /^\/post\//.test(query) ? query.split('\/post\/')[1] : ""
 
-  // const [workData, setWorkData] = useState({})
-  const userId = getUserId(selector)
+  const [state,dispatch] = useReducer(reducer, initialState)
+
   const userName = getUserName(selector)
 
   const useStyles = makeStyles((thema) => ({
@@ -133,97 +196,7 @@ const Post = () => {
 
   const classes = useStyles();
 
-
-  // let workName = "initial workName" 
-  //letで定義すると、際レンダリング時に再初期化されてしまう。
-  //その為、dataでデータを取得するギミックがある場合は
-  //useStateを使った方がいい（と思う）
-  // const [workName, setWorkName] = useState("not definded")
-  // const [infoCount, setInfoCount] = useState(0)
-  // const [likedCount, setLikedCount] = useState(0)
-  // const [workScore, setWorkScore] = useState("")
-  // const [workComment, setWorkComment] = useState("")
-  // const [winfoCategory, setCheckBoxState] = useState([])
-  // const [workCreator ,setWorkCreator] = useState("")
-  // const [workInfo, setWorkInfo] = useState("")
-
-  // const [workSeries, setWorkSeries] = useState("")
-  // const [workMedia, setWorkMedia] = useState("")
-  // const [workPublisher ,setWorkPublisher] = useState("")
-  // const [workStart, setWorkStart] = useState("")
-  // const [workFinish, setWorkFinish] = useState("")
-  // const [workImage, setWorkImage] = useState("")
-
-  // // const [assessmentData ,setAssessmentData] = useState([{userName : "ini" , uid: "ini"}])
-  
-  // const [winfoTag, setWinfoTag] = useState([])
-  
-  const [isAssessed, setIsAssessed] = useState(false) //ログインユーザ評価有無
-  const [isBookmark ,setIsBookmark] = useState(false)
-  const [isLiked ,setIsLiked] = useState(false)
-  const [isAssessmenter, setIsAssessmenter] = useState(false)
-  const [isMyAssessmentPublic, setIsMyAssessmentPublic] = useState(false)
-  const [assessmentData ,setAssessmentData] = useState([]) //評価者一覧のデータ
-
-  //useCallback => レンダリング葉されないが副作用(useEffect)は走るらしい。　
-  //=>いや、レンダリングも走っちゃってるっぽいなぁ。。。
-  const isLikedStateChange = useCallback((status,isPublic) => {
-    console.log(status+"+isLikedStateChange")
-    console.log(isPublic+"+isPublic")
-    setIsLiked(status)
-    setIsMyAssessmentPublic(isPublic)
-
-    if(status){
-      // setLikedCount((preLikedCount) => {
-      //   console.log("pre likedCount + 1")
-      //   return preLikedCount + 1
-      // })
-      dispatch({type:"likedCountChange", likedCount: state.likedCount + 1 })
-    }
-    if(!isAssessed){
-      // setInfoCount((preInfoCount) => {
-      //   return preInfoCount + 1
-      // })
-      dispatch({type:"infoCountChange", infoCount: state.infoCount + 1 })
-      setIsAssessed(true)
-    }
-  },[isMyAssessmentPublic,isLiked,state.likedCount,state.infoCount,isAssessed])
-
-  // const inputWinfoTag = useCallback((value) => {
-  //   console.log(JSON.stringify(value)+"+inputWinfoTag")
-  //   setWinfoTag(value)
-  // },[winfoTag])
-
-  const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
-  console.log(query+"+query")
-  const workId = /^\/post\//.test(query) ? query.split('\/post\/')[1] : ""
-
   console.log(workId+"=workId")
-
-  const workIdCheck = () => {
-    console.log("workIdCheck start")
-    if(!workId){
-      return false 
-    } else {
-      if(workId == "[postWorkId]"){
-        console.log(workId+"false postWorkId")
-        return false
-      } else {
-        console.log("return true")
-        return true
-      }
-    }
-  }
-
-  // const { data , error } = useSWR(
-  //   () => workIdCheck() ? `/api/firebase/assessment/${workId}` : null , fetcher,
-  //   {
-  //     revalidateOnFocus: false,
-  //     revalidateOnReconnect: false
-  //   }
-  // )
-  // console.log(error+"+api error")
-  // console.log(JSON.stringify(data)+"+api assessment")
 
   const getDBData = async() => {
     let assessmentUrl = null
@@ -231,13 +204,7 @@ const Post = () => {
     
     if(workId != undefined){
       if(userId != "uid initial"){
-        if(await workIdCheck()){
-          // const assessmentUrl = "abC"
-          assessmentUrl = `/api/firebase/assessment/${workId}`
-          // console.log(assessmentUrl+"+assessmentUrl")
-        } else {
-          throw new Error("failed get workId")
-        }
+        assessmentUrl = `/api/firebase/assessment/${workId}`
         console.log("workId:"+workId+",userId:"+userId)
 
         dBData = await Promise.all([
@@ -270,10 +237,10 @@ const Post = () => {
           .then(async(res)=> {
             const data = await res.json()
             console.log("successed to get assessment")
-            return data
             if (res.status !== 200) {
               throw new Error(data.message)
             }
+            return data
           }).catch((error) => {
             alert('assessment DB get fail')
             throw new Error(error)
@@ -292,7 +259,7 @@ const Post = () => {
         ])
       } else {
         console.log("workId:"+workId+",userId:undefined")
-        const dBData = await db.collection('wInfo').doc(workId).get()
+        dBData[3] = await db.collection('wInfo').doc(workId).get()
         .then((res) => {
           console.log("successed to get wInfo")
           const data = res.data()
@@ -316,6 +283,19 @@ const Post = () => {
     const assessmentSnapshot = dBData[2]
     const wInfoSnapshot = dBData[3]
 
+    let isAssessmenterFlag = false
+    if(assessmentSnapshot){
+      assessmentSnapshot.some((doc) => {
+        //一つでも非公開以外があればフラグを立てる
+        //(「公開可能情報なし」と表示しない)
+        console.log(JSON.stringify(doc,null,2)+"+doc")
+        if(doc.uid != "非公開") {
+          isAssessmenterFlag = true
+          return true;
+        }
+      })
+    }
+
     await dispatch({type:"loadDB" ,
       payload : {
         workName : wInfoSnapshot.workName,
@@ -332,167 +312,51 @@ const Post = () => {
         workStart : wInfoSnapshot.winfoStart,
         workFinish : wInfoSnapshot.winfoFinish,
         workImage : wInfoSnapshot.winfoImage,
-        winfoTag: (ObjectSort(wInfoSnapshot.winfoTag,"asc"))
+        winfoTag : (ObjectSort(wInfoSnapshot.winfoTag,"asc")),
+
+        //privateUsersSnapshot
+        isBookmark : privateUsersSnapshot 
+          ? Object.keys(privateUsersSnapshot.userBookmark).includes(workId) ? true : false 
+          : false ,
+        sdpActions : [],
+        
+        //postedWorksIdSnapshot
+        isLiked : postedWorksIdSnapshot?.isLiked,
+        isAssessed : postedWorksIdSnapshot ? true : false,
+        isMyAssessmentPublic : postedWorksIdSnapshot?.isPublic ? true : false,
+        
+        //assessmentSnapshot
+        assessmentData : (assessmentSnapshot && state.assessmentData.length == 0) ? [...assessmentSnapshot] : state.assessmentData,
+        isAssessmenter : isAssessmenterFlag,
       }
     })
-
-    console.log(Object.keys(privateUsersSnapshot["userBookmark"])+"+privateUserSnapshotf userBookmark")
-
-    if(Object.keys(privateUsersSnapshot["userBookmark"]).includes(workId)){
-      console.log("got it")
-      console.log("got it")
-      console.log("got it")
-      setIsBookmark(true)
-    } else {
-      console.log("dont got it")
-    }
-
-    if(postedWorksIdSnapshot){
-      setIsAssessed(true)
-      console.log("setisassessed")
-      if(postedWorksIdSnapshot["isPublic"] == true){
-        setIsMyAssessmentPublic(true)
-        console.log("setIsMyassessmentPublic true")
-      } else {
-        setIsMyAssessmentPublic(false)
-        console.log("setIsMyassessmentPublic true")
-      }
-      if(postedWorksIdSnapshot["isLiked"] == true){
-        setIsLiked(true)
-      } else {
-        setIsLiked(false)
-      }
-    }
-
-    if(assessmentSnapshot && assessmentData.length == 0) {
-      setAssessmentData([...assessmentSnapshot])
-      assessmentSnapshot.forEach((doc) => {
-        //一つでも非公開以外があればフラグを立てる
-        //(「公開可能情報なし」と表示しない)
-        console.log(JSON.stringify(doc,null,2)+"+doc")
-        if(doc.uid != "非公開") {
-          setIsAssessmenter(true)
-        }
-      })
-    }
   }
   
-  
   useEffect(() => {
-    (async() => {
+    if (isReady) { //これ挟まないとnext/routerのバグ(初期表示時にasPathがundefinedになる)を踏んでしまう。
       getDBData()
-      // console.log("useEffect Out")
-      
-      // if(workId != undefined) {
-      //   console.log("useEffect Done")
-      //   console.log(workId+"+workId effect")
+    } 
+  },[isReady]) //isReadyに変化があった場合は再描写してくれるからこれでいい。はず。
 
-      //   if(userId != "uid initial"){
-      //     //////これ上に持っていくことで　薄いいいねが表示されなくなるかも
-      //     await db.collection('privateUsers').doc(userId)
-      //     .collection('postedWorksId').doc(workId)
-      //     .get()
-      //     .then(async(postSnapshot) => {
-      //       console.log(postSnapshot+"+postSnapshot")
-      //       await db.collection('privateUsers').doc(userId)
-      //       .get()
-      //       .then((privateSnapshot) => {
-      //         console.log(privateSnapshot+"+privateSnapshot")
-      //         console.log(privateSnapshot.data()+"+privateSnapshot.data()")
-      //         console.log(JSON.stringify(privateSnapshot.data())+"+privateSnapshot.data()@J")
+  console.log(state.isLiked+"+isLiked")
+  console.log(state.isBookmark+"+isBookmark")
 
-      //         if(privateSnapshot.data()["userBookmark"]){//このifはいずれ消す。初期DBだとuserBookmarkのフィールドがないため、この分岐が必要
-      //           console.log(Object.keys(privateSnapshot.data()["userBookmark"])+"OBkey userBookmark")
-                // if(Object.keys(privateSnapshot.data()["userBookmark"]).includes(workId)){
-                //   setIsBookmark(true)
-                // }
-              // }
-              
-              // console.log(JSON.stringify(postSnapshot.data())+"+postSnapshot.data()@J")
-              // if(postSnapshot.data()){
-              //   setIsAssessed(true)
-              //   console.log("setisassessed")
-              //   if(postSnapshot.data()["isPublic"] == true){
-              //     setIsMyAssessmentPublic(true)
-              //     console.log("setIsMyassessmentPublic true")
-              //   } else {
-              //     setIsMyAssessmentPublic(false)
-              //     console.log("setIsMyassessmentPublic true")
-              //   }
-              //   if(postSnapshot.data()["isLiked"] == true){
-              //     setIsLiked(true)
-              //   } else {
-              //     setIsLiked(false)
-              //   }
-              // }
-        //     })
-        //   })
-        //   .catch((error) => {
-        //     alert('privateUsers DB get fail')
-        //     throw new Error(error)
-        //   })
-        // }
-        // await db.collection('wInfo').doc(workId).get()
-        // .then(doc => {
-        //   let wInfoData = doc.data()
-          // if (wInfoData){
-          //   console.log(JSON.stringify(wInfoData)+"+wInfoData JSONstr")
-          //   setWorkName(wInfoData.workName)
-          //   setInfoCount(wInfoData.winfoCount)
-          //   setLikedCount(wInfoData.winfoLikedCount)
-          //   setWorkScore(wInfoData.winfoScore)
-          //   setWorkInfo(wInfoData.winfoInfomation)
-          //   setCheckBoxState(wInfoData.winfoCategory)
-          //   inputWinfoTag(ObjectSort(wInfoData.winfoTag,"asc"))
-          //   setWorkCreator(wInfoData.winfoCreator)
-          //   setWorkSeries(wInfoData.winfoSeries)
-          //   setWorkMedia(wInfoData.winfoMedia)
-          //   setWorkPublisher(wInfoData.winfoPublisher)
-          //   setWorkStart(wInfoData.winfoStart)
-          //   setWorkFinish(wInfoData.winfoFinish)
-          //   setWorkImage(wInfoData.winfoImage)
-
-      //       console.log(JSON.stringify(wInfoData)+"+works wInfoData")
-      //       console.log(JSON.stringify(winfoCategory)+"+works winfoCategory")
-      //       if(data && assessmentData.length == 0) {
-      //         setAssessmentData([...data])
-      //         data.forEach((doc) => {
-      //           //一つでも非公開以外があればフラグを立てる
-      //           //(「公開可能情報なし」と表示しない)
-      //           if(doc.uid != "非公開") {
-      //             setIsAssessmenter(true)
-      //           }
-      //         })
-      //       } else {
-      //         console.log("data no exist")
-      //       }
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     alert('works DB get fail')
-      //     throw new Error(error)
-      //   })
-      // }
-    })()
-   //isLikedが[]内にある理由いいねしたときに「評価投稿数」「いいね数」を更新するため
-  },[])//いや、ここでisLikedを立ててしまうと、speeddialでいいねになる旅にdbアクセスが走るので表示あ遅くなる
-
-  console.log(isLiked+"+isLiked")
-  console.log(isBookmark+"+isBookmark")
-  if(state.workName != "not definded"){
-  // if(data && (workName != "not definded") && standbyState){
+  if(state.isLoading){
+  // if(state.workName != "not definded"){
+    return(
+      <>
+        <GLoading />
+      </>
+      // {/* //   ...loading... */}
+    )
+  } else {
 
     let isLoginUserAssessment = false
     return (
       <>     
-        {/* <div className="c-section-container"> */}
-        {/* <div className="module-spacer--medium" /> */}
-  　　     <ApplicationBar title="作品情報"/>
+　　     <ApplicationBar title="作品情報"/>
 
           {/* //なぜかこのページだけ全体が20pxくらい下に下がってしまうのでfixで調整 */}
-          {/* いいね：{isLiked ? "○" : "×"}
-          公開　：{isMyAssessmentPublic ? "○" : "×"}
-          ブックマーク：{isBookmark ? "○" : "×"} */}
 
         <Box className={classes.boxTotalStyle}> 
           <SCTypografyh5>
@@ -568,11 +432,6 @@ const Post = () => {
             </>
           ))}</h3>
 
-          {/* return内でfor使えない？ */}
-          {/* <h3>tag:{Object.keys(winfoTag).forEach((tokens) => (
-            <span>{tokens}:{winfoTag[tokens]} </span>
-          ))}</h3> */}
-
           <SCTypografyh5>
             {"クリエーター"}
           </SCTypografyh5> 
@@ -598,10 +457,10 @@ const Post = () => {
           <p>画：{workImage}</p> */}
 
           <h3>みんなの評価</h3>
-          {(assessmentData.length != 0 && isAssessmenter == true) && (
+          {(state.assessmentData.length != 0 && state.isAssessmenter == true) && (
             <>
               <ul>
-                {assessmentData.map(mapAssessmentData => ( 
+                {state.assessmentData.map(mapAssessmentData => ( 
                   <>
                     {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (
                       <>
@@ -621,7 +480,7 @@ const Post = () => {
               </ul>
             </>
           )}
-          {isAssessmenter == false && (<p> 公開可能情報なし </p>) }
+          {state.isAssessmenter == false && (<p> 公開可能情報なし </p>) }
 
           {/* <h3>あなたの評価</h3> */}
           {/* <a>userId:::: {userId}</a> */}
@@ -640,47 +499,39 @@ const Post = () => {
               query: {
                 searchWord: state.workName,
                 infoMedia : state.workMedia,
-                workId : state.workId,
-                firstPostFlag : isAssessed ? 2 : 0 ,
+                workId : workId,
+                firstPostFlag : state.isAssessed ? 2 : 0 ,
               }
             }}>
-              <a>[{state.workName}] {isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
+              <a>[{state.workName}] {state.isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
             </Link>
             <SpeedDialPosting
               workName={state.workName} 
               workMedia={state.workMedia} 
               workId={workId} 
-              isLiked={isLiked}
-              isBookmark={isBookmark}
-              // setIsLiked={setIsLiked}
+              isLiked={state.isLiked}
+              isBookmark={state.isBookmark}
+              likedCount={state.likedCount}
+              isAssessed={state.isAssessed}
+              infoCount={state.infoCount}
               uid={userId}
-              setIsLiked={isLikedStateChange}
-              setIsBookmark={setIsBookmark}
-              firstPostFlag={isAssessed ? 2 : 0} 
+              isPublic={true}//常にtrueで渡して、非公開の時にlikeHikoukaiでfalseに変える
+              pfirstPostFlag={state.isAssessed ? 2 : 0} 
               hist={"work"}
+              sdpActions={state.sdpActions}
+              dispatch={dispatch}
             />
           </>
         </Box>
-        {/*    
-          step2 
-          <h2>ーこの作品が読めるアプリー</h2> 
-          <h2>同じジャンルの人気作</h2>
-        */}
-        {(isLiked && isMyAssessmentPublic) ? <FavoriteIcon className={classes.isLikedSignal}/> : null}
-        {(isLiked && !isMyAssessmentPublic) ? <FavoriteTwoToneIcon className={classes.isLikedSignal}/> : null}
-        {(isBookmark && !isLiked) ? <CollectionsBookmarkIcon className={classes.isLikedSignal}/> : null}
-        {(isBookmark && isLiked) ? <CollectionsBookmarkIcon className={classes.isBookmarkSignal}/> : null}
+
+        {(state.isLiked && state.isMyAssessmentPublic) ? <FavoriteIcon className={classes.isLikedSignal}/> : null}
+        {(state.isLiked && !state.isMyAssessmentPublic) ? <FavoriteTwoToneIcon className={classes.isLikedSignal}/> : null}
+        {(state.isBookmark && !state.isLiked) ? <CollectionsBookmarkIcon className={classes.isLikedSignal}/> : null}
+        {(state.isBookmark && state.isLiked) ? <CollectionsBookmarkIcon className={classes.isBookmarkSignal}/> : null}
         <Footer />
       </>
     )
-  } else {
-    return(
-      <>
-      ...loading...
-      </>
-    )
   }
-
 }
 
 // export async function getStaticPaths() {
