@@ -535,6 +535,36 @@ const Post = () => {
   }
 }
 
+// export async function getStaticPaths() {
+//   // const response = await fetch(
+//   //   process.env.HOST + '/api/pages'
+//   // )
+
+//   let postWorkId = false
+//   const snapshot = await db.collection('wInfo').get()
+
+//   snapshot.forEach((doc) => {
+//     if(postWorkId == false) {
+//       postWorkId = [doc.data().workId]
+//     } else {
+//       postWorkId = [...postWorkId , doc.data().workId]
+//     }
+//   })
+
+//   console.log("postWorkId")
+//   console.table(postWorkId)
+  
+//   const paths = postWorkId.map((map) => (
+//     { params: { postWorkId: map }}
+//   ))
+  
+//   console.log("paths")
+//   console.table(paths)
+  
+//   // return {paths:[],fallback : true}
+//   return {paths: paths,fallback : true}
+
+// }
 export async function getStaticPaths() {
   // const response = await fetch(
   //   process.env.HOST + '/api/pages'
@@ -555,7 +585,8 @@ export async function getStaticPaths() {
   console.table(postWorkId)
   
   const paths = postWorkId.map((map) => (
-    { params: { postWorkId: map }}
+    { params: { postWorkId: map , postUserId : 'index'}}
+    // { params: { postWorkId: map }}
   ))
   
   console.log("paths")
@@ -573,7 +604,7 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {params},
-    revalidate: 10,
+    revalidate: 30,
   }
 }
 
