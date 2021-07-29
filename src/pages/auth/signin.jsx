@@ -115,7 +115,7 @@ const SignIn = () => {
             <p className="u-text-small" onClick={() => dispatch(router.push('/auth/signup'))}>アカウント登録がまだですか？</p>
         </div>
           {/* </div> */}
-        {/* <Footer /> */}
+        <Footer />
       </>
     )
   }

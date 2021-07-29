@@ -131,7 +131,7 @@ const reducer = (state, action) => {
       return {
         ...putState,
         // sdpActions : sdpActions,
-        isLoading : false
+        // isLoading : false
       }
     }
 
@@ -298,6 +298,7 @@ const Post = () => {
 
     await dispatch({type:"loadDB" ,
       payload : {
+        isLoading : false,
         workName : wInfoSnapshot.workName,
         infoCount : wInfoSnapshot.winfoCount,
         likedCount : wInfoSnapshot.winfoLikedCount,
