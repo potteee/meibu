@@ -12,7 +12,7 @@ import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
 
 import SpeedDialPosting from '../../components/speedDialPosting'
-import GLoading from '../../components/gLoading';
+import GLoading from '../../components/GLoading';
 
 //API
 
