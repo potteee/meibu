@@ -12,6 +12,7 @@ import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
 
 import SpeedDialPosting from '../../components/speedDialPosting'
+import GLoading from '../../components/gLoading';
 
 //API
 
@@ -43,10 +44,6 @@ const MyPage = () => {
 
   // postedWorkId
   let noWorkFlag = true
-
-  // console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
-  // console.log(JSON.stringify(selector)+"+selector@mypage")
-  // console.log(query.id+"+query.id@mypage")
   
   const noLoginState = () => {
     console.log("start noLoginState")
@@ -63,13 +60,7 @@ const MyPage = () => {
   console.log(userAssessment+"+userAssessment")
 
   if(userAssessment){
-    if(Object.keys(userAssessment).length != 0) {
-      // dataFlag = true
-      // // console.log(JSON.stringify(data.worksData)+"+data.worksData@J")
-      // noWorkFlag = false // 一度trueになってしまっているのでfalseに戻す。
-      // // worksData = userAssessment
-      // console.log("登録した作品がありました。")
-    } else {
+    if(Object.keys(userAssessment).length == 0) {
       userAssessment = {initialId : {workName:"initialWorkName",workMedia:"initalWorkMedia"}}
     }
   } 
@@ -79,11 +70,6 @@ const MyPage = () => {
   } else {
     userBookmark = {initialId : {workName:"initialWorkName",workMedia:"initalWorkMedia"}}
   }
-
-  // if(dataFlag == false){
-  //   noWorkFlag = true
-  //   console.log("投稿した作品はありません！")
-  // }
 
   if(isSignedIn === false){
     //ブラウザ更新時orログインから飛んできたときに'/'に行かないように。
@@ -102,7 +88,7 @@ const MyPage = () => {
     } else if (typeof window !== 'undefined') {
       return (
         <>
-        {dispatch(noLoginState)}
+          {dispatch(noLoginState)}
         </>
       )
     } else {
@@ -112,25 +98,21 @@ const MyPage = () => {
     console.log("isSignedIn true")
   }
 
-    // 最後にsetしているuseBirthdayをチェック
-  if(isSignedIn){
-  // if(isSignedIn && data && userBirthday != ""){
+  // 最後にsetしているuserBookmarkをチェック
+  if(!userBookmark){
+    return (
+      <GLoading/>
+    )
+  } else {
     return (
       <>
-      {/* {myInfo} */}
-        {/* <Header /> */}
         <ApplicationBar title="マイページ"/>
-        {/* <h2>MyPage</h2> */}
-        {/* Reduxからのデータを表示する部分と
-        DBからのデータを表示する部分を分けて高速化。 */}
-
         {/* Redux部 */}
         <h3>公開ユーザ情報</h3>
         <Link href="/user/[uid]" 
           as={`/user/${uid}`}>
           <h3>お名前(L)：{userName}</h3>
         </Link>
-        {/* <p>お名前 : {userName}</p> */}
         <p>性別：
           {userSex == 0 && ("未登録")}
           {userSex == 1 && ("男性")}
@@ -138,7 +120,6 @@ const MyPage = () => {
         </p>
         <p>プロフィール : {userProfile}</p>
         <p>プロフ画 : {userImage}</p>
-        {/* <p>userEmail : {emailFunc}</p> */}
 
         <h3>プライベート情報</h3>
         <p>メール : {userEmail}</p>
@@ -146,18 +127,12 @@ const MyPage = () => {
         <p>Web/SNS : {userWebsite}</p>
         <p>誕生日 : {userBirthday}</p>
         
-        {/* 自身が投稿した作品の一覧を表示してリンクを貼る */}
-        
         <p>評価を投稿した作品：</p>
         {(Object.keys(userAssessment)[0] != "initialId")
-        // {(userAssessment != undefined && Object.keys(userAssessment).length != 0 )
-        // {worksData.length != 0 
           ? <> {Object.keys(userAssessment).map((map) => (
-              // {worksData.map((map) => (
                 <>
                 <Link
                   href="/post/[postWorkId]/[postUserId]"
-                  // as={`/post/${map.workId}/${uid}/`}
                   as={`/post/${map}/${uid}/`}
                 >
                   {userAssessment[map].workName}
@@ -188,11 +163,6 @@ const MyPage = () => {
           : <p>
           "ブックマークした作品はありません"</p>
         }    
-
-        {/* <h3>非公開情報</h3>
-        <p>role : {role}</p>
-        <p>uid : {uid}</p> */}
-        
         <Link 
           href={{
             pathname: "/menu/mypageEdit",
@@ -201,17 +171,10 @@ const MyPage = () => {
         >
           mypageを編集する
         </Link>
-
-        {/* <PrimaryButton
-          label={"mypageを編集する"}
-          onClick={ () => router.push('/menu/mypageEdit')}
-        /> */}
         <SpeedDialPosting />
         <Footer />
       </>
     )
-  } else {
-    return <>loading...mypage...</>
   }
 }
 
