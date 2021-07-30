@@ -342,23 +342,18 @@ const Post = () => {
   console.log(state.isLiked+"+isLiked")
   console.log(state.isBookmark+"+isBookmark")
 
-  if(state.isLoading){
-  // if(state.workName != "not definded"){
-    return(
-      <>
-        <GLoading />
-      </>
-      // {/* //   ...loading... */}
-    )
-  } else {
+  // if(state.isLoading){
+  //   return(
+  //     <>
+  //       <GLoading />
+  //     </>
+  //   )
+  // } else {
 
     let isLoginUserAssessment = false
     return (
       <>     
 　　     <ApplicationBar title="作品情報"/>
-
-          {/* //なぜかこのページだけ全体が20pxくらい下に下がってしまうのでfixで調整 */}
-
         <Box className={classes.boxTotalStyle}> 
           <SCTypografyh5>
             {"作品名"}
@@ -532,7 +527,7 @@ const Post = () => {
         <Footer />
       </>
     )
-  }
+  // }
 }
 
 // export async function getStaticPaths() {
