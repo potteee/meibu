@@ -70,7 +70,7 @@ export async function getStaticProps(context) {
 
   return {
     props : {worksData},
-    revalidate: 3,
+    revalidate: 30,
   }
 }
 

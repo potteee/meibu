@@ -159,7 +159,8 @@ const handlerPostUserId = () => {
   },[])
 
 
-  if(loginUserData && standbyState && getUid != "uid initial"){
+  if(loginUserData && standbyState){
+  // if(loginUserData && standbyState && getUid != "uid initial"){
     return (
       <>
         {/* <Header /> */}
@@ -221,7 +222,7 @@ const handlerPostUserId = () => {
           workMedia={workMedia}
           workId={postWorkId}
           isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
-          uid= {getUid}
+          // uid= {getUid}
           pfirstPostFlag = {(loginUserData === 1) ? 2 : 0}
           hist={"assessment"}
           sdpActions = {[{

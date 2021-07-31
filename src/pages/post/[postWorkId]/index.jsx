@@ -506,7 +506,7 @@ const Post = () => {
               likedCount={state.likedCount}
               isAssessed={state.isAssessed}
               infoCount={state.infoCount}
-              uid={userId}
+              // uid={userId}
               isPublic={true}//常にtrueで渡して、非公開の時にlikeHikoukaiでfalseに変える
               pfirstPostFlag={state.isAssessed ? 2 : 0} 
               hist={"work"}

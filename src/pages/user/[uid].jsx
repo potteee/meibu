@@ -1,16 +1,11 @@
-import React, {useReducer, useEffect, useCallback} from 'react';
+import React, {useReducer, useEffect} from 'react';
 import Link from 'next/link'
 
 import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
 
-import {useDispatch, useSelector} from "react-redux";
-import {getUserId, getUserName, getRole} from '../../reducks/users/selectors'
-// import {getUserId, getUserProfile} from '
-import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
 import { db } from '../../firebase/index'
-import { LocationDisabled } from '@material-ui/icons';
 import GLoading from '../../components/GLoading';
 
 const initialState = {
@@ -20,7 +15,6 @@ const initialState = {
   userProfile : "",
   userImage : "",
   worksData : [],
-  // worksName : "",
 }
 
 const reducer = (state, action) => {
@@ -34,7 +28,6 @@ const reducer = (state, action) => {
         userProfile : action.payload.userProfile,
         userImage : action.payload.userImage,
         worksData : action.payload.worksData,
-        // worksName : action.payload.worksName,
       }
     }
   }
@@ -48,7 +41,6 @@ const userPage = () => {
   const userId = /^\/user\//.test(query) ? query.split('\/')[2] : "no data query"
   
   const [ state , dispatch ] = useReducer(reducer, initialState)
-  // const result = {users : snapshot.data() ,pubPostedWorksId : pubPostedWorksId}
 
   const setDBData = (props) => {
     dispatch({type:"loadDB",
@@ -58,7 +50,6 @@ const userPage = () => {
         userProfile : props.users.userProfile,
         userImage : props.users.userImage,
         worksData : props.pubPostedWorksId,
-        // worksName : "",
       }
     })
   }
@@ -75,54 +66,6 @@ const userPage = () => {
 
     return data
   }  
-  
-  
-  //// from Redux
-  /// users
-  // const userName = getUserName(selector)
-  // const role = getRole(selector)
-
-  /// both
-
-  //// from DataBase
-  /// users
-  // const [userSex, setUserSex] = useState("")
-  // const [userProfile, setUserProfile] = useState("")
-  // const [userImage, setUserImage] = useState("")
-
-  // /// users->userWorkIds
-  // const [worksIds ,setWorkIds] = useState([])
-
-  // /// display worksName
-  // const [worksName ,setWorksName] = useState([])
-  
-  // const [useEffectFin ,setUseEffectFin] = useState(false)
-
-  // const users = getUserId(selector)
-  // console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_mypage")
-  // console.log(JSON.stringify(selector)+"+selector@mypage")
-  // // console.log(name+"+query.name@mypage")
-  // console.log(uid+"+query.id@mypage")
-  
-  // const noLoginState = () => {
-  //   console.log("start noLoginState")
-  //   router.push('/')
-  // }
-
-  // useSWR start　
-  // // SWRじゃなくていいパターん。
-  // const { data , error } = useSWR(
-  //   () => (userId && userId != "[uid]") ? `/api/firebase/user/${userId}` : null, fetcher
-  //   ,{
-  //     revalidateOnFocus: false,
-  //     revalidateOnReconnect: false
-  //   }
-  // )
-  // console.log(error+"+api error")
-  // console.log(JSON.stringify(data)+"+api tmpWorkName")
-
-
-  // useSWR end
     
   useEffect(() => {
     (async() => {
@@ -134,7 +77,6 @@ const userPage = () => {
     })()
   },[isReady])
 
-  // if(data && uid != "uid initial" && useEffectFin){
   if(state.isLoading){
     return (
       <GLoading/>
@@ -181,8 +123,6 @@ export async function getStaticPaths() {
       uids = [...uids , doc.data().uid]
     }
   })
-
-////////////////
   
   const paths = uids.map((map) => (
     { params: {uid : map} }
