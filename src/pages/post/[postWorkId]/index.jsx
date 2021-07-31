@@ -54,7 +54,7 @@ const initialState = {
   isBookmark : false,
   sdpActions : [],
   isAssessed : false,
-  isAssessmenter : false,
+  isAssessmenter : false, // isPublic == true で評価しているユーザが一人でもいるか。
   isMyAssessmentPublic : false,
   assessmentData : [], //評価者一覧のデータ
 }
@@ -63,7 +63,7 @@ const reducer = (state, action) => {
 
   //更新データがあればそれに書き換える。
   let putState = {...state,...action.payload} ///宣言的に書くっていう観点で言うとこれほんとに意味ない。
-  //ただ、再描写はしなくなっているからそれの恩恵は受けられている。
+  //ただ、State分の再描写はしなくなっているからそれの恩恵は受けられている。
 
   let sdpActions = []
 
@@ -121,12 +121,6 @@ const reducer = (state, action) => {
   putState = { ...putState ,sdpActions : sdpActions }
 
   switch (action.type){
-    // case "isLoadingChange" : {
-    //   return {
-    //     ...putState,
-    //     // sdpActions : sdpActions,
-    //   }
-    // }
     case "loadDB": {
       return {
         ...putState,
@@ -198,17 +192,21 @@ const Post = () => {
 
   console.log(workId+"=workId")
 
+  // const GetDBData = React.memo(async() => {
   const getDBData = async() => {
     let assessmentUrl = null
     let dBData = [] 
     
     if(workId != undefined){
-      if(userId != "uid initial"){
-        assessmentUrl = `/api/firebase/assessment/${workId}`
-        console.log("workId:"+workId+",userId:"+userId)
+      // if(userId != "uid initial"){
+      assessmentUrl = `/api/firebase/assessment/${workId}`
+      console.log("workId:"+workId+",userId:"+userId)
 
-        dBData = await Promise.all([
-          db.collection('privateUsers').doc(userId)
+      dBData = await Promise.all([
+
+        //dBData[0]
+        userId != "uid initial"
+        ? db.collection('privateUsers').doc(userId)
           .collection('postedWorksId').doc(workId)
           .get()
           .then((res) => {
@@ -219,9 +217,13 @@ const Post = () => {
           .catch((error) => {
             alert('powtedWorksId DB get fail')
             throw new Error(error)
-          }),
-          
-          db.collection('privateUsers').doc(userId)
+            })
+        : false
+        ,
+
+        //dBData[1]
+        userId != "uid initial"
+        ? db.collection('privateUsers').doc(userId)
           .get()
           .then((res) => {
             console.log("successed to get privateUsers")
@@ -231,35 +233,26 @@ const Post = () => {
           .catch((error) => {
             alert('privateUsers DB get fail')
             throw new Error(error)
-          }),
-          
-          fetch(assessmentUrl)
-          .then(async(res)=> {
-            const data = await res.json()
-            console.log("successed to get assessment")
-            if (res.status !== 200) {
-              throw new Error(data.message)
-            }
-            return data
-          }).catch((error) => {
-            alert('assessment DB get fail')
-            throw new Error(error)
-          }),
-          
-          db.collection('wInfo').doc(workId).get()
-          .then((res) => {
-            console.log("successed to get wInfo")
-            const data = res.data()
-            return data
           })
-          .catch((error) => {
-            alert('wInfo DB get fail')
-            throw new Error(error)
-          }),
-        ])
-      } else {
-        console.log("workId:"+workId+",userId:undefined")
-        dBData[3] = await db.collection('wInfo').doc(workId).get()
+        : false
+        ,
+
+        //dBData[2]
+        fetch(assessmentUrl)
+        .then(async(res)=> {
+          const data = await res.json()
+          console.log("successed to get assessment")
+          if (res.status !== 200) {
+            throw new Error(data.message)
+          }
+          return data
+        }).catch((error) => {
+          alert('assessment DB get fail')
+          throw new Error(error)
+        }),
+        
+        //dBData[3]
+        db.collection('wInfo').doc(workId).get()
         .then((res) => {
           console.log("successed to get wInfo")
           const data = res.data()
@@ -268,8 +261,8 @@ const Post = () => {
         .catch((error) => {
           alert('wInfo DB get fail')
           throw new Error(error)
-        })
-      }
+        }),
+      ])
     } else {
       console.log("workId:undefined")
       throw new Error("failed to get workId")
@@ -331,7 +324,9 @@ const Post = () => {
         isAssessmenter : isAssessmenterFlag,
       }
     })
+    // return <>aaa</>
   }
+  // })
   
   useEffect(() => {
     if (isReady) { //これ挟まないとnext/routerのバグ(初期表示時にasPathがundefinedになる)を踏んでしまう。
@@ -342,17 +337,18 @@ const Post = () => {
   console.log(state.isLiked+"+isLiked")
   console.log(state.isBookmark+"+isBookmark")
 
-  // if(state.isLoading){
-  //   return(
-  //     <>
-  //       <GLoading />
-  //     </>
-  //   )
-  // } else {
+  if(state.isLoading){
+    return(
+      <>
+        <GLoading />
+      </>
+    )
+  } else {
 
     let isLoginUserAssessment = false
     return (
       <>     
+        {/* <GetDBData /> */}
 　　     <ApplicationBar title="作品情報"/>
         <Box className={classes.boxTotalStyle}> 
           <SCTypografyh5>
@@ -527,39 +523,9 @@ const Post = () => {
         <Footer />
       </>
     )
-  // }
+  }
 }
 
-// export async function getStaticPaths() {
-//   // const response = await fetch(
-//   //   process.env.HOST + '/api/pages'
-//   // )
-
-//   let postWorkId = false
-//   const snapshot = await db.collection('wInfo').get()
-
-//   snapshot.forEach((doc) => {
-//     if(postWorkId == false) {
-//       postWorkId = [doc.data().workId]
-//     } else {
-//       postWorkId = [...postWorkId , doc.data().workId]
-//     }
-//   })
-
-//   console.log("postWorkId")
-//   console.table(postWorkId)
-  
-//   const paths = postWorkId.map((map) => (
-//     { params: { postWorkId: map }}
-//   ))
-  
-//   console.log("paths")
-//   console.table(paths)
-  
-//   // return {paths:[],fallback : true}
-//   return {paths: paths,fallback : true}
-
-// }
 export async function getStaticPaths() {
   // const response = await fetch(
   //   process.env.HOST + '/api/pages'
@@ -599,7 +565,7 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {params},
-    revalidate: 30,
+    revalidate: 10,
   }
 }
 
