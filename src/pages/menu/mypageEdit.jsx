@@ -232,7 +232,7 @@ const mypageEdit = () => {
           {Object.keys(userBookmark).map((map) => (
             <>
               {!userBookmark[map]["deleteFlag"] 
-                ? <SCButtonActive
+                ?<SCButtonActive
                   onClick={clickedUserBookmark}
                   value={map}
                   >

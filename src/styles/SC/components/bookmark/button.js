@@ -6,12 +6,14 @@ import { Button, Toolbar } from '@material-ui/core';
 // Create a overRide styles.
 export const SCButtonActive = styled(Button)`
 && {
+  text-transform: none;
   color : black;
 }
 `;
 
 export const SCButtonDeactive = styled(Button)`
 && {
+  text-transform: none;
   color : gray;
   text-decoration: line-through;
   /* disabled ; */
