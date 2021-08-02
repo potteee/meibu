@@ -53,7 +53,13 @@ const GetUserRedux = async(userID) => {
     }
     let postedWorksIds = {}
     snapshotPosted.forEach((doc) => {
-        postedWorksIds = {...postedWorksIds , [doc.id] : { workName : doc.data().workName , workMedia : doc.data().workMedia } }
+        postedWorksIds = {...postedWorksIds ,
+            [doc.id] : { 
+                workName : doc.data().workName ,
+                workMedia : doc.data().workMedia ,
+                isPublic : doc.data().isPublic ,
+                isLiked : doc.data().isLiked ,    
+            }}
     })
 
     const userRedux = {

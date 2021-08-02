@@ -18,7 +18,7 @@ import { SCTypografyh5 } from 'src/styles/SC/shared/typografy/h5'
 import {db} from '../../../firebase/index'
 import {useSelector} from 'react-redux'
 
-import {getUserId,getUserName} from "../../../reducks/users/selectors";
+import {getUserId,getUserName,getUserBookmark,getUserAssessmentWorks} from "../../../reducks/users/selectors";
 // import { postWorkCreate } from '../../../reducks/works/operations'
 
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -155,7 +155,7 @@ const reducer = (state, action) => {
 }
 
 //作品情報閲覧ページ
-const Post = () => {
+const Post = (props) => {
   const selector = useSelector((state) => state)
   const userId = getUserId(selector)
 
@@ -166,7 +166,9 @@ const Post = () => {
 
   const [state,dispatch] = useReducer(reducer, initialState)
 
-  const userName = getUserName(selector)
+  const RdUserName = getUserName(selector)
+  const RdIsBookmark = getUserBookmark(selector)
+  const RdAssessmentWorks = getUserAssessmentWorks(selector)
 
   const useStyles = makeStyles((thema) => ({
     h3WorksName: {
@@ -194,87 +196,56 @@ const Post = () => {
 
   // const GetDBData = React.memo(async() => {
   const getDBData = async() => {
-    let assessmentUrl = null
-    let dBData = [] 
+    // let assessmentUrl = null
+    // let dBData = [] 
     
-    if(workId != undefined){
-      // if(userId != "uid initial"){
-      assessmentUrl = `/api/firebase/assessment/${workId}`
-      console.log("workId:"+workId+",userId:"+userId)
+    // if(workId != undefined){
+    //   // if(userId != "uid initial"){
+    //   assessmentUrl = `/api/firebase/assessment/${workId}`
+    //   console.log("workId:"+workId+",userId:"+userId)
 
-      dBData = await Promise.all([
+    //   dBData = await Promise.all([
 
-        //dBData[0]
-        userId != "uid initial"
-        ? db.collection('privateUsers').doc(userId)
-          .collection('postedWorksId').doc(workId)
-          .get()
-          .then((res) => {
-            console.log("successed to get postedWorksId")
-            const data = res.data()
-            return data
-          })
-          .catch((error) => {
-            alert('powtedWorksId DB get fail')
-            throw new Error(error)
-            })
-        : false
-        ,
-
-        //dBData[1]
-        userId != "uid initial"
-        ? db.collection('privateUsers').doc(userId)
-          .get()
-          .then((res) => {
-            console.log("successed to get privateUsers")
-            const data = res.data()
-            return data
-          })
-          .catch((error) => {
-            alert('privateUsers DB get fail')
-            throw new Error(error)
-          })
-        : false
-        ,
-
-        //dBData[2]
-        fetch(assessmentUrl)
-        .then(async(res)=> {
-          const data = await res.json()
-          console.log("successed to get assessment")
-          if (res.status !== 200) {
-            throw new Error(data.message)
-          }
-          return data
-        }).catch((error) => {
-          alert('assessment DB get fail')
-          throw new Error(error)
-        }),
+    //     //dBData[0]
+    //     fetch(assessmentUrl)
+    //     .then(async(res)=> {
+    //       const data = await res.json()
+    //       console.log("successed to get assessment")
+    //       if (res.status !== 200) {
+    //         throw new Error(data.message)
+    //       }
+    //       return data
+    //     }).catch((error) => {
+    //       alert('assessment DB get fail')
+    //       throw new Error(error)
+    //     }),
         
-        //dBData[3]
-        db.collection('wInfo').doc(workId).get()
-        .then((res) => {
-          console.log("successed to get wInfo")
-          const data = res.data()
-          return data
-        })
-        .catch((error) => {
-          alert('wInfo DB get fail')
-          throw new Error(error)
-        }),
-      ])
-    } else {
-      console.log("workId:undefined")
-      throw new Error("failed to get workId")
-    }
+    //     //dBData[1]
+    //     db.collection('wInfo').doc(workId).get()
+    //     .then((res) => {
+    //       console.log("successed to get wInfo")
+    //       const data = res.data()
+    //       return data
+    //     })
+    //     .catch((error) => {
+    //       alert('wInfo DB get fail')
+    //       throw new Error(error)
+    //     }),
+    //   ])
+    // } else {
+    //   console.log("workId:undefined")
+    //   throw new Error("failed to get workId")
+    // // }
 
-    console.log("dBData")
-    console.table(dBData)
+    // console.log("dBData")
+    // console.table(dBData)
 
-    const postedWorksIdSnapshot = dBData[0]
-    const privateUsersSnapshot = dBData[1]
-    const assessmentSnapshot = dBData[2]
-    const wInfoSnapshot = dBData[3]
+    // const postedWorksIdSnapshot = dBData[0]
+    // const privateUsersSnapshot = dBData[1]
+    const assessmentSnapshot = props[0]
+    const wInfoSnapshot = props[1]
+    // const assessmentSnapshot = dBData[2]
+    // const wInfoSnapshot = dBData[3]
 
     let isAssessmenterFlag = false
     if(assessmentSnapshot){
@@ -291,6 +262,8 @@ const Post = () => {
 
     await dispatch({type:"loadDB" ,
       payload : {
+
+        //wInfoSnapshot
         isLoading : false,
         workName : wInfoSnapshot.workName,
         infoCount : wInfoSnapshot.winfoCount,
@@ -307,24 +280,34 @@ const Post = () => {
         workFinish : wInfoSnapshot.winfoFinish,
         workImage : wInfoSnapshot.winfoImage,
         winfoTag : (ObjectSort(wInfoSnapshot.winfoTag,"asc")),
-
-        //privateUsersSnapshot
-        isBookmark : privateUsersSnapshot 
-          ? Object.keys(privateUsersSnapshot.userBookmark).includes(workId) ? true : false 
-          : false ,
-        sdpActions : [],
-        
-        //postedWorksIdSnapshot
-        isLiked : postedWorksIdSnapshot?.isLiked,
-        isAssessed : postedWorksIdSnapshot ? true : false,
-        isMyAssessmentPublic : postedWorksIdSnapshot?.isPublic ? true : false,
-        
         //assessmentSnapshot
         assessmentData : (assessmentSnapshot && state.assessmentData.length == 0) ? [...assessmentSnapshot] : state.assessmentData,
         isAssessmenter : isAssessmenterFlag,
-      }
+
+        //privateUsersSnapshot
+        isBookmark : RdIsBookmark
+          ? Object.keys(RdIsBookmark).includes(workId) ? true : false 
+          : false 
+        ,
+          
+        //postedWorksIdSnapshot
+        //ログインユーザが「いいね」しているかどうか
+        isLiked : RdAssessmentWorks?.isLiked, 
+        //ログインユーザが既に評価しているか？
+        isAssessed : Object.keys(RdAssessmentWorks).includes(workId) 
+          ? true 
+          : false
+        , 
+        //ログインユーザが評価した作品の公開有無
+        isMyAssessmentPublic : RdAssessmentWorks?.isPublic 
+          ? true 
+          : false
+        , 
+        
+        //スピードダイアルのボタン
+        sdpActions : [],
+    }
     })
-    // return <>aaa</>
   }
   // })
   
@@ -344,11 +327,9 @@ const Post = () => {
       </>
     )
   } else {
-
     let isLoginUserAssessment = false
     return (
       <>     
-        {/* <GetDBData /> */}
 　　     <ApplicationBar title="作品情報"/>
         <Box className={classes.boxTotalStyle}> 
           <SCTypografyh5>
@@ -480,7 +461,7 @@ const Post = () => {
             <>
               <Link href="/post/[id]/[postUserId]" 
                 as={`/post/${workId}/${userId}`}>
-                <p>{userName}自身の評価をみる</p>
+                <p>{RdUserName}自身の評価をみる</p>
               </Link>
             </>
           )}
@@ -526,10 +507,12 @@ const Post = () => {
   }
 }
 
+
+////リファクタリング案
+//作品のDBだけssgで取得
+//user文はReduxで賄う。//賄えない文は逆にReduxに追加する（すべき）
+
 export async function getStaticPaths() {
-  // const response = await fetch(
-  //   process.env.HOST + '/api/pages'
-  // )
 
   let postWorkId = false
   const snapshot = await db.collection('wInfo').get()
@@ -563,9 +546,43 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
+  assessmentUrl = `/api/firebase/assessment/${params.postWorkId}`
+  console.log(assessmentUrl+"+assessmentUrl")
+
+  const dBData = await Promise.all([
+
+    //dBData[0]
+    fetch(assessmentUrl)
+    .then(async(res)=> {
+      const data = await res.json()
+      console.log("successed to get assessment")
+      if (res.status !== 200) {
+        throw new Error(data.message)
+      }
+      return data
+    }).catch((error) => {
+      alert('assessment DB get fail')
+      throw new Error(error)
+    }),
+    
+    //dBData[1]
+    db.collection('wInfo').doc(params.postWorkId).get()
+    .then((res) => {
+      console.log("successed to get wInfo")
+      const data = res.data()
+      return data
+    })
+    .catch((error) => {
+      alert('wInfo DB get fail')
+      throw new Error(error)
+    }),
+  ])
+
+  console.log(dBData+"+dBData")
+
   return {
-    props: {params},
-    revalidate: 10,
+    props: dBData,
+    revalidate: 60,
   }
 }
 

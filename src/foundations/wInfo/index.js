@@ -197,7 +197,8 @@ const postWInfoCreate = (
             .then(async(snapshot) => {
                 await db.collection('privateUsers').doc(uid)
                 .collection('postedWorksId').doc(workId).get()
-                .then((snapshotPrivate) => {
+                .then(async(snapshotPrivate) => {
+                // .then((snapshotPrivate) => {
                     console.log(snapshotPrivate.data()["workScore"]+"++++snapshotPrivate.data()[workScore]")
 
                     // ↓バグ　0入れたらダメ。評価したことになってしまう。
@@ -352,7 +353,8 @@ const postWInfoCreate = (
 
                     // ****************************
 
-                    db.collection('wInfo').doc(workId).update({
+                    // await db.collection('wInfo').doc(workId).update({
+                    await db.collection('wInfo').doc(workId).update({
                         winfoCount : ediWinfoCount,
                         winfoScoreCount : ediWinfoScoreCount,
                         winfoLikedCount : tmpLikedCount,
@@ -392,6 +394,8 @@ const postWInfoCreate = (
                 worksLikedCount : 0,
                 assessmentComment : [],
             }
+
+            console.log(JSON.stringify(assessment,null,2)+"+assessment")
 
             // assessment.updateTime = new Date()
 

@@ -622,6 +622,7 @@ const Posting = () => {
     // ユーザに紐づく作品データをDBに登録(redux/works(db))
     // const workId = await dispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,uid))
 
+    console.log(userName+"+userName a")
     // 作品の固有データをDBに登録
     // 新規登録なのでScoreは入力値のまま　*-*- (wInfo)
     await dispatch(postWInfoCreate( //セキュアなでーたがあるならapi下でやった方がいい。
