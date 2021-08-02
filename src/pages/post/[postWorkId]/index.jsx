@@ -242,8 +242,8 @@ const Post = (props) => {
 
     // const postedWorksIdSnapshot = dBData[0]
     // const privateUsersSnapshot = dBData[1]
-    const assessmentSnapshot = props[0]
-    const wInfoSnapshot = props[1]
+    const assessmentSnapshot = props.assessment
+    const wInfoSnapshot = props.wInfo
     // const assessmentSnapshot = dBData[2]
     // const wInfoSnapshot = dBData[3]
 
@@ -546,7 +546,7 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  assessmentUrl = `/api/firebase/assessment/${params.postWorkId}`
+  const assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
   console.log(assessmentUrl+"+assessmentUrl")
 
   const dBData = await Promise.all([
@@ -561,7 +561,8 @@ export async function getStaticProps({ params }) {
       }
       return data
     }).catch((error) => {
-      alert('assessment DB get fail')
+      // alert('assessment DB get fail')
+      console.log('assessment DB get fail')
       throw new Error(error)
     }),
     
@@ -573,15 +574,18 @@ export async function getStaticProps({ params }) {
       return data
     })
     .catch((error) => {
-      alert('wInfo DB get fail')
+      console.log('wInfo DB get fail')
+      // alert('wInfo DB get fail')
       throw new Error(error)
     }),
   ])
 
   console.log(dBData+"+dBData")
 
+  const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
+
   return {
-    props: dBData,
+    props: setDBData,
     revalidate: 60,
   }
 }
