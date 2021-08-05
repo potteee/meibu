@@ -81,12 +81,13 @@ const WrappedApp = ({Component, pageProps}) => {
           }
         });
         unsubscribe() //これやらないとずっとここだけ回り続ける
-        // まずはここをupdateにする。（少なくとも直接actionsは呼ばないようにする。→ここはisSignedInの更新も必要なので、
-        // updateではなくactionsでなくてはならない
-        // await dispatch(signInAction(userRedux))
-        // const temp = 
-        // console.log(JSON.stringify(temp)+"+GetUserRedux@J")
-        await dispatch(updateUsersWithSignIn(await GetUserRedux(userID)))
+
+        //ここバグでは？ 先にGetUserReducer終わらないと送る値がundefinedになりそう。
+        //予めawait で取得した値を入れないとダメか。
+        //→下記の通り修正済み
+        const userRedux = await GetUserRedux(userID)
+
+        await dispatch(updateUsersWithSignIn(userRedux))
 
         faFinished = true
         // setFaFinished(true)
@@ -128,12 +129,12 @@ const WrappedApp = ({Component, pageProps}) => {
       // const jssStyles = document.querySelector('#jss-server-side');
       // console.log(jssStyles+"+jssStyles")
       // if (jssStyles) {
-        //   jssStyles.parentElement.removeChild(jssStyles);
-        //   console.log("delete jss")
-    // }
+      //   jssStyles.parentElement.removeChild(jssStyles);
+      //   console.log("delete jss")
+      // }  
     firstAction()
-    //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
-    // setRenderTriger(!renderTriger)
+      //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
+      // ssssetRenderTriger(!renderTriger)
   },[])
 
   if(isSignedIn == false && userID){
@@ -149,6 +150,7 @@ const WrappedApp = ({Component, pageProps}) => {
       return null
     }
   } else if(isSignedIn == true && userID) {
+    //ここのifチェックの時に、DBの値が入っていなかったら↑の条件にして...
     console.log("return Comp isSignedIn")
     return (
         <StylesProvider injectFirst>

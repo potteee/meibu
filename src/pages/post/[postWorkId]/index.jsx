@@ -196,56 +196,9 @@ const Post = (props) => {
 
   // const GetDBData = React.memo(async() => {
   const getDBData = async() => {
-    // let assessmentUrl = null
-    // let dBData = [] 
-    
-    // if(workId != undefined){
-    //   // if(userId != "uid initial"){
-    //   assessmentUrl = `/api/firebase/assessment/${workId}`
-    //   console.log("workId:"+workId+",userId:"+userId)
 
-    //   dBData = await Promise.all([
-
-    //     //dBData[0]
-    //     fetch(assessmentUrl)
-    //     .then(async(res)=> {
-    //       const data = await res.json()
-    //       console.log("successed to get assessment")
-    //       if (res.status !== 200) {
-    //         throw new Error(data.message)
-    //       }
-    //       return data
-    //     }).catch((error) => {
-    //       alert('assessment DB get fail')
-    //       throw new Error(error)
-    //     }),
-        
-    //     //dBData[1]
-    //     db.collection('wInfo').doc(workId).get()
-    //     .then((res) => {
-    //       console.log("successed to get wInfo")
-    //       const data = res.data()
-    //       return data
-    //     })
-    //     .catch((error) => {
-    //       alert('wInfo DB get fail')
-    //       throw new Error(error)
-    //     }),
-    //   ])
-    // } else {
-    //   console.log("workId:undefined")
-    //   throw new Error("failed to get workId")
-    // // }
-
-    // console.log("dBData")
-    // console.table(dBData)
-
-    // const postedWorksIdSnapshot = dBData[0]
-    // const privateUsersSnapshot = dBData[1]
     const assessmentSnapshot = props.assessment
     const wInfoSnapshot = props.wInfo
-    // const assessmentSnapshot = dBData[2]
-    // const wInfoSnapshot = dBData[3]
 
     let isAssessmenterFlag = false
     if(assessmentSnapshot){
@@ -506,11 +459,6 @@ const Post = (props) => {
     )
   }
 }
-
-
-////リファクタリング案
-//作品のDBだけssgで取得
-//user文はReduxで賄う。//賄えない文は逆にReduxに追加する（すべき）
 
 export async function getStaticPaths() {
 

@@ -56,6 +56,7 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
     uid　: uid,
     userName : ODB.userName,
     // assessmentCategory : checkBoxState,
+    createTime : timestamp,
     updateTime : timestamp,
     // updateTime : new Date(),
     workScore : ODB.workScore, // -1は初期値
@@ -255,7 +256,8 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
             if(ODB.isPublic){
               console.log("Dari k -> k")
               assessmentRef.update({
-                isLiked : true
+                isLiked : true,
+                updateTime : timestamp
               })
               console.log("fin assessmentRef")
               pubPostedRef.update({
@@ -263,7 +265,8 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
               })
               console.log("fin pubPostedRef")
               privateUserRef.update({
-                isLiked : true
+                isLiked : true ,
+                updated_at : timestamp
               })
               console.log("fin privateUserRef")
             //データ有　公開　→　秘密
@@ -275,7 +278,8 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
               console.log("fin pubPostedRef")
               privateUserRef.update({
                 isLiked : true,
-                isPublic : false
+                isPublic : false,
+                updated_at : timestamp
               })
               console.log("fin privateUserRef")
             }
@@ -295,14 +299,16 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
               console.log("fin pubPostedRef")
               privateUserRef.update({
                 isLiked : true,
-                isPublic : true
+                isPublic : true,
+                updated_at : timestamp
               })
               console.log("fin privateUserRef")
             //データ有　秘密　→　秘密
             } else {
               console.log("Dari h -> h")
               privateUserRef.update({
-                isLiked : true
+                isLiked : true,
+                updated_at : timestamp
               })
               console.log("fin privateUserRef")
             }

@@ -1,15 +1,8 @@
-//mypage.jsx->
+//-> /post/[postWorkId]/[postUserId].jsx
 
-import React from 'react' 
-import firebase from 'firebase/app';
-
-const handler = async({ query: { uid } }, res) => { //{}内はファイルの[]内の名前にする
+const handler = async(req , res) => { //{}内はファイルの[]内の名前にする
   console.log("apiStart");
   var admin = require("firebase-admin");
-  console.log(uid+"+id api");
-
-  //// admin SDK
-  // const serviceAccount = require('../../../../../meibu-86430-firebase-adminsdk-n1251-724c587f22.json')
 
   const initialized = admin.apps.some(app => app.name === "adminSDK");
   
@@ -38,36 +31,39 @@ const handler = async({ query: { uid } }, res) => { //{}内はファイルの[]�
   const FirestoreSDK = admin.app('adminSDK').firestore();
 
   // DB access
-  // collectionGroupを使ったsubCollectionの検索はadminSDKにしかできない。
-  await FirestoreSDK
-  .collectionGroup('postedWorksId')
-  // .where('workId','!=','99')
+  const postedWorksIdData = await FirestoreSDK
+  .collectionGroup('postedWorksId') //全てのドキュメントを取得
   .where('workId','!=','99')
-  .where('uid','==',uid)
+  // .where('uid','!=','uid initial')
   .get()
-  .then(snapshot => {
-    // console.log(JSON.stringify(snapshot)+"snapshot")
-
-    const worksData = snapshot.docs.map(map => ({
-      workName : map.data()["workName"], workId :map.data()["workId"] 
-    }))
-
-    console.log(worksData+"+worksData")
-
-    // FirestoreSDK
-    // .collection('works')
-    // .where('workId','==','99')
-
-    const apiWorksName = { worksData: worksData, id: uid }
-
-    console.log(JSON.stringify(apiWorksName)+"+apiWorksName")
-    res.status(200).json(apiWorksName)
-  // Redux access => cannot
+  .then( (snapshot) => {
+    console.log("success powtedWroksIdData");
+    return snapshot
   })
   .catch((error) => {
     res.status(599).json({ error : error });
   })
+
+  console.log("postedWorksIdData@api")
+  // console.log(JSON.stringify(postedWorksIdData))
+  console.table(postedWorksIdData.docs)
+  console.log(postedWorksIdData.docs[0])
+
+  const postedWorksIdDataEdit = postedWorksIdData.docs.map((map) => ({
+    datas : map.data()
+
+    // if(postedWorksIdDataEdit.length === 0){
+    // postedWorksIdDataEdit = map.data()
+    // } else {
+    //   postedWorksIdDataEdit = [...postedWorksIdDataEdit,map.data()]
+    // }
+  }))
+
+  console.log("postedWorksIdDataEdit")
+  console.table(postedWorksIdDataEdit)
+
+  res.status(200).json({jtop : postedWorksIdDataEdit})
+  // res.status(200).json({datas : [...postedWorksIdData.docs]})
 } 
 
 export default handler 
-// export const FirestoreSDK = admin.app('adminSDK').firestore();
