@@ -326,6 +326,7 @@ export async function getStaticPaths() {
 
   console.log("postedWorksIdData@local")
   console.table(postedWorksIdData)
+  console.log(JSON.stringify(postedWorksIdData,null,2))
   // console.log(JSON.stringify(postedWorksIdData.datas,null,2))
   //  const snapshot = await db.collection('wInfo').get()
 
