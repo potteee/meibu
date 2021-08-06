@@ -6,10 +6,6 @@ const handlerGetPostWorksdId = async(req,res) => {
   //引数がない時はresだけにする。(req,res)とかやっちゃうとresの中に何も入らない。わけじゃないっぽい
   console.log("apiStart");
   var admin = require("firebase-admin");
-
-  // console.log(JSON.parse(req)+"+req@J")
-  // console.log(JSON.parse(res)+"+res@J")
-
   const initialized = admin.apps.some(app => app.name === "adminSDK");
   
   if(initialized){
@@ -43,16 +39,6 @@ const handlerGetPostWorksdId = async(req,res) => {
   // .where('uid','!=','uid initial')
   .get()
   .then((postedWorksIdData) => {
-    console.log("success powtedWroksIdData");
-
-    console.log("postedWorksIdData@api")
-    // console.log(JSON.stringify(postedWorksIdData))
-    // console.table(postedWorksIdData.docs)
-    // console.log(postedWorksIdData.docs[0])
-
-    // const postedWorksIdDataEdit = postedWorksIdData.docs.map((map) => ({
-    //   [map.data().workId+"_"+map.data().uid] : map.data()
-    // }))
 
     let postedWorksIdDataEdit = {}
 
@@ -74,17 +60,10 @@ const handlerGetPostWorksdId = async(req,res) => {
         }
       }
     })
-
-    // console.log("postedWorksIdDataEdit")
-    // console.log(JSON.stringify(postedWorksIdDataEdit,null,2))
-    // console.log(postedWorksIdDataEdit)
-
-    // res.status(200).json({status:true})
-    // res.json(postedWorksIdDataEdit)
     res.status(200).json(postedWorksIdDataEdit)
   })
   .catch((error) => {
-    throw new Error(error)
+    // throw new Error(error)
     res.status(506).json({ error : "error" });
   })
 } 
