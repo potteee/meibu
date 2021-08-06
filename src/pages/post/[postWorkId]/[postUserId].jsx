@@ -345,14 +345,14 @@ export async function getStaticPaths() {
     if(postedCombination == false) {
       postedCombination = [{ 
         "postedWorkId" : postedWorksIdData[doc]["workId"] ,
-        "userId" : postedWorksIdData[doc].uid
+        "userId" : postedWorksIdData[doc]["uid"]
       }]
     } else {
       postedCombination = [
         ...postedCombination ,
         { 
         "postedWorkId" : postedWorksIdData[doc]["workId"] ,
-        "userId" : postedWorksIdData[doc].uid
+        "userId" : postedWorksIdData[doc]["uid"]
         }
       ]
     }
