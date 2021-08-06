@@ -36,7 +36,7 @@ const handler = async(req , res) => { //{}内はファイルの[]内の名前に
   .where('workId','!=','99')
   // .where('uid','!=','uid initial')
   .get()
-  .then( (snapshot) => {
+  .then((snapshot) => {
     console.log("success powtedWroksIdData");
     return snapshot
   })
@@ -47,7 +47,7 @@ const handler = async(req , res) => { //{}内はファイルの[]内の名前に
   console.log("postedWorksIdData@api")
   // console.log(JSON.stringify(postedWorksIdData))
   console.table(postedWorksIdData.docs)
-  console.log(postedWorksIdData.docs[0])
+  // console.log(postedWorksIdData.docs[0])
 
   // const postedWorksIdDataEdit = postedWorksIdData.docs.map((map) => ({
   //   [map.data().workId+"_"+map.data().uid] : map.data()
