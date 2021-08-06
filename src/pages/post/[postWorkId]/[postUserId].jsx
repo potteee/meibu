@@ -324,26 +324,23 @@ export async function getStaticPaths() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/firebase/get/postedWorksId/`)
   const postedWorksIdData = await res.json()
 
-  console.log("postedWorksIdData.jtop@local")
-  console.table(postedWorksIdData.jtop)
+  console.log("postedWorksIdData@local")
+  console.table(postedWorksIdData)
   // console.log(JSON.stringify(postedWorksIdData.datas,null,2))
   //  const snapshot = await db.collection('wInfo').get()
 
-  postedWorksIdData.jtop.forEach((doc) => {
-    // doc.data().workId
-    // doc.data().uid
-
+  Object.keys(postedWorksIdData).forEach((doc) => {
     if(postedCombination == false) {
       postedCombination = [{ 
-        postedWorkId : doc.datas.workId ,
-        userId : doc.datas.uid
+        "postedWorkId" : postedWorksIdData[doc]["workId"] ,
+        "userId" : postedWorksIdData[doc].uid
       }]
     } else {
       postedCombination = [
         ...postedCombination ,
         { 
-          postedWorkId : doc.datas.workId ,
-          userId : doc.datas.uid
+        "postedWorkId" : postedWorksIdData[doc]["workId"] ,
+        "userId" : postedWorksIdData[doc].uid
         }
       ]
     }

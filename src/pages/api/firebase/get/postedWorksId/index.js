@@ -49,20 +49,38 @@ const handler = async(req , res) => { //{}内はファイルの[]内の名前に
   console.table(postedWorksIdData.docs)
   console.log(postedWorksIdData.docs[0])
 
-  const postedWorksIdDataEdit = postedWorksIdData.docs.map((map) => ({
-    datas : map.data()
+  // const postedWorksIdDataEdit = postedWorksIdData.docs.map((map) => ({
+  //   [map.data().workId+"_"+map.data().uid] : map.data()
+  // }))
 
-    // if(postedWorksIdDataEdit.length === 0){
-    // postedWorksIdDataEdit = map.data()
-    // } else {
-    //   postedWorksIdDataEdit = [...postedWorksIdDataEdit,map.data()]
-    // }
-  }))
+  let postedWorksIdDataEdit = false
+
+  postedWorksIdData.docs.forEach((doc,index) => {
+    if(postedWorksIdDataEdit === false){
+      postedWorksIdDataEdit = 
+      { [index] : { 
+          "workId" : doc.data().workId ,
+          "uid" : doc.data().uid 
+        }
+      }
+    } else {
+      postedWorksIdDataEdit = 
+      { 
+        ...postedWorksIdDataEdit ,
+        [index] : { 
+          "workId" : doc.data().workId ,
+          "uid" : doc.data().uid 
+        }
+      }
+    }
+  })
+
+
 
   console.log("postedWorksIdDataEdit")
-  console.table(postedWorksIdDataEdit)
+  console.log(JSON.stringify(postedWorksIdDataEdit,null,2))
 
-  res.status(200).json({jtop : postedWorksIdDataEdit})
+  res.status(200).json(postedWorksIdDataEdit)
   // res.status(200).json({datas : [...postedWorksIdData.docs]})
 } 
 
