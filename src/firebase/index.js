@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/storage';
-import 'firebase/database';
+// import 'firebase/database';
 import 'firebase/functions';
 import 'firebase/firestore';
 import firebaseConfigPrm from './next.config'
@@ -28,7 +28,7 @@ export const auth = firebase.auth();
 // export const admindb = admin.firestore();
 export const db = firebase.firestore();
 export const storage = firebase.storage();
-export const databese = firebase.database();
+// export const databese = firebase.database();
 export const functions = firebase.functions();
 export const FirebaseTimestamp =firebase.firestore.Timestamp;
 // export const adm = admin();
