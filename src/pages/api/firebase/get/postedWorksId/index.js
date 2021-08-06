@@ -39,7 +39,7 @@ const handlerGetPostWorksdId = async(req,res) => {
   // DB access
   await FirestoreSDK
   .collectionGroup('postedWorksId') //全てのドキュメントを取得
-  .where('workId','!=','99')
+  // .where('workId','!=','99')
   // .where('uid','!=','uid initial')
   .get()
   .then((postedWorksIdData) => {
