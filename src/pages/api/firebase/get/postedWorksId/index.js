@@ -64,7 +64,7 @@ const handlerGetPostWorksdId = async(req,res) => {
   })
   .catch((error) => {
     // throw new Error(error)
-    res.status(506).json({ error : "error" });
+    res.status(599).json({ error : error });
   })
 } 
 
