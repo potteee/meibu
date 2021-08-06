@@ -2,7 +2,7 @@
 import React from 'react' 
 import firebase from 'firebase/app';
 
-const handler = async(req , res) => { //{}内はファイルの[]内の名前にする
+const handlerGetPostWorksdId = async(req , res) => { //{}内はファイルの[]内の名前にする
   console.log("apiStart");
   var admin = require("firebase-admin");
 
@@ -84,4 +84,4 @@ const handler = async(req , res) => { //{}内はファイルの[]内の名前に
   res.status(200).json(postedWorksIdDataEdit)
 } 
 
-export default handler 
+export default handlerGetPostWorksdId
