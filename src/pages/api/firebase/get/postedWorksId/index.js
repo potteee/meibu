@@ -58,15 +58,14 @@ const handlerGetPostWorksdId = async(req,res) => {
 
     postedWorksIdData.docs.forEach((doc,index) => {
       if(postedWorksIdDataEdit == {}){
-        postedWorksIdDataEdit = 
-        { [index] : { 
+        postedWorksIdDataEdit = { 
+          [index] : { 
             "workId" : doc.data().workId ,
             "uid" : doc.data().uid 
           }
         }
       } else {
-        postedWorksIdDataEdit = 
-        { 
+        postedWorksIdDataEdit = { 
           ...postedWorksIdDataEdit ,
           [index] : { 
             "workId" : doc.data().workId ,
