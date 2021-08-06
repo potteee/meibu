@@ -37,59 +37,60 @@ const handlerGetPostWorksdId = async(req,res) => {
   const FirestoreSDK = admin.app('adminSDK').firestore();
 
   // DB access
-  const postedWorksIdData = await FirestoreSDK
+  await FirestoreSDK
   .collectionGroup('postedWorksId') //全てのドキュメントを取得
   .where('workId','!=','99')
   // .where('uid','!=','uid initial')
   .get()
-  .then((snapshot) => {
+  .then((postedWorksIdData) => {
     console.log("success powtedWroksIdData");
-    return snapshot
+
+    console.log("postedWorksIdData@api")
+    // console.log(JSON.stringify(postedWorksIdData))
+    // console.table(postedWorksIdData.docs)
+    // console.log(postedWorksIdData.docs[0])
+
+    // const postedWorksIdDataEdit = postedWorksIdData.docs.map((map) => ({
+    //   [map.data().workId+"_"+map.data().uid] : map.data()
+    // }))
+
+    let postedWorksIdDataEdit = {}
+
+    postedWorksIdData.docs.forEach((doc,index) => {
+      if(postedWorksIdDataEdit == {}){
+        postedWorksIdDataEdit = 
+        { [index] : { 
+            "workId" : doc.data().workId ,
+            "uid" : doc.data().uid 
+          }
+        }
+      } else {
+        postedWorksIdDataEdit = 
+        { 
+          ...postedWorksIdDataEdit ,
+          [index] : { 
+            "workId" : doc.data().workId ,
+            "uid" : doc.data().uid 
+          }
+        }
+      }
+    })
+
+    // console.log("postedWorksIdDataEdit")
+    // console.log(JSON.stringify(postedWorksIdDataEdit,null,2))
+    // console.log(postedWorksIdDataEdit)
+
+    // res.status(200).json({status:true})
+    // res.json(postedWorksIdDataEdit)
+    res.status(200).json(postedWorksIdDataEdit)
+    
+
   })
   .catch((error) => {
     throw new Error(error)
     res.status(506).json({ error : error });
   })
 
-
-  console.log("postedWorksIdData@api")
-  // console.log(JSON.stringify(postedWorksIdData))
-  // console.table(postedWorksIdData.docs)
-  // console.log(postedWorksIdData.docs[0])
-
-  // const postedWorksIdDataEdit = postedWorksIdData.docs.map((map) => ({
-  //   [map.data().workId+"_"+map.data().uid] : map.data()
-  // }))
-
-  let postedWorksIdDataEdit = {}
-
-  postedWorksIdData.docs.forEach((doc,index) => {
-    if(postedWorksIdDataEdit == {}){
-      postedWorksIdDataEdit = 
-      { [index] : { 
-          "workId" : doc.data().workId ,
-          "uid" : doc.data().uid 
-        }
-      }
-    } else {
-      postedWorksIdDataEdit = 
-      { 
-        ...postedWorksIdDataEdit ,
-        [index] : { 
-          "workId" : doc.data().workId ,
-          "uid" : doc.data().uid 
-        }
-      }
-    }
-  })
-
-  // console.log("postedWorksIdDataEdit")
-  // console.log(JSON.stringify(postedWorksIdDataEdit,null,2))
-  // console.log(postedWorksIdDataEdit)
-
-  // res.status(200).json({status:true})
-  // res.json(postedWorksIdDataEdit)
-  res.status(200).json(postedWorksIdDataEdit)
 } 
 
 export default handlerGetPostWorksdId
