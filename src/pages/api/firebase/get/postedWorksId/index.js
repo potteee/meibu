@@ -33,12 +33,12 @@ const handlerGetPostWorksdId = async(req,res) => {
   const FirestoreSDK = admin.app('adminSDK').firestore();
 
   // DB access
-  FirestoreSDK
+  await FirestoreSDK
   .collectionGroup('postedWorksId') //全てのドキュメントを取得
   // .where('workId','!=','99')
   // .where('uid','!=','uid initial')
   .get()
-  .then((postedWorksIdData) => {
+  .then(postedWorksIdData => {
 
     let postedWorksIdDataEdit = {}
 
