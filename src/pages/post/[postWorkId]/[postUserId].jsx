@@ -324,6 +324,8 @@ export async function getStaticPaths() {
 
   const fetcher = async() => {
     const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/postedWorksId`
+    // const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/user/${params.uid}`
+
     const res = await fetch(url)
 
     const data = await res.json()
@@ -351,8 +353,8 @@ export async function getStaticPaths() {
       postedCombination = [
         ...postedCombination ,
         { 
-        "postedWorkId" : postedWorksIdData[doc]["workId"] ,
-        "userId" : postedWorksIdData[doc]["uid"]
+          "postedWorkId" : postedWorksIdData[doc]["workId"] ,
+          "userId" : postedWorksIdData[doc]["uid"]
         }
       ]
     }
