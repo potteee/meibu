@@ -60,7 +60,7 @@ const handlerGetPostWorksdId = async(req,res) => {
         }
       }
     })
-    res.status(200).json(postedWorksIdDataEdit)
+    res.status(200).json({jtop : postedWorksIdDataEdit})
   })
   .catch((error) => {
     // throw new Error(error)
