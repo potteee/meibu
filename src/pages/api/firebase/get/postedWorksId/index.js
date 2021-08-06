@@ -2,9 +2,13 @@
 import React from 'react' 
 import firebase from 'firebase/app';
 
-const handlerGetPostWorksdId = async(res) => { //{}内はファイルの[]内の名前にする
+const handlerGetPostWorksdId = async(req,res) => {
+  //引数がない時はresだけにする。(req,res)とかやっちゃうとresの中に何も入らない。わけじゃないっぽい
   console.log("apiStart");
   var admin = require("firebase-admin");
+
+  // console.log(JSON.parse(req)+"+req@J")
+  // console.log(JSON.parse(res)+"+res@J")
 
   const initialized = admin.apps.some(app => app.name === "adminSDK");
   
@@ -42,7 +46,10 @@ const handlerGetPostWorksdId = async(res) => { //{}内はファイルの[]内の
     console.log("success powtedWroksIdData");
     return snapshot
   })
-
+  .catch((error) => {
+    throw new Error(error)
+    res.status(506).json({ error : error });
+  })
 
 
   console.log("postedWorksIdData@api")
