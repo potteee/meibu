@@ -321,9 +321,19 @@ export async function getStaticPaths() {
 
   //対象は・・・
   //サブコレクションでpostedWorksIdを全部撮ってくれば網羅できる。
-  const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/postedWorksId`
-  const res = await fetch(url)
-  const postedWorksIdData = await res.json()
+
+  const fetcher = async() => {
+    const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/postedWorksId`
+    const res = await fetch(url)
+
+    const data = await res.json()
+      if (res.status !== 200) {
+        throw new Error(data.message)
+      }
+    return data
+  }
+
+  const postedWorksIdData = await fetcher()
 
   console.log("postedWorksIdData@local")
   console.table(postedWorksIdData)
