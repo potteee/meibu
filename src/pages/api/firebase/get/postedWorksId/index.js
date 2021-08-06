@@ -79,7 +79,8 @@ const handler = async(req , res) => { //{}内はファイルの[]内の名前に
   console.log(JSON.stringify(postedWorksIdDataEdit,null,2))
   console.log(postedWorksIdDataEdit)
 
-  res.status(200).json(JSON.stringify(postedWorksIdDataEdit))
+  res.status(200).json({stateu:true})
+  // res.status(200).json(JSON.stringify(postedWorksIdDataEdit))
 } 
 
 export default handler 
