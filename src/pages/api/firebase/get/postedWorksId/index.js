@@ -53,10 +53,10 @@ const handler = async(req , res) => { //{}内はファイルの[]内の名前に
   //   [map.data().workId+"_"+map.data().uid] : map.data()
   // }))
 
-  let postedWorksIdDataEdit = false
+  let postedWorksIdDataEdit = {}
 
   postedWorksIdData.docs.forEach((doc,index) => {
-    if(postedWorksIdDataEdit === false){
+    if(postedWorksIdDataEdit == {}){
       postedWorksIdDataEdit = 
       { [index] : { 
           "workId" : doc.data().workId ,
