@@ -40,9 +40,8 @@ const handler = async(req , res) => { //{}内はファイルの[]内の名前に
     console.log("success powtedWroksIdData");
     return snapshot
   })
-  // .catch((error) => {
-  //   res.status(506).json({ error : "error" });
-  // })
+
+
 
   console.log("postedWorksIdData@api")
   // console.log(JSON.stringify(postedWorksIdData))
