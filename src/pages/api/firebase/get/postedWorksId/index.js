@@ -37,7 +37,7 @@ const handlerGetPostWorksdId = async(req,res) => {
   const FirestoreSDK = admin.app('adminSDK').firestore();
 
   // DB access
-  await FirestoreSDK
+  FirestoreSDK
   .collectionGroup('postedWorksId') //全てのドキュメントを取得
   // .where('workId','!=','99')
   // .where('uid','!=','uid initial')
@@ -82,14 +82,11 @@ const handlerGetPostWorksdId = async(req,res) => {
     // res.status(200).json({status:true})
     // res.json(postedWorksIdDataEdit)
     res.status(200).json(postedWorksIdDataEdit)
-    
-
   })
   .catch((error) => {
     throw new Error(error)
     res.status(506).json({ error : "error" });
   })
-
 } 
 
 export default handlerGetPostWorksdId
