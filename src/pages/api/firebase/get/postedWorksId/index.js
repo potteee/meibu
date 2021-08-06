@@ -80,8 +80,8 @@ const handlerGetPostWorksdId = async(req , res) => { //{}内はファイルの[]
   // console.log(JSON.stringify(postedWorksIdDataEdit,null,2))
   // console.log(postedWorksIdDataEdit)
 
-  res.status(200).json({status:true})
-  // res.status(200).json(postedWorksIdDataEdit)
+  // res.status(200).json({status:true})
+  res.json(postedWorksIdDataEdit)
   // res.status(200).json(postedWorksIdDataEdit)
 } 
 
