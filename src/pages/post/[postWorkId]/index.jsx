@@ -460,82 +460,82 @@ const Post = (props) => {
   }
 }
 
-export async function getStaticPaths() {
+// export async function getStaticPaths() {
 
-  let postWorkId = false
-  const snapshot = await db.collection('wInfo').get()
+//   let postWorkId = false
+//   const snapshot = await db.collection('wInfo').get()
 
-  snapshot.forEach((doc) => {
-    if(postWorkId == false) {
-      postWorkId = [doc.data().workId]
-    } else {
-      postWorkId = [...postWorkId , doc.data().workId]
-    }
-  })
+//   snapshot.forEach((doc) => {
+//     if(postWorkId == false) {
+//       postWorkId = [doc.data().workId]
+//     } else {
+//       postWorkId = [...postWorkId , doc.data().workId]
+//     }
+//   })
 
-  console.log("postWorkId")
-  console.table(postWorkId)
+//   console.log("postWorkId")
+//   console.table(postWorkId)
+
+//   const paths = postWorkId.map((map) => (
+//     { params: { postWorkId: map , postUserId : 'index'}}
+//     // { params: { postWorkId: map }}
+//   ))
   
-  const paths = postWorkId.map((map) => (
-    { params: { postWorkId: map , postUserId : 'index'}}
-    // { params: { postWorkId: map }}
-  ))
+//   console.log("paths")
+//   console.table(paths)
   
-  console.log("paths")
-  console.table(paths)
-  
-  // return {paths:[],fallback : true}
-  return {paths: paths,fallback : true}
+//   // return {paths:[],fallback : true}
+//   return {paths: paths,fallback : true}
 
-}
+// }
 
-export async function getStaticProps({ params }) {
-  // 受け取ったパスパラーメータをもとに処理を行う
-  console.log("params@staticProps")
-  console.table(params)
+// export async function getStaticProps({ params }) {
+//   // 受け取ったパスパラーメータをもとに処理を行う
+//   console.log("params@staticProps")
+//   console.table(params)
 
-  const assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
-  console.log(assessmentUrl+"+assessmentUrl")
+//   const assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
+//   console.log(assessmentUrl+"+assessmentUrl")
 
-  const dBData = await Promise.all([
+//   const dBData = await Promise.all([
 
-    //dBData[0]
-    fetch(assessmentUrl)
-    .then(async(res)=> {
-      const data = await res.json()
-      console.log("successed to get assessment")
-      if (res.status !== 200) {
-        throw new Error(data.message)
-      }
-      return data
-    }).catch((error) => {
-      // alert('assessment DB get fail')
-      console.log('assessment DB get fail')
-      throw new Error(error)
-    }),
+//     //dBData[0]
+//     fetch(assessmentUrl)
+//     .then(async(res)=> {
+//       const data = await res.json()
+//       console.log("successed to get assessment")
+//       if (res.status !== 200) {
+//         throw new Error(data.message)
+//       }
+//       return data
+//     }).catch((error) => {
+//       // alert('assessment DB get fail')
+//       console.log('assessment DB get fail')
+//       throw new Error(error)
+//     }),
     
-    //dBData[1]
-    db.collection('wInfo').doc(params.postWorkId).get()
-    .then((res) => {
-      console.log("successed to get wInfo")
-      const data = res.data()
-      return data
-    })
-    .catch((error) => {
-      console.log('wInfo DB get fail')
-      // alert('wInfo DB get fail')
-      throw new Error(error)
-    }),
-  ])
+//     //dBData[1]
+//     db.collection('wInfo').doc(params.postWorkId).get()
+//     .then((res) => {
+//       console.log("successed to get wInfo")
+//       const data = res.data()
+//       return data
+//     })
+//     .catch((error) => {
+//       console.log('wInfo DB get fail')
+//       // alert('wInfo DB get fail')
+//       throw new Error(error)
+//     }),
+//   ])
 
-  console.log(dBData+"+dBData")
+//   console.log(dBData+"+dBData")
 
-  const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
+//   const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
 
-  return {
-    props: setDBData,
-    revalidate: 60,
-  }
-}
+//   return {
+//     props: setDBData,
+//     revalidate: 60,
+//   }
+// }
 
 export default Post
