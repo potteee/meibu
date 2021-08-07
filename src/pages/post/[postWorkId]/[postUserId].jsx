@@ -356,7 +356,7 @@ export async function getStaticPaths() {
 
     let postedWorksIdDataEdit = []
 
-    postedWorksIdDatas.forEach((privateUsersIds,index) => {
+    postedWorksIdDatas.forEach((privateUsersIds) => {
       privateUsersIds.docs.forEach((privateUsersId) => {
         postedWorksIdDataEdit = [ 
           ...postedWorksIdDataEdit ,
@@ -461,10 +461,12 @@ export async function getStaticProps({ params }) {
     })
   ])
 
-  console.log("+dBData")
-  console.table(dBData)
+  console.log("+dBData[0]")
+  // console.table(dBData)
   console.log(dBData[0])
+  console.log("+dBData[1]")
   console.log(dBData[1])
+  console.log("+dBData[2]")
   console.log(dBData[2])
 
   // console.log(dBData[0].updateTime.toDate()+"+dateDate") //063762164725.492000000+dateDate
@@ -472,11 +474,14 @@ export async function getStaticProps({ params }) {
   // console.log(new Date(dBData[0].updateTime * 10).toLocaleString("ja")+"+dateDate3")
 
   const setDBData = {
-    assessment: {
-      ...dBData[0],
-//    setWorkUpdateTime(new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
-      updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
-    },
+    assessment: dBData[0] 
+      ? {
+        ...dBData[0],
+  //    setWorkUpdateTime(new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
+        updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
+      }
+     : undefined  
+    ,
     wInfo: {
       ...dBData[1],
     },
