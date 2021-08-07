@@ -10,7 +10,7 @@ import SpeedDialPosting from '../../../components/speedDialPosting'
 import {db} from '../../../firebase/index'
 
 import {useDispatch, useSelector} from "react-redux";
-import {getUserId} from '../../../reducks/users/selectors'
+import {getUserId ,getUserName} from '../../../reducks/users/selectors'
 
 import CreateIcon from '@material-ui/icons/Create';
 
@@ -59,6 +59,7 @@ const handlerPostUserId = (props) => {
 
   const selector = useSelector((state) => state)
   const RdGetUid = getUserId(selector)
+  const RdUserName = getUserName(selector)
 
   const router = useRouter()
   const { isReady } = useRouter()
@@ -139,23 +140,32 @@ const handlerPostUserId = (props) => {
     await dispatch({type:"loadDB" ,
       payload : {
         isLoading : false,
-        userName : assessmentSnapshot.userName,
+        userName : assessmentSnapshot 
+          ? assessmentSnapshot.userName
+          : RdUserName
+        ,
         workName : wInfoSnapshot.workName,
         workMedia : wInfoSnapshot.winfoMedia,
-        workScore : assessmentSnapshot.workScore,
+        workScore : postedWorksIdSnapshot.workScore,
         workCategory : wInfoSnapshot.winfoCategory,
-        workTag : assessmentSnapshot.workTag,
+        workTag : postedWorksIdSnapshot.assessmentWorkTag,
         // workTag : (ObjectSort(wInfoSnapshot.winfoTag,"asc")),
-        isLiked : assessmentSnapshot.isLiked,
+        isLiked : postedWorksIdSnapshot.isLiked,
         workInfomation : wInfoSnapshot.winfoInfomation,
         // (new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
         // workCreateTime : new Date(assessmentSnapshot?.createTime._seconds * 1000).toLocaleString("ja"), //?はいずれ消す。
         // workUpdateTime : new Date(assessmentSnapshot.updateTime._seconds * 1000).toLocaleString("ja"),
-        workCreateTime : assessmentSnapshot?.createTime,
-        workUpdateTime : assessmentSnapshot.updateTime,
-        assessmentComment : assessmentSnapshot.workComment,
-        assessmentLike : assessmentSnapshot.isLiked,
-        isPublic : assessmentSnapshot.isPublic,
+        workCreateTime : postedWorksIdSnapshot.created_at,
+        workUpdateTime : postedWorksIdSnapshot.updated_at,
+        assessmentComment : assessmentSnapshot 
+          ? assessmentSnapshot.workComment
+          : undefined
+        , 
+        assessmentLike : assessmentSnapshot 
+          ? assessmentSnapshot.isLiked
+          : undefined  
+        ,
+        isPublic : postedWorksIdSnapshot.isPublic,
         loginUserData : postedWorksIdSnapshot ? 1 : 2 ,//評価している１：していない２
        }
     })
@@ -312,6 +322,9 @@ const handlerPostUserId = (props) => {
 
 
 export async function getStaticPaths() {
+  // getStaticPathsではapiにアクセスできない。
+  // 開発環境ではエラーが出ないから厄介。
+  // エラーメッセージが Unexpected token < in JSON at position 0 →　切り分けに時間がかかった
 
   // let postWorkId = false
   // let userId = false
