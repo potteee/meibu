@@ -42,25 +42,25 @@ const handlerGetPostWorksdId = async(req,res) => {
 
     let postedWorksIdDataEdit = {}
 
-    // postedWorksIdData.docs.forEach((doc,index) => {
-    //   if(postedWorksIdDataEdit == {}){
-    //     postedWorksIdDataEdit = { 
-    //       [index] : { 
-    //         "workId" : doc.data().workId ,
-    //         "uid" : doc.data().uid 
-    //       }
-    //     }
-    //   } else {
-    //     postedWorksIdDataEdit = { 
-    //       ...postedWorksIdDataEdit ,
-    //       [index] : { 
-    //         "workId" : doc.data().workId ,
-    //         "uid" : doc.data().uid 
-    //       }
-    //     }
-    //   }
-    // })
-    res.status(200).json({jtop : postedWorksIdDataEdit})
+    postedWorksIdData.docs.forEach((doc,index) => {
+      if(postedWorksIdDataEdit == {}){
+        postedWorksIdDataEdit = { 
+          [index] : { 
+            "workId" : doc.data().workId ,
+            "uid" : doc.data().uid 
+          }
+        }
+      } else {
+        postedWorksIdDataEdit = { 
+          ...postedWorksIdDataEdit ,
+          [index] : { 
+            "workId" : doc.data().workId ,
+            "uid" : doc.data().uid 
+          }
+        }
+      }
+    })
+    res.status(200).json(postedWorksIdDataEdit)
   })
   .catch((error) => {
     // throw new Error(error)

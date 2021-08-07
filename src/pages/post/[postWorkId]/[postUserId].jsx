@@ -322,53 +322,86 @@ export async function getStaticPaths() {
   //対象は・・・
   //サブコレクションでpostedWorksIdを全部撮ってくれば網羅できる。
 
-  const fetcher = async() => {
-    const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/postedWorksId`
-    // const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/user/${params.uid}`
+  const makeParams = async() => {
+  // const fetcher = async() => {
+    // const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/postedWorksId`
+    // const res = await fetch(url)
 
-    const res = await fetch(url)
+    const privateUsers = await db.collection('privateUsers').get()
+    // let privateUsersId = []
+    let postedWorksIdDatas = []
+    // privateUsers.docs.forEach(async(doc) => {
+    //   // privateUsersId = [...privateUsersId ,doc.id]
+    //   console.log(doc.id+"privateUsers doc.id")
 
-    const data = await res.json()
-      if (res.status !== 200) {
-        throw new Error(data.message)
-      }
-    return data
+    //   postedWorksIdDatas = [
+    //     ...postedWorksIdDatas,
+    //     await db.collection('privateUsers').doc(doc.id).collection('privateUsersId').get()
+    //   ]     
+    // ]) 
+    // }) 
+
+
+    postedWorksIdDatas = await Promise.all(
+      privateUsers.docs.map(async(map) => {
+        return await db.collection('privateUsers').doc(map.id).collection('postedWorksId').get()
+        // const foo = await db.collection('privateUsers').doc(map.id).collection('postedWorksId').get()
+        // return foo
+      })
+    )
+    
+    //uidごとのprivateUserId配列
+    console.log("postedWorksIdDatas")
+    console.table(postedWorksIdDatas)
+
+    let postedWorksIdDataEdit = []
+
+    postedWorksIdDatas.forEach((privateUsersIds,index) => {
+      privateUsersIds.docs.forEach((privateUsersId) => {
+        postedWorksIdDataEdit = [ 
+          ...postedWorksIdDataEdit ,
+          { params : { 
+            postUserId : privateUsersId.data().uid ,
+            postWorkId : privateUsersId.id ,
+          }}
+        ]
+      })
+    })
+
+    console.log("postedWorksDataEdit")
+    console.table(postedWorksIdDataEdit)
+
+    return postedWorksIdDataEdit
   }
 
-  const postedWorksIdData = await fetcher()
+  // Object.keys(postedWorksIdData).forEach((doc) => {
+  //   if(postedCombination == false) {
+  //     postedCombination = [{ 
+  //       "postedWorkId" : postedWorksIdData[doc]["workId"] ,
+  //       "userId" : postedWorksIdData[doc]["uid"]
+  //     }]
+  //   } else {
+  //     postedCombination = [
+  //       ...postedCombination ,
+  //       { 
+  //         "postedWorkId" : postedWorksIdData[doc]["workId"] ,
+  //         "userId" : postedWorksIdData[doc]["uid"]
+  //       }
+  //     ]
+  //   }
+  // })
 
-  console.log("postedWorksIdData@local")
-  // console.table(postedWorksIdData)
-  console.log(JSON.stringify(postedWorksIdData,null,2))
-  // console.log(JSON.stringify(postedWorksIdData.datas,null,2))
-  //  const snapshot = await db.collection('wInfo').get()
-
-  Object.keys(postedWorksIdData).forEach((doc) => {
-    if(postedCombination == false) {
-      postedCombination = [{ 
-        "postedWorkId" : postedWorksIdData[doc]["workId"] ,
-        "userId" : postedWorksIdData[doc]["uid"]
-      }]
-    } else {
-      postedCombination = [
-        ...postedCombination ,
-        { 
-          "postedWorkId" : postedWorksIdData[doc]["workId"] ,
-          "userId" : postedWorksIdData[doc]["uid"]
-        }
-      ]
-    }
-  })
-
-  console.log("postedCombination")
-  console.table(postedCombination)
+  // console.log("postedCombination")
+  // console.table(postedCombination)
   
-  const paths = postedCombination.map((map) => (
-    { params: { postWorkId: map.postedWorkId , postUserId : map.userId}}
+  // const paths = postedCombination.map((map) => (
+  //   { params: { postWorkId: map.postedWorkId , postUserId : map.userId}}
     // { params: { postWorkId: map }}
-  ))
+      // ))
+
+  const paths = await makeParams()
   
-  console.log("paths")
+  console.log("postedUserId paths")
   console.table(paths)
   
   // return {paths:[],fallback : true}
