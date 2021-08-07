@@ -493,7 +493,7 @@ export async function getStaticProps({ params }) {
   //    setWorkUpdateTime(new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
         updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
       }
-     : undefined  
+     : null  
     ,
     wInfo: {
       ...dBData[1],
