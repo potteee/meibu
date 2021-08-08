@@ -24,7 +24,10 @@ const News = ({worksData}) => {
           as={`/post/${oneworksData.workId}`}>
             {oneworksData.workName+"("+oneworksData.winfoCount+")"}
           </Link>
-          <a>：{oneworksData.winfoScore != -1 ? oneworksData.winfoScore : "採点なし"}</a>
+          <a>：{oneworksData.winfoScore != -1 
+            ? Math.floor(oneworksData.winfoScore * 10) / 10  
+            : "採点なし"
+          }</a>
           <a>：{oneworksData.winfoCategory.map(cate => ( 
           <>{cate+" "}</>
           ))}

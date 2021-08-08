@@ -74,64 +74,6 @@ const handlerPostUserId = (props) => {
   console.log(postUserId+"+postUserId")
   console.log(postWorkId+"+postWorkId")
 
-  //useReducerに。
-  // const [userName, setUserName] = useState("")
-  // // const [loginUserId, setLoginUserId] = useState("")
-  // const [workName, setWorkName] = useState("")
-  // const [workMedia, setWorkMedia] = useState("")
-  // const [workScore, setWorkScore] = useState("")
-  // const [workCategory, setWorkCategory] = useState([])
-  // const [workTag, setWorkTag] = useState([])
-  // const [isLiked, setIsLiked] = useState(false)
-  // const [workComment ,setWorkComment] = useState("")
-  // const [workUpdateTime, setWorkUpdateTime] = useState("")
-  // const [assessmentComment, setAssessmentComment] = useState([""])
-  // const [assessmentLike, setAssessmentLike] = useState(0)
-  // const [isPublic, setIsPublic] = useState(false)
-  // const [loginUserData,setLoginUserData] = useState(0)
-
-  // // const [standbyState , setStandbyState] = useState(false)
-
-
-  //isReadyにおきかえ。
-  // const postIdCheck = () => {
-  //   console.log("postIdCheck start")
-  //   if(!postWorkId){
-  //     return false 
-  //   } else {
-  //     if(!postUserId){
-  //       return false
-  //     } else {
-  //       if(postWorkId == "[postWorkId]"){
-  //         console.log(postWorkId+"false postWorkId")
-  //         return false
-  //         } else {
-  //           if (postUserId == "[postUserId]"){
-  //             console.log(postUserId+"false postUserId")
-  //             return false
-  //           } else {
-  //             console.log("return true")
-  //             return true
-  //         }
-  //       }
-  //     }
-  //   }
-  // } 
-  
-  // const { data , error } = useSWR(
-  //     () => postIdCheck() 
-  //       ? `/api/firebase/assessmentSearchUser/${postWorkId}_${postUserId}`
-  //       : null,
-  //       fetcher,
-  //     {
-  //       revalidateOnFocus: false,
-  //       revalidateOnReconnect: false
-  //     }
-  // )
-
-  // console.log(error+"+api error")
-  // console.log(JSON.stringify(data)+"+api assessmentSearchUser")
-
   const getDBData = async() => {
     const assessmentSnapshot = props.assessment
     const wInfoSnapshot = props.wInfo
@@ -149,12 +91,8 @@ const handlerPostUserId = (props) => {
         workScore : postedWorksIdSnapshot.workScore,
         workCategory : wInfoSnapshot.winfoCategory,
         workTag : postedWorksIdSnapshot.assessmentWorkTag,
-        // workTag : (ObjectSort(wInfoSnapshot.winfoTag,"asc")),
         isLiked : postedWorksIdSnapshot.isLiked,
         workInfomation : wInfoSnapshot.winfoInfomation,
-        // (new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
-        // workCreateTime : new Date(assessmentSnapshot?.createTime._seconds * 1000).toLocaleString("ja"), //?はいずれ消す。
-        // workUpdateTime : new Date(assessmentSnapshot.updateTime._seconds * 1000).toLocaleString("ja"),
         workCreateTime : postedWorksIdSnapshot.created_at,
         workUpdateTime : postedWorksIdSnapshot.updated_at,
         assessmentComment : assessmentSnapshot 
@@ -169,75 +107,23 @@ const handlerPostUserId = (props) => {
         loginUserData : postedWorksIdSnapshot ? 1 : 2 ,//評価している１：していない２
        }
     })
+    console.log("dispatched loadDb")
   }
 
   useEffect(() => {
-    (async() => {
-      if(isReady) {
-        getDBData()
-      }
-      // console.log("useEffect Out")
-      //Redux
-      // if(postWorkId != "no data query" && postUserId != "no data query") {
-      //   console.log("useEffect Done")
-      //   if(data) {
-      //     // if(data.userName != undefined || data.userName != "") {
-      //     if(data.length != 0) {
-      //       console.log(JSON.stringify(data)+"+data[0]@JSON")
-      //       setUserName(data.userName)
-      //       setWorkName(data.workName)
-      //       setWorkMedia(data.winfoMedia)
-      //       setWorkScore(data.workScore)
-      //       setWorkCategory(data.winfoCategory)
-      //       setWorkTag(data.assessmentWorkTag)
-      //       data.isLiked ? setIsLiked(data.isLiked) : setIsLiked(false)
-      //       setWorkComment(data.workComment)
-      //       setWorkUpdateTime(new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
-      //       // setWorkUpdateTime(new Date(data.updateTime._seconds * 1000).toLocaleString("ja"))
-      //       setAssessmentComment(data.assessmentComment)
-      //       setAssessmentLike(data.worksLikedCount)
-
-      //       setIsPublic(data.isPublic)
-
-      //       setStandbyState(true)
-      //     } else {
-      //       console.log("data.userName no exist")
-      //     }
-      //   } else {
-      //     console.log("data no exist")
-      //   }
-      // }
-    })()
+    if(isReady) {
+      getDBData()
+    }
   },[isReady])
-
-  // useEffect(() => { // ログインユーザが評価しているか？
-  //   (async() => {
-  //     console.log("start useEffect2")
-  //     const res2 = await fetch(`/api/firebase/get/privateUsers/postedWorksId/${postWorkId}_${RdGetUid}`)
-  //     const data2 = await res2.json()
-  //     console.log(data2+"+data2 of fetcher")
-  //     // console.log(data2.data()+"+data2.data() of fetcher")
-  //     console.log(JSON.stringify(data2)+"+data2@J of fetcher")
-  //     setLoginUserData(() => {
-  //       return data2.uid ? 1 : 2 //評価している１：していない２
-  //     })
-  //     if (res2.status !== 200) {
-  //       throw new Error(data2.message)
-  //     }
-  //   })()
-  // },[])
 
   console.log("reducer Data")
   console.log(JSON.stringify(state,null,2)+"+reducer Data")
 
   if(state.isLoading){
     return <>loading...loginUserData:{state.loginUserData} RdGetUid:{RdGetUid}</>
-  // if(loginUserData && standbyState){
-  // if(loginUserData && standbyState && RdGetUid != "uid initial"){
   } else {
     return (
       <>
-        {/* <Header /> */}
         <ApplicationBar title="作品評価"/>
         {/* <h2>ユーザごとの作品評価ページ</h2> */}
         
@@ -326,40 +212,13 @@ export async function getStaticPaths() {
   // 開発環境ではエラーが出ないから厄介。
   // エラーメッセージが Unexpected token < in JSON at position 0 →　切り分けに時間がかかった
 
-  // let postWorkId = false
-  // let userId = false
-  let postedCombination = false;
-
-  // ? `/api/firebase/assessmentSearchUser/${postWorkId}_${postUserId}`
-
-  //対象は・・・
-  //サブコレクションでpostedWorksIdを全部撮ってくれば網羅できる。
-
   const makeParams = async() => {
-  // const fetcher = async() => {
-    // const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/postedWorksId`
-    // const res = await fetch(url)
-
     const privateUsers = await db.collection('privateUsers').get()
-    // let privateUsersId = []
     let postedWorksIdDatas = []
-    // privateUsers.docs.forEach(async(doc) => {
-    //   // privateUsersId = [...privateUsersId ,doc.id]
-    //   console.log(doc.id+"privateUsers doc.id")
-
-    //   postedWorksIdDatas = [
-    //     ...postedWorksIdDatas,
-    //     await db.collection('privateUsers').doc(doc.id).collection('privateUsersId').get()
-    //   ]     
-    // ]) 
-    // }) 
-
 
     postedWorksIdDatas = await Promise.all(
       privateUsers.docs.map(async(map) => {
         return await db.collection('privateUsers').doc(map.id).collection('postedWorksId').get()
-        // const foo = await db.collection('privateUsers').doc(map.id).collection('postedWorksId').get()
-        // return foo
       })
     )
     
@@ -387,39 +246,12 @@ export async function getStaticPaths() {
     return postedWorksIdDataEdit
   }
 
-  // Object.keys(postedWorksIdData).forEach((doc) => {
-  //   if(postedCombination == false) {
-  //     postedCombination = [{ 
-  //       "postedWorkId" : postedWorksIdData[doc]["workId"] ,
-  //       "userId" : postedWorksIdData[doc]["uid"]
-  //     }]
-  //   } else {
-  //     postedCombination = [
-  //       ...postedCombination ,
-  //       { 
-  //         "postedWorkId" : postedWorksIdData[doc]["workId"] ,
-  //         "userId" : postedWorksIdData[doc]["uid"]
-  //       }
-  //     ]
-  //   }
-  // })
-
-  // console.log("postedCombination")
-  // console.table(postedCombination)
-  
-  // const paths = postedCombination.map((map) => (
-  //   { params: { postWorkId: map.postedWorkId , postUserId : map.userId}}
-    // { params: { postWorkId: map }}
-      // ))
-
   const paths = await makeParams()
   
   console.log("postedUserId paths")
   console.table(paths)
   
-  // return {paths:[],fallback : true}
   return {paths: paths,fallback : true}
-
 }
 
 export async function getStaticProps({ params }) {
@@ -427,25 +259,16 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  // const assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
-  // console.log(assessmentUrl+"+assessmentUrl")
-
   const dBData = await Promise.all([
 
     //dBData[0]
-    // fetch(assessmentUrl)
     db.collection('wInfo').doc(params.postWorkId)
     .collection('assessment').doc(params.postUserId).get()
     .then((res)=> {
       const data = res.data()
-      // const data = await res.json()
       console.log("successed to get assessment")
-      // if (res.status !== 200) {
-      //   throw new Error(data.message)
-      // }
       return data
     }).catch((error) => {
-      // alert('assessment DB get fail')
       console.log('assessment DB get fail')
       throw new Error(error)
     }),
@@ -459,7 +282,6 @@ export async function getStaticProps({ params }) {
     })
     .catch((error) => {
       console.log('wInfo DB get fail')
-      // alert('wInfo DB get fail')
       throw new Error(error)
     }),
 
@@ -475,22 +297,16 @@ export async function getStaticProps({ params }) {
   ])
 
   console.log("+dBData[0]")
-  // console.table(dBData)
   console.log(dBData[0])
   console.log("+dBData[1]")
   console.log(dBData[1])
   console.log("+dBData[2]")
   console.log(dBData[2])
 
-  // console.log(dBData[0].updateTime.toDate()+"+dateDate") //063762164725.492000000+dateDate
-  // console.log(new Date(Math.floor(dBData[0].updateTime * 25.51))+"+dateDate2")
-  // console.log(new Date(dBData[0].updateTime * 10).toLocaleString("ja")+"+dateDate3")
-
   const setDBData = {
     assessment: dBData[0] 
       ? {
         ...dBData[0],
-  //    setWorkUpdateTime(new Date(data.updated_at._seconds * 1000).toLocaleString("ja"))
         updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
       }
      : null  
