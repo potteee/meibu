@@ -1,4 +1,5 @@
 import React from 'react';
+import { likedWork } from 'src/reducks/users/operations'
 
 const like = async(props) => {
 
@@ -11,7 +12,7 @@ const like = async(props) => {
   }
 
   console.log("作品にいいねで評価しました。")
-  const urlPosting = `/api/firebase/posting/${props.uid}`
+  const urlPosting = `/api/firebase/likedWork/${props.uid}`
   const postingData = {
     workName:props.workName,
     workMedia:props.workMedia,
@@ -32,6 +33,7 @@ const like = async(props) => {
 
   console.log(JSON.stringify(postingData)+"+postingData@J")
 
+  //useReducer
   props.dispatch({type:"isLikeChange" , 
     payload : {
       isLiked : true,
@@ -49,6 +51,7 @@ const like = async(props) => {
     })
   }
 
+  //DB
   const res = await fetch(urlPosting, {
     // 送信先URL
     method: 'post', 
@@ -68,6 +71,23 @@ const like = async(props) => {
   if (res.status !== 200) {
     throw new Error(data.message)
   }
+
+  //Redux
+  const userAssessmentWorks = {
+    [props.workId] : {
+      workName : props.workName,
+      workMedia : props.workMedia,
+      isPublic : props.isPublic,
+      isLiked : true,
+    }
+  }
+
+  props.dispatchRedux(
+    likedWork(
+      userAssessmentWorks
+    )
+  ),
+
 
   console.log(props.pfirstPostFlag)
   console.log("いいねが押されました")

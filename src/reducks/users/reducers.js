@@ -29,6 +29,26 @@ export const UsersReducer = (state = initialState.users, action) => {
                 ...state,
                 ...action.payload
             }
+        case Actions.POST_WORK:
+            // console.log(JSON.stringify(state)+"state reducer")
+            // console.log(JSON.stringify(action.payload)+"action.payload reducer")
+            return {
+                ...state,
+                userAssessmentWorks : {
+                    ...state.userAssessmentWorks,
+                    ...action.payload.userAssessmentWorks
+                }
+            }
+        case Actions.LIKED_WORK:
+            // console.log(JSON.stringify(state)+"state reducer")
+            // console.log(JSON.stringify(action.payload)+"action.payload reducer")
+            return {
+                ...state,
+                userAssessmentWorks : {
+                    ...state.userAssessmentWorks,
+                    ...action.payload.userAssessmentWorks
+                }
+            }
         default:
             console.log("default")
             return state

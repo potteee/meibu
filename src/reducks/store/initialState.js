@@ -16,7 +16,7 @@ const initialState = {
         userLiveIn: "liveIn initial",// お住まい : 未登録
         userWebsite: "website initial", // Web/SNS : 未登録
         userBirthday: "birthday initial",// 誕生日 : 未登録
-        userAssessmentWorks: {},// 評価を投稿した作品：
+        userAssessmentWorks: {},// 評価を投稿した作品：例：userAssessmentWorks":{"KtCsa74PooRszzvRebNY":{"workName":"こここ","workMedia":"映画","isPublic":true,"isLiked":true}}
         userBookmark: {},// ブックマークした作品
     }
 }

@@ -1,7 +1,7 @@
 //redux-thunkを使うとこのようにasync/awaitを使える様になる。
 import React, {useMemo} from 'react';
 
-import {signInAction ,signOutAction, updateUsersAction} from "./actions";
+import {signInAction ,signOutAction, updateUsersAction,postWorks} from "./actions";
 import { auth, db, FirebaseTimestamp } from "../../firebase/index";
 import {isValidEmailFormat, isValidRequiredInput} from "../../foundations/share/common";
 
@@ -271,40 +271,50 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                         isLiked : false,
                     }
 
-                    await usersRef.doc(uid).set(userInitialData)
-                    .then(() => {
-                        console.log("auth db success!!!")
-                    }).catch((error) => {
-                        alert('DB fail')
-                        throw new Error(error)
-                    })
+                    await Promise.all([
+                        usersRef.doc(uid).set(userInitialData)
+                        .then(() => {
+                            console.log("auth db success!!!")
+                        }).catch((error) => {
+                            alert('DB fail')
+                            throw new Error(error)
+                        })
+                        ,
+                        privateUserRef.doc(uid)
+                        .set(privateUserInitialData)
+                        .then(() => {
+                            console.log("private auth db success!!!")
+                        }).catch((error) => {
+                            alert('private DB fail')
+                            throw new Error(error)
+                        })
+                    ])
 
-                    await privateUserRef.doc(uid)
-                    .set(privateUserInitialData)
-                    .then(() => {
-                        console.log("private auth db success!!!")
-                    }).catch((error) => {
-                        alert('private DB fail')
-                        throw new Error(error)
+                    router.push({
+                        pathname: '/auth/signin',
+                        query: {
+                            email : email,
+                        }
                     })
 
                     //サブコレクション(↓)はコレクションを作った後に追加
-                    await privateUserRef.doc(uid)
-                    .collection('postedWorksId')
-                    .doc(workId)
-                    .set(postedWorksId)
-                    .then(() => {
-                        console.log("posted initial db success!!!")
-                        router.push({
-                            pathname: '/auth/signin',
-                            query: {
-                                email : email,
-                            }}
-                            )
-                    }).catch((error) => {
-                        alert('posted inital DB fail')
-                        throw new Error(error)
-                    })
+                      //これこのタイミングでいらなくない？
+                    // await privateUserRef.doc(uid)
+                    // .collection('postedWorksId')
+                    // .doc(workId)
+                    // .set(postedWorksId)
+                    // .then(() => {
+                    //     console.log("posted initial db success!!!")
+                    //     router.push({
+                    //         pathname: '/auth/signin',
+                    //         query: {
+                    //             email : email,
+                    //         }
+                    //     })
+                    // }).catch((error) => {
+                    //     alert('posted inital DB fail')
+                    //     throw new Error(error)
+                    // })
                 }
             }).catch((error) => {
                 // dispatch(hideLoadingAction())
@@ -316,6 +326,8 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
 }
 
 //なんでこれここにあるんだろう。actionsにアクセスしていないのでapi配下で良さそう
+// →逆になんでactionsにアクセスしていないんだろうって考えた方が良さそう。
+// 　アクセスさせる。
 export const addPostedWork = (
     uid,
     workId,
@@ -383,6 +395,15 @@ export const addPostedWork = (
             workScore: workScore,
         }
 
+        const userAssessmentWorks = {
+            [workId] : {
+                workName : workName,
+                workMedia : workMedia,
+                isPublic : isPublic,
+                isLiked : isLiked,
+            }
+        }
+
         await privateUserRef.doc(uid)
         .collection('postedWorksId')
         .doc(workId)
@@ -405,8 +426,8 @@ export const addPostedWork = (
             .then(() => {
                 console.log("PublicPost success!!")
             }).catch((error) => {
-            alert('PubPosted inital DB fail')
-            throw new Error(error)
+                alert('PubPosted inital DB fail')
+                throw new Error(error)
             })
         } else {
             usersRef.doc(uid)
@@ -416,10 +437,25 @@ export const addPostedWork = (
             .then(() => {
                 console.log("PublicPost delete success!!")
             }).catch((error) => {
-            alert('PubPosted delete DB fail')
-            throw new Error(error)
+                alert('PubPosted delete DB fail')
+                throw new Error(error)
             })
         }
+        await dispatch(
+            postWorks(
+                userAssessmentWorks
+            )
+        )
+    }
+}
+
+export const likedWork = (userAssessmentWorks) => {
+    return async (dispatch) => {
+        await dispatch(
+            postWorks(
+                userAssessmentWorks
+            )
+        )
     }
 }
 

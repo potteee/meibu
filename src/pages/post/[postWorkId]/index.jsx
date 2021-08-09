@@ -61,6 +61,12 @@ const initialState = {
 
 const reducer = (state, action) => {
 
+  console.log("state")
+  console.table(state)
+
+  console.log("action.payload")
+  console.table(action.payload)
+
   //更新データがあればそれに書き換える。
   let putState = {...state,...action.payload} ///宣言的に書くっていう観点で言うとこれほんとに意味ない。
   //ただ、State分の再描写はしなくなっているからそれの恩恵は受けられている。
@@ -213,6 +219,11 @@ const Post = (props) => {
       })
     }
 
+    console.log("RdAssessmentWorks")
+    console.table(RdAssessmentWorks)
+    // console.log(RdAssessmentWorks[workId])
+    // console.log(RdAssessmentWorks[workId].["isLiked"])
+
     await dispatch({type:"loadDB" ,
       payload : {
 
@@ -245,7 +256,7 @@ const Post = (props) => {
           
         //postedWorksIdSnapshot
         //ログインユーザが「いいね」しているかどうか
-        isLiked : RdAssessmentWorks?.isLiked, 
+        isLiked : RdAssessmentWorks?.[workId]?.["isLiked"], 
         //ログインユーザが既に評価しているか？
         isAssessed : Object.keys(RdAssessmentWorks).includes(workId) 
           ? true 
@@ -270,8 +281,8 @@ const Post = (props) => {
     } 
   },[isReady]) //isReadyに変化があった場合は再描写してくれるからこれでいい。はず。
 
-  console.log(state.isLiked+"+isLiked")
-  console.log(state.isBookmark+"+isBookmark")
+  console.log("state@[postWorkId]/index.js")
+  console.table(state)
 
   if(state.isLoading){
     return(
@@ -298,7 +309,7 @@ const Post = (props) => {
           </SCTypografyh5> 
 
           <h3 className={classes.h3WorksName}>
-            {state.workScore != -1 ? state.workScore : "評価なし"}
+            {state.workScore != -1 ? Math.floor(state.workScore * 10) / 10  : "評価なし"}
           </h3>
 
           <SCTypografyh5>

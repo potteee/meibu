@@ -646,7 +646,7 @@ const Posting = () => {
     )).then( async(workId) => {
       console.log(workId+"+workId posting m")
       // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
-      await dispatch(addPostedWork( //これ上野とまとめて良さそ。
+      await dispatch(addPostedWork( //これ上のとPromise.all()で良さそ。
         uid,
         workId,
         workName,

@@ -10,7 +10,7 @@ import SpeedDialPosting from '../../../components/speedDialPosting'
 import {db} from '../../../firebase/index'
 
 import {useDispatch, useSelector} from "react-redux";
-import {getUserId ,getUserName} from '../../../reducks/users/selectors'
+import {getUserId ,getUserName,getUserAssessmentWorks} from '../../../reducks/users/selectors'
 
 import CreateIcon from '@material-ui/icons/Create';
 
@@ -19,7 +19,6 @@ import Link from 'next/link'
 import useSWR,{ mutate } from 'swr'
 
 import post from 'src/components/speedDial/post'
-import postWInfoCreate from '../../../foundations/wInfo'
 
 import ObjectSort from '../../../foundations/share/objectSort'
 
@@ -60,6 +59,7 @@ const handlerPostUserId = (props) => {
   const selector = useSelector((state) => state)
   const RdGetUid = getUserId(selector)
   const RdUserName = getUserName(selector)
+  const RdUserAssessmentWorks = getUserAssessmentWorks(selector)
 
   const router = useRouter()
   const { isReady } = useRouter()
@@ -104,7 +104,10 @@ const handlerPostUserId = (props) => {
           : undefined  
         ,
         isPublic : postedWorksIdSnapshot.isPublic,
-        loginUserData : postedWorksIdSnapshot ? 1 : 2 ,//評価している１：していない２
+        loginUserData : Object.keys(RdUserAssessmentWorks).includes(postWorkId) 
+          ? 1 
+          : 2 
+        ,//評価している１：していない２
        }
     })
     console.log("dispatched loadDb")
@@ -307,9 +310,13 @@ export async function getStaticProps({ params }) {
     assessment: dBData[0] 
       ? {
         ...dBData[0],
+        createTime : dBData[0].createTime 
+          ? dBData[0].createTime.toDate().toLocaleString("ja") 
+          : null
+        , //最近追加２０２１０８０６ 
         updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
       }
-     : null  
+      : null  
     ,
     wInfo: {
       ...dBData[1],

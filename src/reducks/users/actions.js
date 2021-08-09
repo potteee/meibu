@@ -56,3 +56,26 @@ export const updateUsersAction = (userState) => {
         }
     }
 }
+
+export const POST_WORK = "POST_WORK"
+export const postWorks = (userAssessmentWorks) => {
+    console.log(JSON.stringify(userAssessmentWorks)+"userAssessmentWorks actions in post work")
+    return {
+        type: "POST_WORK",
+        payload: {
+            userAssessmentWorks: userAssessmentWorks,// 評価を投稿した作品：
+        }
+    }
+}
+
+export const LIKED_WORK = "LIKED_WORK"
+export const likedWorks = (userAssessmentWorks) => {
+    console.log(JSON.stringify(userAssessmentWorks)+"userAssessmentWorks actions in Liked work")
+    return {
+        type: "LIKED_WORK",
+        payload: {
+            userAssessmentWorks: userAssessmentWorks,// 評価を投稿した作品：
+        }
+    }
+}
+
