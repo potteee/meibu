@@ -441,19 +441,34 @@ export const addPostedWork = (
                 throw new Error(error)
             })
         }
+
+        const instantChangedWorkId = {
+            workId : workId,
+            timestamp : timestamp,
+        }
+
         await dispatch(
             postWorks(
-                userAssessmentWorks
+                userAssessmentWorks,
+                instantChangedWorkId,
             )
         )
     }
 }
 
 export const likedWork = (userAssessmentWorks) => {
+    const timestamp = FirebaseTimestamp.now()
+
+    const instantChangedWorkId = {
+        workId : workId,
+        timestamp : timestamp,
+    }   
+
     return async (dispatch) => {
         await dispatch(
             postWorks(
-                userAssessmentWorks
+                userAssessmentWorks,
+                instantChangedWorkId,
             )
         )
     }

@@ -18,6 +18,7 @@ const initialState = {
         userBirthday: "birthday initial",// 誕生日 : 未登録
         userAssessmentWorks: {},// 評価を投稿した作品：例：userAssessmentWorks":{"KtCsa74PooRszzvRebNY":{"workName":"こここ","workMedia":"映画","isPublic":true,"isLiked":true}}
         userBookmark: {},// ブックマークした作品
+        instantChangedWorkId : {},//{workId : Xxxxxxx , timestamp : yyyyyyy}
     }
 }
 

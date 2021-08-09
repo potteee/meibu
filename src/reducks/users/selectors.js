@@ -62,3 +62,7 @@ export const getUserBookmark = createSelector(
     [usersSelector],
     state => state.userBookmark
 )
+export const getInstantChangedWorkId = createSelector(
+    [usersSelector],
+    state => state.instantChangedWorkId
+)

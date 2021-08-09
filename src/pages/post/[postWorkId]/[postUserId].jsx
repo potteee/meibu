@@ -7,10 +7,10 @@ import Footer from '../../../components/footer'
 import ApplicationBar from '../../../components/applicationBar'
 import SpeedDialPosting from '../../../components/speedDialPosting'
 
-import {db} from '../../../firebase/index'
+import {db,FirebaseTimestamp} from '../../../firebase/index'
 
 import {useDispatch, useSelector} from "react-redux";
-import {getUserId ,getUserName,getUserAssessmentWorks} from '../../../reducks/users/selectors'
+import {getUserId ,getUserName,getUserAssessmentWorks,getInstantChangedWorkId} from '../../../reducks/users/selectors'
 
 import CreateIcon from '@material-ui/icons/Create';
 
@@ -51,6 +51,75 @@ const reducer = (state,action) => {
   }
 }
 
+const getOriginalDBData = async(params) => {
+    const dBData = await Promise.all([
+    //dBData[0]
+    db.collection('wInfo').doc(params.postWorkId)
+    .collection('assessment').doc(params.postUserId).get()
+    .then((res)=> {
+      const data = res.data()
+      console.log("successed to get assessment")
+      return data
+    }).catch((error) => {
+      console.log('assessment DB get fail')
+      throw new Error(error)
+    }),
+    
+    //dBData[1]
+    db.collection('wInfo').doc(params.postWorkId).get()
+    .then((res) => {
+      console.log("successed to get wInfo")
+      const data = res.data()
+      return data
+    })
+    .catch((error) => {
+      console.log('wInfo DB get fail')
+      throw new Error(error)
+    }),
+
+    //dBData[2]
+    db.collection('privateUsers').doc(params.postUserId)
+    .collection('postedWorksId').doc(params.postWorkId)
+    .get()
+    .then((res) => {
+      console.log("successed to get postedWorksId")
+      const data = res.data()
+      return data
+    })
+  ])
+
+  console.log("+dBData[0]")
+  console.log(dBData[0])
+  console.log("+dBData[1]")
+  console.log(dBData[1])
+  console.log("+dBData[2]")
+  console.log(dBData[2])
+
+  const setDBData = {
+    assessment: dBData[0] 
+      ? {
+        ...dBData[0],
+        createTime : dBData[0].createTime 
+          ? dBData[0].createTime.toDate().toLocaleString("ja") 
+          : null
+        , //最近追加２０２１０８０６ 
+        updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
+      }
+      : null  
+    ,
+    wInfo: {
+      ...dBData[1],
+    },
+    postedWorksId : {
+      ...dBData[2],
+      created_at : dBData[2].created_at.toDate().toLocaleString("ja"),
+      updated_at : dBData[2].updated_at.toDate().toLocaleString("ja")
+    }
+  }
+
+  return setDBData
+}
+
 const handlerPostUserId = (props) => {
 
   console.log("main props")
@@ -60,12 +129,14 @@ const handlerPostUserId = (props) => {
   const RdGetUid = getUserId(selector)
   const RdUserName = getUserName(selector)
   const RdUserAssessmentWorks = getUserAssessmentWorks(selector)
+  const RdInstantChangedWorksId = getInstantChangedWorkId(selector)
 
   const router = useRouter()
   const { isReady } = useRouter()
 
   const [state,dispatch] = useReducer(reducer, initialState)
 
+  const timestamp = FirebaseTimestamp.now()
 
   const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
   console.log(query+"+query at postUserId")
@@ -75,9 +146,33 @@ const handlerPostUserId = (props) => {
   console.log(postWorkId+"+postWorkId")
 
   const getDBData = async() => {
-    const assessmentSnapshot = props.assessment
-    const wInfoSnapshot = props.wInfo
-    const postedWorksIdSnapshot = props.postedWorksId
+    console.log("getDBData start")
+    let assessmentSnapshot = {}
+    let wInfoSnapshot = {}
+    let postedWorksIdSnapshot = {}
+
+    if(RdInstantChangedWorksId.workId == postWorkId &&
+    RdInstantChangedWorksId.timestamp.seconds <= timestamp.seconds + 600){
+      console.log("get original db")
+
+      const params = { 
+        postUserId : postUserId,
+        postWorkId : postWorkId,
+      }
+
+      const DBData = await getOriginalDBData(params)
+
+      assessmentSnapshot = DBData.assessment
+      wInfoSnapshot = DBData.wInfo
+      postedWorksIdSnapshot = DBData.postedWorksId
+
+    } else {
+      console.log("get props")
+      assessmentSnapshot = props.assessment
+      wInfoSnapshot = props.wInfo
+      postedWorksIdSnapshot = props.postedWorksId
+    }   
+
 
     await dispatch({type:"loadDB" ,
       payload : {
@@ -113,6 +208,10 @@ const handlerPostUserId = (props) => {
     console.log("dispatched loadDb")
   }
 
+  // const getOriginalDBData = async() => {
+
+  // }
+
   useEffect(() => {
     if(isReady) {
       getDBData()
@@ -121,6 +220,8 @@ const handlerPostUserId = (props) => {
 
   console.log("reducer Data")
   console.log(JSON.stringify(state,null,2)+"+reducer Data")
+
+  console.log(JSON.stringify(RdInstantChangedWorksId)+"+RdInstantChangedWorkId")
 
   if(state.isLoading){
     return <>loading...loginUserData:{state.loginUserData} RdGetUid:{RdGetUid}</>
@@ -262,71 +363,75 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  const dBData = await Promise.all([
-
-    //dBData[0]
-    db.collection('wInfo').doc(params.postWorkId)
-    .collection('assessment').doc(params.postUserId).get()
-    .then((res)=> {
-      const data = res.data()
-      console.log("successed to get assessment")
-      return data
-    }).catch((error) => {
-      console.log('assessment DB get fail')
-      throw new Error(error)
-    }),
+  // const dBData = await Promise.all([
+  //   //dBData[0]
+  //   db.collection('wInfo').doc(params.postWorkId)
+  //   .collection('assessment').doc(params.postUserId).get()
+  //   .then((res)=> {
+  //     const data = res.data()
+  //     console.log("successed to get assessment")
+  //     return data
+  //   }).catch((error) => {
+  //     console.log('assessment DB get fail')
+  //     throw new Error(error)
+  //   }),
     
-    //dBData[1]
-    db.collection('wInfo').doc(params.postWorkId).get()
-    .then((res) => {
-      console.log("successed to get wInfo")
-      const data = res.data()
-      return data
-    })
-    .catch((error) => {
-      console.log('wInfo DB get fail')
-      throw new Error(error)
-    }),
+  //   //dBData[1]
+  //   db.collection('wInfo').doc(params.postWorkId).get()
+  //   .then((res) => {
+  //     console.log("successed to get wInfo")
+  //     const data = res.data()
+  //     return data
+  //   })
+  //   .catch((error) => {
+  //     console.log('wInfo DB get fail')
+  //     throw new Error(error)
+  //   }),
 
-    //dBData[2]
-    db.collection('privateUsers').doc(params.postUserId)
-    .collection('postedWorksId').doc(params.postWorkId)
-    .get()
-    .then((res) => {
-      console.log("successed to get postedWorksId")
-      const data = res.data()
-      return data
-    })
-  ])
+  //   //dBData[2]
+  //   db.collection('privateUsers').doc(params.postUserId)
+  //   .collection('postedWorksId').doc(params.postWorkId)
+  //   .get()
+  //   .then((res) => {
+  //     console.log("successed to get postedWorksId")
+  //     const data = res.data()
+  //     return data
+  //   })
+  // ])
 
-  console.log("+dBData[0]")
-  console.log(dBData[0])
-  console.log("+dBData[1]")
-  console.log(dBData[1])
-  console.log("+dBData[2]")
-  console.log(dBData[2])
+  // console.log("+dBData[0]")
+  // console.log(dBData[0])
+  // console.log("+dBData[1]")
+  // console.log(dBData[1])
+  // console.log("+dBData[2]")
+  // console.log(dBData[2])
 
-  const setDBData = {
-    assessment: dBData[0] 
-      ? {
-        ...dBData[0],
-        createTime : dBData[0].createTime 
-          ? dBData[0].createTime.toDate().toLocaleString("ja") 
-          : null
-        , //最近追加２０２１０８０６ 
-        updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
-      }
-      : null  
-    ,
-    wInfo: {
-      ...dBData[1],
-    },
-    postedWorksId : {
-      ...dBData[2],
-      created_at : dBData[2].created_at.toDate().toLocaleString("ja"),
-      updated_at : dBData[2].updated_at.toDate().toLocaleString("ja")
-    }
-  }
+  // const setDBData = {
+  //   assessment: dBData[0] 
+  //     ? {
+  //       ...dBData[0],
+  //       createTime : dBData[0].createTime 
+  //         ? dBData[0].createTime.toDate().toLocaleString("ja") 
+  //         : null
+  //       , //最近追加２０２１０８０６ 
+  //       updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
+  //     }
+  //     : null  
+  //   ,
+  //   wInfo: {
+  //     ...dBData[1],
+  //   },
+  //   postedWorksId : {
+  //     ...dBData[2],
+  //     created_at : dBData[2].created_at.toDate().toLocaleString("ja"),
+  //     updated_at : dBData[2].updated_at.toDate().toLocaleString("ja")
+  //   }
+  // }
+
+  const setDBData = await getOriginalDBData(params)
+
+  console.log("setDBData")
+  console.table(setDBData)
 
   return {
     props: setDBData,

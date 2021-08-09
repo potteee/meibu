@@ -37,6 +37,10 @@ export const UsersReducer = (state = initialState.users, action) => {
                 userAssessmentWorks : {
                     ...state.userAssessmentWorks,
                     ...action.payload.userAssessmentWorks
+                },
+                instantChangedWorkId : {
+                    ...state.instantChangedWorkId,
+                    ...action.payload.instantChangedWorkId
                 }
             }
         case Actions.LIKED_WORK:
@@ -47,6 +51,10 @@ export const UsersReducer = (state = initialState.users, action) => {
                 userAssessmentWorks : {
                     ...state.userAssessmentWorks,
                     ...action.payload.userAssessmentWorks
+                },
+                instantChangedWorkId : {
+                    ...state.instantChangedWorkId,
+                    ...action.payload.instantChangedWorkId
                 }
             }
         default:
