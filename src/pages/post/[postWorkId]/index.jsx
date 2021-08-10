@@ -15,10 +15,10 @@ import ObjectSort from '../../../foundations/share/objectSort'
 
 import { SCTypografyh5 } from 'src/styles/SC/shared/typografy/h5'
 
-import {db} from '../../../firebase/index'
+import {db , FirebaseTimestamp} from '../../../firebase/index'
 import {useSelector} from 'react-redux'
 
-import {getUserId,getUserName,getUserBookmark,getUserAssessmentWorks} from "../../../reducks/users/selectors";
+import {getUserId,getUserName,getUserBookmark,getUserAssessmentWorks,getInstantChangedWorksId} from "../../../reducks/users/selectors";
 // import { postWorkCreate } from '../../../reducks/works/operations'
 
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -160,6 +160,47 @@ const reducer = (state, action) => {
   }
 }
 
+const getOriginalDBData = async(params) => {
+  const assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
+  console.log(assessmentUrl+"+assessmentUrl")
+
+  const dBData = await Promise.all([
+    //dBData[0]
+    fetch(assessmentUrl)
+    .then(async(res)=> {
+      const data = await res.json()
+      console.log("successed to get assessment")
+      if (res.status !== 200) {
+        throw new Error(data.message)
+      }
+      return data
+    }).catch((error) => {
+      // alert('assessment DB get fail')
+      console.log('assessment DB get fail')
+      throw new Error(error)
+    }),
+    
+    //dBData[1]
+    db.collection('wInfo').doc(params.postWorkId).get()
+    .then((res) => {
+      console.log("successed to get wInfo")
+      const data = res.data()
+      return data
+    })
+    .catch((error) => {
+      console.log('wInfo DB get fail')
+      // alert('wInfo DB get fail')
+      throw new Error(error)
+    }),
+  ])
+
+  console.log(dBData+"+dBData")
+
+  return dBData
+
+}
+
+
 //作品情報閲覧ページ
 const Post = (props) => {
   const selector = useSelector((state) => state)
@@ -175,6 +216,9 @@ const Post = (props) => {
   const RdUserName = getUserName(selector)
   const RdIsBookmark = getUserBookmark(selector)
   const RdAssessmentWorks = getUserAssessmentWorks(selector)
+  const RdInstantChangedWorksId = getInstantChangedWorksId(selector)
+
+  const timestamp = FirebaseTimestamp.now()
 
   const useStyles = makeStyles((thema) => ({
     h3WorksName: {
@@ -203,8 +247,28 @@ const Post = (props) => {
   // const GetDBData = React.memo(async() => {
   const getDBData = async() => {
 
-    const assessmentSnapshot = props.assessment
-    const wInfoSnapshot = props.wInfo
+    let assessmentSnapshot = {}
+    let wInfoSnapshot = {}
+
+    if(RdInstantChangedWorksId.workId == workId &&
+    RdInstantChangedWorksId.timestamp.seconds >= timestamp.seconds - 600){
+    //更新から１０分以内であれば、DBからデータ持ってくる
+
+      console.log("get original db")
+      const params = { 
+        postWorkId : workId,
+        postUserId : 'index',
+      }
+      const DBData = await getOriginalDBData(params)
+
+      assessmentSnapshot = DBData.assessment
+      wInfoSnapshot = DBData.wInfo
+
+    } else {
+      console.log("get props")
+      assessmentSnapshot = props.assessment
+      wInfoSnapshot = props.wInfo
+    }
 
     let isAssessmenterFlag = false
     if(assessmentSnapshot){
@@ -283,6 +347,8 @@ const Post = (props) => {
 
   console.log("state@[postWorkId]/index.js")
   console.table(state)
+
+  console.log(JSON.stringify(RdInstantChangedWorksId)+"+RdInstantChangedWorkId")
 
   if(state.isLoading){
     return(
@@ -505,43 +571,12 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  const assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
-  console.log(assessmentUrl+"+assessmentUrl")
-
-  const dBData = await Promise.all([
-
-    //dBData[0]
-    fetch(assessmentUrl)
-    .then(async(res)=> {
-      const data = await res.json()
-      console.log("successed to get assessment")
-      if (res.status !== 200) {
-        throw new Error(data.message)
-      }
-      return data
-    }).catch((error) => {
-      // alert('assessment DB get fail')
-      console.log('assessment DB get fail')
-      throw new Error(error)
-    }),
-    
-    //dBData[1]
-    db.collection('wInfo').doc(params.postWorkId).get()
-    .then((res) => {
-      console.log("successed to get wInfo")
-      const data = res.data()
-      return data
-    })
-    .catch((error) => {
-      console.log('wInfo DB get fail')
-      // alert('wInfo DB get fail')
-      throw new Error(error)
-    }),
-  ])
-
-  console.log(dBData+"+dBData")
+  const dBData = getDBData(params)
 
   const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
+
+  console.log("setDBData")
+  console.table(setDBData)
 
   return {
     props: setDBData,

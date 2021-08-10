@@ -10,7 +10,7 @@ import SpeedDialPosting from '../../../components/speedDialPosting'
 import {db,FirebaseTimestamp} from '../../../firebase/index'
 
 import {useDispatch, useSelector} from "react-redux";
-import {getUserId ,getUserName,getUserAssessmentWorks,getInstantChangedWorkId} from '../../../reducks/users/selectors'
+import {getUserId ,getUserName,getUserAssessmentWorks,getInstantChangedWorksId} from '../../../reducks/users/selectors'
 
 import CreateIcon from '@material-ui/icons/Create';
 
@@ -129,7 +129,7 @@ const handlerPostUserId = (props) => {
   const RdGetUid = getUserId(selector)
   const RdUserName = getUserName(selector)
   const RdUserAssessmentWorks = getUserAssessmentWorks(selector)
-  const RdInstantChangedWorksId = getInstantChangedWorkId(selector)
+  const RdInstantChangedWorksId = getInstantChangedWorksId(selector)
 
   const router = useRouter()
   const { isReady } = useRouter()
@@ -137,6 +137,8 @@ const handlerPostUserId = (props) => {
   const [state,dispatch] = useReducer(reducer, initialState)
 
   const timestamp = FirebaseTimestamp.now()
+
+  const SSG_WAIT_SEC = 90
 
   const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
   console.log(query+"+query at postUserId")
@@ -152,7 +154,9 @@ const handlerPostUserId = (props) => {
     let postedWorksIdSnapshot = {}
 
     if(RdInstantChangedWorksId.workId == postWorkId &&
-    RdInstantChangedWorksId.timestamp.seconds <= timestamp.seconds + 600){
+    RdInstantChangedWorksId.timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
+    //更新から１０分以内であれば、DBからデータ持ってくる
+
       console.log("get original db")
 
       const params = { 
@@ -172,7 +176,6 @@ const handlerPostUserId = (props) => {
       wInfoSnapshot = props.wInfo
       postedWorksIdSnapshot = props.postedWorksId
     }   
-
 
     await dispatch({type:"loadDB" ,
       payload : {
@@ -362,71 +365,6 @@ export async function getStaticProps({ params }) {
   // 受け取ったパスパラーメータをもとに処理を行う
   console.log("params@staticProps")
   console.table(params)
-
-  // const dBData = await Promise.all([
-  //   //dBData[0]
-  //   db.collection('wInfo').doc(params.postWorkId)
-  //   .collection('assessment').doc(params.postUserId).get()
-  //   .then((res)=> {
-  //     const data = res.data()
-  //     console.log("successed to get assessment")
-  //     return data
-  //   }).catch((error) => {
-  //     console.log('assessment DB get fail')
-  //     throw new Error(error)
-  //   }),
-    
-  //   //dBData[1]
-  //   db.collection('wInfo').doc(params.postWorkId).get()
-  //   .then((res) => {
-  //     console.log("successed to get wInfo")
-  //     const data = res.data()
-  //     return data
-  //   })
-  //   .catch((error) => {
-  //     console.log('wInfo DB get fail')
-  //     throw new Error(error)
-  //   }),
-
-  //   //dBData[2]
-  //   db.collection('privateUsers').doc(params.postUserId)
-  //   .collection('postedWorksId').doc(params.postWorkId)
-  //   .get()
-  //   .then((res) => {
-  //     console.log("successed to get postedWorksId")
-  //     const data = res.data()
-  //     return data
-  //   })
-  // ])
-
-  // console.log("+dBData[0]")
-  // console.log(dBData[0])
-  // console.log("+dBData[1]")
-  // console.log(dBData[1])
-  // console.log("+dBData[2]")
-  // console.log(dBData[2])
-
-  // const setDBData = {
-  //   assessment: dBData[0] 
-  //     ? {
-  //       ...dBData[0],
-  //       createTime : dBData[0].createTime 
-  //         ? dBData[0].createTime.toDate().toLocaleString("ja") 
-  //         : null
-  //       , //最近追加２０２１０８０６ 
-  //       updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
-  //     }
-  //     : null  
-  //   ,
-  //   wInfo: {
-  //     ...dBData[1],
-  //   },
-  //   postedWorksId : {
-  //     ...dBData[2],
-  //     created_at : dBData[2].created_at.toDate().toLocaleString("ja"),
-  //     updated_at : dBData[2].updated_at.toDate().toLocaleString("ja")
-  //   }
-  // }
 
   const setDBData = await getOriginalDBData(params)
 
