@@ -571,7 +571,7 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  const dBData = getDBData(params)
+  const dBData = await getDBData(params)
 
   const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
 
