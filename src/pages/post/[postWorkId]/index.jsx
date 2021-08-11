@@ -196,7 +196,7 @@ const getOriginalDBData = async(params) => {
 
   console.log(dBData+"+dBData")
 
-  return dBData
+  return {assessment: dBData[0], wInfo: dBData[1]}
 
 }
 
@@ -570,9 +570,9 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  const dBData = await getOriginalDBData(params)
+  const setDBData = await getOriginalDBData(params)
 
-  const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
+  // const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
 
   console.log("setDBData")
   console.table(setDBData)
