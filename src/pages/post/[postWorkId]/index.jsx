@@ -160,8 +160,15 @@ const reducer = (state, action) => {
   }
 }
 
-const getOriginalDBData = async(params) => {
-  const assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
+const getOriginalDBData = async(params,history) => {
+
+  let assessmentUrl = ""
+
+  if (history == 'Post'){
+    assessmentUrl = `/api/firebase/assessment/${params.postWorkId}`
+  } else {
+    assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
+  }
   console.log(assessmentUrl+"+assessmentUrl")
 
   const dBData = await Promise.all([
@@ -258,7 +265,9 @@ const Post = (props) => {
         postWorkId : workId,
         postUserId : 'index',
       }
-      const DBData = await getOriginalDBData(params)
+
+      const history = 'Post' 
+      const DBData = await getOriginalDBData(params,history)
 
       assessmentSnapshot = DBData.assessment
       wInfoSnapshot = DBData.wInfo
@@ -570,7 +579,9 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  const setDBData = await getOriginalDBData(params)
+  const history = 'Props'
+
+  const setDBData = await getOriginalDBData(params,history)
 
   // const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
 
