@@ -244,7 +244,6 @@ const Post = (props) => {
 
   console.log(workId+"=workId")
 
-  // const GetDBData = React.memo(async() => {
   const getDBData = async() => {
 
     let assessmentSnapshot = {}
@@ -571,7 +570,7 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  const dBData = await getDBData(params)
+  const dBData = await getOriginalDBData(params)
 
   const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
 
