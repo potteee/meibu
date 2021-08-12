@@ -164,6 +164,8 @@ const getOriginalDBData = async(params,history) => {
 
   let assessmentUrl = ""
 
+  console.log(history+"+history")
+
   if (history == 'Post'){
     assessmentUrl = `/api/firebase/assessment/${params.postWorkId}`
   } else {

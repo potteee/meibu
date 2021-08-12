@@ -51,9 +51,12 @@ const reducer = (state,action) => {
   }
 }
 
-const getOriginalDBData = async(params) => {
-    const dBData = await Promise.all([
-    //dBData[0]
+const getOriginalDBData = async(params,history) => {
+
+  console.log(history+"+history")
+
+  const dBData = await Promise.all([
+  //dBData[0]
     db.collection('wInfo').doc(params.postWorkId)
     .collection('assessment').doc(params.postUserId).get()
     .then((res)=> {
@@ -164,7 +167,7 @@ const handlerPostUserId = (props) => {
         postWorkId : postWorkId,
       }
 
-      const DBData = await getOriginalDBData(params)
+      const DBData = await getOriginalDBData(params,"Main")
 
       assessmentSnapshot = DBData.assessment
       wInfoSnapshot = DBData.wInfo
@@ -366,7 +369,7 @@ export async function getStaticProps({ params }) {
   console.log("params@staticProps")
   console.table(params)
 
-  const setDBData = await getOriginalDBData(params)
+  const setDBData = await getOriginalDBData(params,"Props")
 
   console.log("setDBData")
   console.table(setDBData)
