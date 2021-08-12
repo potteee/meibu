@@ -12,7 +12,7 @@ module.exports = {
     return config;
   },
   env : {
-    url : isDevelop ? 'http://localhost:3060' : 'process.env.NEXT_PUBLIC_VERCEL_URL'
+    url : isDevelop ? 'http://localhost:3060' : 'NEXT_PUBLIC_VERCEL_URL'
     // url : isDevelop ? 'http://localhost:3060' : 'VERCEL_URL'
   }
 };
