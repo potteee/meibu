@@ -45,7 +45,6 @@ const News = ({worksData}) => {
     </>
     )
   } else {
-    console.log(process.env.url+"+process.env.url")
     return <>loading...</>
   }
 }

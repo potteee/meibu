@@ -374,6 +374,8 @@ export async function getStaticProps({ params }) {
   console.log("setDBData")
   console.table(setDBData)
 
+  console.log(process.env.url+"+process.env.url")
+
   return {
     props: setDBData,
     revalidate: 60,
