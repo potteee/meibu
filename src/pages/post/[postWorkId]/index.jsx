@@ -170,9 +170,9 @@ const getOriginalDBData = async(params,history) => {
 
   if (history == 'Post'){
     assessmentUrl = `/api/firebase/assessment/${params.postWorkId}`
-    
+
   } else {
-    assessmentUrl = `${process.env.url}/api/firebase/assessment/${params.postWorkId}`
+    assessmentUrl = `https://${process.env.url}/api/firebase/assessment/${params.postWorkId}`
     // assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
   }
   console.log(assessmentUrl+"+assessmentUrl")
@@ -588,8 +588,6 @@ export async function getStaticProps({ params }) {
   const history = 'Props'
 
   const setDBData = await getOriginalDBData(params,history)
-
-  // const setDBData = {assessment: dBData[0], wInfo: dBData[1]}
 
   console.log("setDBData")
   console.table(setDBData)
