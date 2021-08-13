@@ -97,7 +97,8 @@ export async function getStaticProps({ params }) {
     }
   
     const fetcher = async() => { 
-      const url = `https://${process.env.url}/api/firebase/user/${params.uid}`
+      const url = `${process.env.url}/api/firebase/user/${params.uid}`
+      // const url = `https://${process.env.url}/api/firebase/user/${params.uid}`
       // const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/user/${params.uid}`
       const res = await fetch(url)
   
