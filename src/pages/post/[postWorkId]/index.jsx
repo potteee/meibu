@@ -263,7 +263,7 @@ const Post = (props) => {
     let wInfoSnapshot = {}
 
     if(RdInstantChangedWorksId.workId == workId &&
-    RdInstantChangedWorksId.timestamp.seconds >= timestamp.seconds - 600){
+    RdInstantChangedWorksId.timestamp.seconds >= timestamp.seconds - 90){
     //更新から１０分以内であれば、DBからデータ持ってくる
 
       console.log("get original db")
