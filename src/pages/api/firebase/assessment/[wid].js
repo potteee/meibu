@@ -79,8 +79,8 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
     console.log(workData+"++++workData")
     console.log(JSON.stringify(workData)+"++++workData")
 
-    // res.status(200).json(state:"failed")
-    res.status(200).json(workData)
+    res.status(200).json(state:"failed")
+    // res.status(200).json(workData)
   // Redux access => cannot
   })
   .catch((error) => {
