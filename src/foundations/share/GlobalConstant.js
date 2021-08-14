@@ -7,4 +7,4 @@
 
 // define('SSG_WAIT_SEC',90)
 
-const SSG_WAIT_SEC = 90;
+export const SSG_WAIT_SEC = 86400;
