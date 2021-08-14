@@ -6,6 +6,7 @@ import Header from '../../../components/header'
 import Footer from '../../../components/footer'
 import ApplicationBar from '../../../components/applicationBar'
 import SpeedDialPosting from '../../../components/speedDialPosting'
+import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
 
 import {db,FirebaseTimestamp} from '../../../firebase/index'
 
@@ -141,8 +142,6 @@ const handlerPostUserId = (props) => {
 
   const timestamp = FirebaseTimestamp.now()
 
-  const SSG_WAIT_SEC = 90
-
   const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
   console.log(query+"+query at postUserId")
   const postWorkId = /^\/post\//.test(query) ? query.split('\/')[2] : "no data query"
@@ -155,6 +154,8 @@ const handlerPostUserId = (props) => {
     let assessmentSnapshot = {}
     let wInfoSnapshot = {}
     let postedWorksIdSnapshot = {}
+
+    console.log(SSG_WAIT_SEC+"+SSG_WAIT_SEC")
 
     if(RdInstantChangedWorksId.workId == postWorkId &&
     RdInstantChangedWorksId.timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
