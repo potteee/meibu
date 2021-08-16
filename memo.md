@@ -1,11 +1,6 @@
-    setUserBookmark((preUserBookmark) => {
-      if(!preUserBookmark[e.currentTarget.value]["deleteFlag"]){
-        preUserBookmark[e.currentTarget.value]["deleteFlag"] = true
-      } else if(preUserBookmark[e.currentTarget.value]["deleteFlag"] == false){
-        preUserBookmark[e.currentTarget.value]["deleteFlag"] = true
-      } else {
-        preUserBookmark[e.currentTarget.value]["deleteFlag"] = false
-      }
-      return {...preUserBookmark}
-    })
-  },[userBookmark])
+asyncToGenerator.js?1da1:6 Uncaught (in promise) 
+t {code: "auth/argument-error", message: "createUserWithEmailAndPassword failed: Expected 2 arguments but got 5.", a: null}
+a: null
+code: "auth/argument-error"
+message: "createUserWithEmailAndPassword failed: Expected 2 arguments but got 5."
+__proto__: Error

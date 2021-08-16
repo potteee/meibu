@@ -4,13 +4,13 @@ import React, {useState, useEffect, useCallback} from 'react';
 import { PrimaryButton, TextInput } from "../../styles/UIkit"
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import Header from '../../components/header'
+
 import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
 
 import {db} from '../../firebase/index'
 import {useDispatch,useSelector} from 'react-redux'
-import {getUserId,getUserName} from "../../reducks/users/selectors";
+import {getIsSignedIn, getUserId} from "../../reducks/users/selectors";
 
 // import { getWorkData } from '../../reducks/works/operations'
 import { DiscFull } from '@material-ui/icons'
@@ -49,6 +49,7 @@ const searchResult = () => {
   const selector = useSelector((state) => state)
 
   const uid = getUserId(selector);
+  const isSignIn = getIsSignedIn(selector);
 
   const router = useRouter()
 
@@ -63,7 +64,7 @@ const searchResult = () => {
   hist = /\&/.test(routerPath.split('hist=')[1]) 
           ? (routerPath.split('hist=')[1]).split('&')[0] 
           : routerPath.split('hist=')[1]
- 
+
   searchWord = 
       (/\&/.test(routerPath.split('searchWord=')[1]))
         ? ((routerPath.split('searchWord=')[1]).split('&')[0])
@@ -141,16 +142,13 @@ const searchResult = () => {
 
   const createNewWork = () => {
     router.push({
-      pathname: '/post/posting',
-      // pathname: '/post/index',
+      pathname: isSignIn ? '/post/posting' : '/menu/PleaseSignUpIn',
       query: {
         searchWord: searchWord,
-        // searchWord: decodeURIComponent(searchWord),
-        // searchWord: searchWord.replace('+',' ').replace('%2B','+'),
-        // searchWord: decodeURIComponent(searchWord.replace(/\+/g,' ')),
         infoMedia : "",
         workId : "NoData because firstPost",
         firstPostFlag : 1,
+        hist: "Posting",//Postingにすることで、ログイン後にPostingにいくようにする。
       }
     })
   }

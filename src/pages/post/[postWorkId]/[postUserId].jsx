@@ -11,17 +11,13 @@ import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
 import {db,FirebaseTimestamp} from '../../../firebase/index'
 
 import {useDispatch, useSelector} from "react-redux";
-import {getUserId ,getUserName,getUserAssessmentWorks,getInstantChangedWorksId} from '../../../reducks/users/selectors'
+import {getUserId ,getUserName,getUserAssessmentWorks,getInstantChangedWorksId ,getIsSignedIn} from '../../../reducks/users/selectors'
 
 import CreateIcon from '@material-ui/icons/Create';
 
 import Link from 'next/link'
 
-import useSWR,{ mutate } from 'swr'
-
 import post from 'src/components/speedDial/post'
-
-import ObjectSort from '../../../foundations/share/objectSort'
 
 //ユーザごとの作品ページを検索
 const initialState = {
@@ -134,6 +130,7 @@ const handlerPostUserId = (props) => {
   const RdUserName = getUserName(selector)
   const RdUserAssessmentWorks = getUserAssessmentWorks(selector)
   const RdInstantChangedWorksId = getInstantChangedWorksId(selector)
+  const isSignedIn = getIsSignedIn(selector)
 
   const router = useRouter()
   const { isReady } = useRouter()
@@ -157,8 +154,12 @@ const handlerPostUserId = (props) => {
 
     console.log(SSG_WAIT_SEC+"+SSG_WAIT_SEC")
 
-    if(RdInstantChangedWorksId.workId == postWorkId &&
-    RdInstantChangedWorksId.timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
+    const isIncludesICW = Object.keys(RdInstantChangedWorksId).includes(postWorkId)
+
+    console.log(isIncludesICW+"isIncludesICW")
+
+    if(isIncludesICW &&
+    RdInstantChangedWorksId?.[postWorkId].timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
     //更新から１０分以内であれば、DBからデータ持ってくる
 
       console.log("get original db")
@@ -210,7 +211,7 @@ const handlerPostUserId = (props) => {
           ? 1 
           : 2 
         ,//評価している１：していない２
-       }
+      }
     })
     console.log("dispatched loadDb")
   }
@@ -289,7 +290,7 @@ const handlerPostUserId = (props) => {
           </>
         ) : null }
 
-        <SpeedDialPosting
+        {isSignedIn && (<SpeedDialPosting
           workName={state.workName}
           workMedia={state.workMedia}
           workId={postWorkId}
@@ -306,6 +307,7 @@ const handlerPostUserId = (props) => {
           }]}
           // router={router}
         />
+        )}
 
         <br/>
         <h3>評価に対するコメント：{state.assessmentComment}</h3>
@@ -316,7 +318,6 @@ const handlerPostUserId = (props) => {
     )
   }
 }
-
 
 export async function getStaticPaths() {
   // getStaticPathsではapiにアクセスできない。

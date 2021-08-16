@@ -10,10 +10,10 @@ const post = (props) => {
     props.router.push({
         pathname: "/post/posting",
         query: {
-        searchWord: props.workName,
-        infoMedia : props.workMedia,
-        workId : props.workId,
-        firstPostFlag : props.pfirstPostFlag,
+            searchWord: props.workName,
+            infoMedia : props.workMedia,
+            workId : props.workId,
+            firstPostFlag : props.pfirstPostFlag,
         }
     })
 };

@@ -24,7 +24,7 @@ const SignUp = () => {
         [confirmPassword, setConfirmPassword] = useState("");
 
   const [signupPush,setSignupPush] = useState(false)
-
+  const { hist,searchWord,firstPostFlag } = router.query
 
   //useCallbackを使った方がパフォーマンスが良い
   const inputUserName = useCallback((event)=> {
@@ -46,8 +46,17 @@ const SignUp = () => {
   const accountButtonClicked = async() => {
     //   const signUpResult = dispatch(signUp(userName,email,password,confirmPassword));
     setSignupPush(true)
-    const signupResult = await dispatch(signUp(userName,email,password,confirmPassword,router));
-    
+    const signupResult = await dispatch(signUp(
+      userName,
+      email,
+      password,
+      confirmPassword,
+      router,
+      hist,
+      searchWord,
+      firstPostFlag
+    ));
+
     console.log(signupResult+"+signupResult")
     if(!signupResult){
       setSignupPush(false)

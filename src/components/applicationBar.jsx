@@ -28,27 +28,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 // import Container from '@material-ui/core/container';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
-
-// function ElevationScroll(props) {
-//   const { children, window } = props;
-//   // Note that you normally won't need to set the window ref as useScrollTrigger
-//   // will default to window.
-//   // This is only being set here because the demo is in an iframe.
-//   const trigger = useScrollTrigger({
-//     disableHysteresis: true,
-//     threshold: 0,
-//     target: window ? window() : undefined,
-//   });
-
-//   return React.cloneElement(children, {
-//     elevation: trigger ? 5 : 0, //昇降の高さ
-//   });
-// }
-
-// ElevationScroll.propTypes = {
-//   children: PropTypes.element.isRequired,
-// };
-
 const ApplicationBar = (props) => {
   const router = useRouter();
   const useStyles = makeStyles((theme) => ({

@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 
 //Redux
 import {useDispatch,useSelector} from 'react-redux'
-import {getUserId,getUserName} from "../reducks/users/selectors";
+import {getIsSignedIn, getUserId,getUserName} from "../reducks/users/selectors";
 
 //makeStyles
 import useStyles from "src/styles/overRide"
@@ -45,37 +45,21 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 // import Container from '@material-ui/core/container';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
-  // const SCAppBar = styled(AppBar)`
-  //   && {
-  //     top: auto;
-  //     bottom: -1px;
-  //     box-shadow : none;
-  //   }
-  // `;
-
 const Footer = () => {
-  // const useStyles = makeStyles((theme) => ({
-  //   appBarPosition : {
-  //     //  position: 'fixed', //defaultでオーバーライドだから書かなくていい。
-  //     top: "auto",
-  //     bottom: "-1px", //最下部がちらつくので-1しておく
-  //     boxShadow : "none", //デフォルトで影がついてるので消す。
-  //   },
-  //   footerToolBar : {
-  //     height : "2.3rem", //親要素のrem倍
-  //     minHeight : "2.3rem",
-  //   },
-  // }))
   const router = useRouter();
   const classes = useStyles();
   // export default function MenuAppBar() {
   // const [auth, setAuth] = useState(true);
   const selector = useSelector((state) => state)
   //上記よりこっちの方が処理漏れ少ない？
-  const uid = getUserId(selector);
+  const isSignedIn = getIsSignedIn(selector);
   
   const handleGoMypage = () => {
-    router.push('/menu/mypage')
+    if(isSignedIn) {
+      router.push('/menu/mypage')
+    } else {
+      router.push('/menu/PleaseSignUpIn')
+    }
   }
   const handleGoNotification = () => {
     router.push('/menu/notification')
@@ -109,118 +93,50 @@ const Footer = () => {
 
   return (
     <>
-      {/* <a>aaa</a> */}
-      {/* <Box> */}
-      {/* <Box className={classes.masterBox}> //スクロールが一番下までいくようになる設定 ...なの？ */}
-      {/* <Box sx={{ flexGrow: 1 }}> //スクロールが一番下までいくようになる設定 */}
-        {/* <React.Fragment> */}
-          {/* <CssBaseline /> */}
-          {/* <ElevationScroll> */}
-          {/* <div className={classes.appBarPosition}> */}
-          {/* <ThemeProvider theme={appBarTheme}> */}
-            {/* <AppBar>  */}
-            <SCAppBar> 
-            {/* <AppBar classes={{positionFixed: classes.appBarPosition}}>  */}
-            {/* <AppBar className={classes.appBarPosition}>  */}
-            {/* <AppBar position="fixed" className={classes.appBarPosition}>  */}
-            {/* 下記のsxはなぜか効かない */}
-            {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}> */}
-              <SCToolBar variant="dense">
-                <Grid container item xs={12} justify="space-between" direction="row">
-                  <Grid container item xs={2} justify="center" alignItems="center">
-                    {/* <a>マイページ</a> */}
-                    <IconButton
-                      onClick={handleGoMypage}
-                      color="inherit"
-                    >
-                      <HomeIcon />
-                    </IconButton>
-                  </Grid>
-                  <Grid container item xs={2} justify="center" alignItems="center">
-                    {/* <a>通知</a> */}
-                    <IconButton
-                      onClick={handleGoNotification}
-                      color="inherit"
-                    >
-                      <NotificationsNoneIcon />
-                    </IconButton>
-                  </Grid>
-                  <Grid container item xs={2} justify="center" alignItems="center">
-                    {/* <a>NEWS</a> */}
-                    <IconButton
-                      onClick={handleGoNews}
-                      color="inherit"
-                    >
-                      <AnnouncementOutlinedIcon />
-                    </IconButton>
-                  </Grid>
-                  <Grid container item xs={2} justify="center" alignItems="center">
-                    {/* <a>検索</a> */}
-                    <IconButton
-                      onClick={handleGoSearch}
-                      color="inherit"
-                    >
-                      <SearchIcon />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </SCToolBar>
-            </SCAppBar>
-            {/* </AppBar> */}
-          {/* </ThemeProvider> */}
-          {/* </div> */}
-          {/* </ElevationScroll> */}
-        {/* </React.Fragment> */}
-      {/* </Box> */}
+      <SCAppBar> 
+        <SCToolBar variant="dense">
+          <Grid container item xs={12} justify="space-between" direction="row">
+            <Grid container item xs={2} justify="center" alignItems="center">
+              {/* <a>マイページ</a> */}
+              <IconButton
+                onClick={handleGoMypage}
+                color="inherit"
+              >
+                <HomeIcon />
+              </IconButton>
+            </Grid>
+            <Grid container item xs={2} justify="center" alignItems="center">
+              {/* <a>通知</a> */}
+              <IconButton
+                onClick={handleGoNotification}
+                color="inherit"
+              >
+                <NotificationsNoneIcon />
+              </IconButton>
+            </Grid>
+            <Grid container item xs={2} justify="center" alignItems="center">
+              {/* <a>NEWS</a> */}
+              <IconButton
+                onClick={handleGoNews}
+                color="inherit"
+              >
+                <AnnouncementOutlinedIcon />
+              </IconButton>
+            </Grid>
+            <Grid container item xs={2} justify="center" alignItems="center">
+              {/* <a>検索</a> */}
+              <IconButton
+                onClick={handleGoSearch}
+                color="inherit"
+              >
+                <SearchIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+        </SCToolBar>
+      </SCAppBar>
     </>
   )
 }
 
 export default Footer
-
-
-
-// const Footer = () => {
-//   const selector = useSelector((state) => state)
-  
-//   console.log("Footer Start")
-  
-//   const loginStatus = getIsSignedIn(selector)
-//   const userId = getUserId(selector)
-
-//   console.log("Footer End")
-//   return(
-//   <footer>
-//     <ul className={styles.undermenu}>
-//       <li>
-//         <Link
-//           href={{
-//           pathname: loginStatus ? "/menu/mypage" : "/auth/signin" ,
-//           query: loginStatus ? { id : userId} : {hist : "Mypage"} ,
-//         }}>
-//             <a>mypage</a>
-//         </Link> 
-//       </li>
-//       <li>
-//         <Link href="/menu/notification">
-//           <a>notification</a>
-//         </Link>
-//       </li>
-//       <li>
-//         <Link href="/">
-//           <a>news</a>
-//         </Link>
-//       </li>
-//       <li>
-//         <Link href={{
-//           pathname: "/menu/search",
-//           query: {hist : "Search"},
-//         }}>
-//           <a>search</a>
-//         </Link>
-//       </li>
-//     </ul>
-//   </footer>
-//   )
-// }
-// export default Footer

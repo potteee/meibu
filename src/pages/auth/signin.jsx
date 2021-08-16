@@ -16,7 +16,7 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const router = useRouter()
   // const uid = useSelector(state => state)
-  const { hist } = router.query
+  const { hist,searchWord,firstPostFlag } = router.query
   const oriQuery = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
 
   // const tmpEmail = /\?email=/.test(query) ? query.split('email=')[1] : ""
@@ -53,7 +53,7 @@ const SignIn = () => {
 
   //useCallbackに入れてあげないと、dispatch(signInAction...のところで再レンダリングされる。
   const signInModule = useCallback(async(email,password, router) => {
-    return await dispatch(signIn(email, password, router))
+    return await dispatch(signIn(email, password, router,hist,searchWord,firstPostFlag))
   },[]);
 
   const loginButtonClicked = async() => {
@@ -78,15 +78,9 @@ const SignIn = () => {
       <>
         <ApplicationBar title="ログイン" />
         {/* <Header /> */}
-        {hist == "Posting" && (
+        {/* {hist == "Posting" && (
           <p>投稿機能を使用するにはログインしてください</p>
-        )}
-        {hist == "Mypage" && (
-          <p>MyPageを見るにはログインしてね！</p>
-        )}
-        {/* <div className="c-section-container"> */}
-        {/* <h2 className="u-text-center u-text__headline">ログイン画面</h2> */}
-        {/* <div className="module-spacer--medium" /> */}
+        )} */}
         {qStatus == "requiredMail" 
         ?(
           <>

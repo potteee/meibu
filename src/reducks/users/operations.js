@@ -14,7 +14,7 @@ const usersRef = db.collection('users')
 const privateUserRef = db.collection('privateUsers')
 // const selector = useSelector((state) => state)
 
-export const signIn = (email,password,router) => {
+export const signIn = (email,password,router,hist,searchWord,firstPostFlag) => {
     // const router = useRouter()    
     // async (dispatch) => {
     return async (dispatch) => {
@@ -133,7 +133,11 @@ export const signIn = (email,password,router) => {
         if(signinSucCount >= 2){
             router.push({
                 pathname: '/auth/signin',
-                query: { status: 'requiredMail' }
+                query: { 
+                    status: 'requiredMail',
+                    hist: hist,
+                    searchWord: searchWord,
+                }
             })
             return false
         } 
@@ -164,11 +168,16 @@ export const signIn = (email,password,router) => {
                 console.log(JSON.stringify(userRedux)+"+usrRedux@J")
                 
                 dispatch(signInAction(userRedux))
+
+                console.log(hist,searchWord+"+hist,searchWord")
                 
-                //Someoneもう使ってないかも...?
                 router.push({
-                    pathname: '/menu/mypage',
-                    query: { name: 'Someone' }
+                    pathname: hist != "Posting" ? '/menu/mypage' : '/post/posting',
+                    query: { 
+                        searchWord: searchWord ,
+                        firstPostFlag : firstPostFlag,
+                        hist: hist ,
+                    }
                 })
                 
                 return true
@@ -195,7 +204,16 @@ export const signOut = () => {
     }
 }
 
-export const signUp = ( userName, email, password, confirmPassword,router) => {
+export const signUp = ( 
+    userName, 
+    email, 
+    password, 
+    confirmPassword,
+    router,
+    hist,
+    searchWord,
+    firstPostFlag
+    ) => {
     // const router = useRouter() ///ここダメって言われる。onClickのなかはだめ
     return async (dispatch) => {
         var regexAtto = new RegExp(/^[a-zA-Z0-9!¥_¥]*$/)
@@ -291,9 +309,16 @@ export const signUp = ( userName, email, password, confirmPassword,router) => {
                     ])
 
                     router.push({
+                        // pathname: '/auth/signin',
+                        // query: {
+                            //     email : email,
+                            // }
                         pathname: '/auth/signin',
-                        query: {
+                        query: { 
                             email : email,
+                            searchWord: searchWord ,
+                            firstPostFlag : firstPostFlag,
+                            hist: hist ,
                         }
                     })
 
@@ -443,8 +468,7 @@ export const addPostedWork = (
         }
 
         const instantChangedWorkId = {
-            workId : workId,
-            timestamp : timestamp,
+            [workId] : {timestamp : timestamp},
         }
 
         await dispatch(
@@ -460,8 +484,9 @@ export const likedWork = (userAssessmentWorks) => {
     const timestamp = FirebaseTimestamp.now()
 
     const instantChangedWorkId = {
-        workId : workId,
-        timestamp : timestamp,
+        [Object.keys(userAssessmentWorks)[0]] : {timestamp : timestamp},
+        // workId : workId,
+        // timestamp : timestamp,
     }   
 
     return async (dispatch) => {

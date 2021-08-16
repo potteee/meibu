@@ -18,7 +18,7 @@ import { SCTypografyh5 } from 'src/styles/SC/shared/typografy/h5'
 import {db , FirebaseTimestamp} from '../../../firebase/index'
 import {useSelector} from 'react-redux'
 
-import {getUserId,getUserName,getUserBookmark,getUserAssessmentWorks,getInstantChangedWorksId} from "../../../reducks/users/selectors";
+import {getUserId,getUserName,getUserBookmark,getUserAssessmentWorks,getInstantChangedWorksId, getIsSignedIn} from "../../../reducks/users/selectors";
 // import { postWorkCreate } from '../../../reducks/works/operations'
 
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -32,6 +32,7 @@ import like ,{likeHikoukai} from 'src/components/speedDial/like'
 import bookmark from 'src/components/speedDial/bookmark'
 import post from 'src/components/speedDial/post'
 
+import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
 
 const initialState = {
   isLoading : true,
@@ -218,6 +219,7 @@ const getOriginalDBData = async(params,history) => {
 const Post = (props) => {
   const selector = useSelector((state) => state)
   const userId = getUserId(selector)
+  const isSignIn = getIsSignedIn(selector)
 
   const router = useRouter()
   const { isReady } = useRouter()
@@ -262,8 +264,12 @@ const Post = (props) => {
     let assessmentSnapshot = {}
     let wInfoSnapshot = {}
 
-    if(RdInstantChangedWorksId.workId == workId &&
-    RdInstantChangedWorksId.timestamp.seconds >= timestamp.seconds - 90){
+    const isIncludesICW = Object.keys(RdInstantChangedWorksId).includes(workId)
+
+    console.log(isIncludesICW+"isIncludesICW")
+
+    if(isIncludesICW &&
+    RdInstantChangedWorksId?.[workId].timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
     //更新から１０分以内であれば、DBからデータ持ってくる
 
       console.log("get original db")
@@ -341,7 +347,7 @@ const Post = (props) => {
           : false
         , 
         //ログインユーザが評価した作品の公開有無
-        isMyAssessmentPublic : RdAssessmentWorks?.isPublic 
+        isMyAssessmentPublic : RdAssessmentWorks?.[workId]["isPublic"] 
           ? true 
           : false
         , 
@@ -522,22 +528,23 @@ const Post = (props) => {
             }}>
               <a>[{state.workName}] {state.isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
             </Link>
-            <SpeedDialPosting
-              workName={state.workName} 
-              workMedia={state.workMedia} 
-              workId={workId} 
-              isLiked={state.isLiked}
-              isBookmark={state.isBookmark}
-              likedCount={state.likedCount}
-              isAssessed={state.isAssessed}
-              infoCount={state.infoCount}
-              // uid={userId}
-              isPublic={true}//常にtrueで渡して、非公開の時にlikeHikoukaiでfalseに変える
-              pfirstPostFlag={state.isAssessed ? 2 : 0} 
-              hist={"work"}
-              sdpActions={state.sdpActions}
-              dispatch={dispatch}
-            />
+            {isSignIn && (<SpeedDialPosting
+                workName={state.workName} 
+                workMedia={state.workMedia} 
+                workId={workId} 
+                isLiked={state.isLiked}
+                isBookmark={state.isBookmark}
+                likedCount={state.likedCount}
+                isAssessed={state.isAssessed}
+                infoCount={state.infoCount}
+                // uid={userId}
+                isPublic={true}//常にtrueで渡して、非公開の時にlikeHikoukaiでfalseに変える
+                pfirstPostFlag={state.isAssessed ? 2 : 0} 
+                hist={"work"}
+                sdpActions={state.sdpActions}
+                dispatch={dispatch}
+              />) 
+            }
           </>
         </Box>
 

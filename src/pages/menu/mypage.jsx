@@ -41,21 +41,11 @@ const MyPage = () => {
   const userBirthday = getUserBirthday(selector)
   let userBookmark = getUserBookmark(selector)
   let userAssessment = getUserAssessmentWorks(selector)
-
-  // postedWorkId
-  let noWorkFlag = true
   
   const noLoginState = () => {
     console.log("start noLoginState")
     router.push('/')
   }
-
-  // useEffect(() => {
-  //   (async() => {    
-  //   })()
-  // },[])
-
-  let dataFlag = false
 
   console.log(userAssessment+"+userAssessment")
 
@@ -86,6 +76,7 @@ const MyPage = () => {
     //ログアウト状態時
     //この条件つけないとSSR時にdispatchしてしまってエラーになる
     } else if (typeof window !== 'undefined') {
+      console.log("windows is undefined")
       return (
         <>
           {dispatch(noLoginState)}

@@ -31,10 +31,10 @@ import Header from '../../components/header'
 import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
 import { parseCookies } from 'nookies'
-import { set } from 'immutable'
+import { is, set } from 'immutable'
 import {useDispatch,useSelector} from 'react-redux'
 
-import {getUserId,getUserName} from "../../reducks/users/selectors";
+import {getUserId,getUserName,getIsSignedIn} from "../../reducks/users/selectors";
 // import { postWorkCreate } from '../../reducks/works/operations'
 import { addPostedWork } from '../../reducks/users/operations'
 
@@ -47,6 +47,8 @@ import { db, FirebaseTimestamp } from "../../firebase/index";
 import {tagMap,tagExtraData} from "../../models/tagMap"
 import {categoryMap} from "../../models/categoryMap"
 import {bunruiMap} from "../../models/bunruiMap"
+import PleaseSignUpIn from '../menu/PleaseSignUpIn'
+import GLoading from '../../components/GLoading';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -296,10 +298,13 @@ const Posting = () => {
   console.log(JSON.stringify(selector,null,2)+"+selector")
   //上記よりこっちの方が処理漏れ少ない？
   const uid = getUserId(selector);
+  const isSignin = getIsSignedIn(selector);
   const userName = getUserName(selector);
   const classes = useStyles();
 
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
+  const { isReady } = useRouter()
+
   // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
   // console.log(asPath+"+asPath first")
   const oriQuery = /^\/post\/posting\?searchWord=/.test(asPath) ? asPath.split('\/post\/posting')[1] : ""
@@ -334,8 +339,8 @@ const Posting = () => {
     firstPostFlag = decodeURIComponent(/\&/.test(oriQuery.split('&firstPostFlag=')[1]) ? (oriQuery.split('&firstPostFlag=')[1]).split('&')[0] : oriQuery.split('&firstPostFlag=')[1])
     console.log(firstPostFlag+"+firstPostFlag first")
   } else {
+    console.log("no oriQuery")
   }
-
 
   console.log(query+"++query")
   // console.log(querysWorkName+"+querysWorkName")
@@ -361,20 +366,13 @@ const Posting = () => {
   const [showMoreOriginal ,setShowMoreOriginal] = useState(totalCountImpression + firstCheckBoxDisp)
   const [showMorePosition ,setShowMorePosition] = useState(totalCountOriginal + firstCheckBoxDisp)
 
-  const [standbyState , setStandbyState] = useState(false)
+  // const [standbyState , setStandbyState] = useState(false)
 
   let tagResult = {}
 
   Object.keys(tagMap).map((map) => 
     tagResult = {...tagResult, [map] : false}
-    // tagResult = {...tagResult, [tagMap.[map].key] : false}
-    // console.log(tagMap.map+"+inMap")
   )
-  // console.log(tagResult)
-  // console.log(JSON.stringify(tagResult))
-  // console.log("++tagResult")
-  // console.log(tagMap.Autodoa.key+"+tagMap.Autodoa.key")
-  // console.log(JSON.stringify(tagMap.Autodoa)+"+tagMap.Autodoa")
 
   const [tagCheckBox, setTagCheckBox] = useState(tagResult)
   
@@ -414,19 +412,9 @@ const Posting = () => {
     setTagCheckBox({...tagCheckBox,[event.target.name]: event.target.checked})
   },[tagCheckBox])
   
-  // console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J")
-  // console.log(checkBoxState+"+checkBoxState")
-  // console.log(JSON.stringify(tagCheckBox)+"+tagCheckBox@J")
-  
   const inputWorkComment = useCallback((event) => {
     setWorkComment(event.target.value)
   }, [])
-  // }, [workComment]) // 意味ない
-
-  // const isPublicHandleChange = useCallback((event) => {
-  //   setIsPublic(event.target.checked)
-  //   // },[checkBoxState])
-  // },[isPublic])
 
   const isSpoilerHandleChange = useCallback((event) => {
     setIsSpoiler(event.target.checked)
@@ -466,99 +454,114 @@ const Posting = () => {
 
   //useEffect
   useEffect(() => {
-    (async() => {
-      if(query && qInfoMedia){
-        setWorkName(query)
-        setWorkMedia(qInfoMedia)
-      }
-      console.log(workName+"+workName")
-      console.log(tagCheckBox+"+tagCheckBox")
-      console.log(firstPostFlag+"+firstPostFlag")
-
-      //既に評価済みの評価を編集する場合
-      if(firstPostFlag == 2){
-        if(uid != "uid initial"){
-          console.log("firstPostFlag = 2 effect start")
-          console.log(uid+"+uid +++")
-          console.log(preWorkId+"preWorkId +++")
-          await db.collection('privateUsers').doc(uid)
-          .collection('postedWorksId').doc(preWorkId)
+    if(oriQuery && isSignin){
+      (async() => {
+        if(query && qInfoMedia){
+          setWorkName(query)
+          setWorkMedia(qInfoMedia)
+        }
+        console.log(workName+"+workName")
+        console.log(tagCheckBox+"+tagCheckBox")
+        console.log(firstPostFlag+"+firstPostFlag")
+  
+        //既に評価済みの評価を編集する場合
+        if(firstPostFlag == 2){
+          if(uid != "uid initial"){
+            console.log("firstPostFlag = 2 effect start")
+            console.log(uid+"+uid +++")
+            console.log(preWorkId+"preWorkId +++")
+            await db.collection('privateUsers').doc(uid)
+            .collection('postedWorksId').doc(preWorkId)
+            .get()
+            .then((snapshot) => {
+              // console.log(JSON.stringify(snapshot)+"+snapshot@J")
+              console.log("+snapshot")
+              console.log(snapshot)
+              console.log(snapshot.data()+"+snapshot.data()")
+              console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
+              // console.log(snapshot.data().assessmentCategory+"+snapshot.data().assessmentCategory") 
+              console.log(snapshot.data().assessmentWorkTag+"+snapshot.data().assessmentWorkTag") 
+            
+              snapshot.data().assessmentWorkTag.map((tag) => {
+                console.log(tag+"+tags")
+                Object.keys(tagMap).map((map) => {
+                  if([tagMap[map].key] == tag){
+                    setTagCheckBox(tagCheckBox => ({...tagCheckBox , [map]:true}))
+                  }
+                })
+              })            
+              setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
+              setWorkComment(snapshot.data().workComment)
+              setIsPublic(snapshot.data().isPublic)
+              // isPublic = snapshot.data().isPublic
+              setIsSpoiler(snapshot.data().isSpoiler)
+              setIsLiked(snapshot.data().isLiked)
+              console.log(snapshot.data().isLiked+"+setIsLiked")
+            })
+            .catch((error) => {
+              alert('failed fistPostFlag 2 get postedWorksId')
+              throw new Error(error)
+            })
+          } else {
+            console.log(uid+"+uid")
+          }
+          await db.collection('wInfo').doc(preWorkId)
           .get()
           .then((snapshot) => {
-            // console.log(JSON.stringify(snapshot)+"+snapshot@J")
-            console.log("+snapshot")
-            console.log(snapshot)
-            console.log(snapshot.data()+"+snapshot.data()")
             console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-            // console.log(snapshot.data().assessmentCategory+"+snapshot.data().assessmentCategory") 
-            console.log(snapshot.data().assessmentWorkTag+"+snapshot.data().assessmentWorkTag") 
-          
-            snapshot.data().assessmentWorkTag.map((tag) => {
-              console.log(tag+"+tags")
-              Object.keys(tagMap).map((map) => {
-                if([tagMap[map].key] == tag){
-                  setTagCheckBox(tagCheckBox => ({...tagCheckBox , [map]:true}))
+            snapshot.data().winfoCategory.map((cate) => {
+              console.log(cate+"+cates")
+              Object.keys(categoryMap).map((map) => {
+                if(categoryMap[map] == cate){
+                  setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
                 }
               })
-            })            
-            setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
-            setWorkComment(snapshot.data().workComment)
-            setIsPublic(snapshot.data().isPublic)
-            // isPublic = snapshot.data().isPublic
-            setIsSpoiler(snapshot.data().isSpoiler)
-            setIsLiked(snapshot.data().isLiked)
-            console.log(snapshot.data().isLiked+"+setIsLiked")
+            })
           })
           .catch((error) => {
-            alert('failed fistPostFlag 2 get postedWorksId')
+            alert('failed fistPostFlag 0 get wInfo')
             throw new Error(error)
           })
-        } else {
-          console.log(uid+"+uid")
         }
-        await db.collection('wInfo').doc(preWorkId)
-        .get()
-        .then((snapshot) => {
-          console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-          snapshot.data().winfoCategory.map((cate) => {
-            console.log(cate+"+cates")
-            Object.keys(categoryMap).map((map) => {
-              if(categoryMap[map] == cate){
-                setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
-              }
+        //未評価の既に登録されている作品
+        if(firstPostFlag == 0){
+          console.log("firstPostFlag = 0 effect start")
+          await db.collection('wInfo').doc(preWorkId)
+          .get()
+          .then((snapshot) => {
+            console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
+            snapshot.data().winfoCategory.map((cate) => {
+              console.log(cate+"+cates")
+              Object.keys(categoryMap).map((map) => {
+                if(categoryMap[map] == cate){
+                  setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
+                }
+              })
             })
           })
-        })
-        .catch((error) => {
-          alert('failed fistPostFlag 0 get wInfo')
-          throw new Error(error)
-        })
-      }
-      //未評価の既に登録されている作品
-      if(firstPostFlag == 0){
-        console.log("firstPostFlag = 0 effect start")
-        await db.collection('wInfo').doc(preWorkId)
-        .get()
-        .then((snapshot) => {
-          console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-          snapshot.data().winfoCategory.map((cate) => {
-            console.log(cate+"+cates")
-            Object.keys(categoryMap).map((map) => {
-              if(categoryMap[map] == cate){
-                setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
-              }
-            })
+          .catch((error) => {
+            alert('failed fistPostFlag 0 get wInfo')
+            throw new Error(error)
           })
-        })
-        .catch((error) => {
-          alert('failed fistPostFlag 0 get wInfo')
-          throw new Error(error)
-        })
-      }
-
-      setStandbyState(true)
-
-    })()
+        }
+      })()
+    } else if(!isSignin) {
+      router.replace({
+        pathname: '/menu/PleaseSignUpIn',
+        query: {
+          hist : "Posting",
+          searchWord : query,
+        }
+      })
+    } else {
+      router.replace({
+        pathname: '/menu/search',
+        query: {
+          hist : "Posting",
+        }
+      })
+    }
+    //setStandbyState(true)
   },[selector])
   
   console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J chuu")
@@ -599,13 +602,6 @@ const Posting = () => {
       alert("カテゴリを選択してください！")
       return false
     }
-
-
-    //この条件そもそも入らなくない？？
-    // if(goCheckBoxState == ""){
-    //   goCheckBoxState =  [...goCheckBoxState,categoryMap[map]]
-    //   // goCheckBoxState.push("None")
-    // }
 
     let goTagCheckBoxState = []
     Object.keys(tagCheckBox).map((map,index) => {
@@ -672,15 +668,20 @@ const Posting = () => {
     })
   }
 
-  if(standbyState){
+  // if(!isReady || !standbyState){
+  if(!isReady || !oriQuery || !isSignin){
+    return(
+      <GLoading />
+    )
+  } else {
     return (
       <>
-        {/* <Header /> */}
-        {/* <div className="c-section-container">
-          {/* // 他人が登録した作品を評価 */}
+        <ApplicationBar title="新規登録"/>
+        {/* {isSignin === true
+        ? (  */}
+        {/* <> */}
           {firstPostFlag == 0 && (
             <>
-            <ApplicationBar title="新規登録"/>
             {/* <ApplicationBar title="新規登録" auth={uid} /> */}
             {/* <h2>新規評価</h2> */}
             <Typography className={classes.h5WorksTitle}>
@@ -702,7 +703,7 @@ const Posting = () => {
             <h3 className={classes.h3WorksNamePosting}>{workMedia}</h3>
             </>
           )}
-
+          
           {/* // 新規登録 */}
           {firstPostFlag == 1 && (
             <>
@@ -800,415 +801,350 @@ const Posting = () => {
             </h3>
             </>
           )}
-        {/* </div> */}
-
-        {/* ログインしていないと以下は表示されない */}
-        {uid !== "uid initial" 
-          ? (
-            <div>
-              <FormControlLabel
-                control={
-                  <CheckIconBox
-                  checked={isLiked} onChange={isLikedHandleChange} 
-                  name={"isLiked"} color={"secondary"}
-                  // classes={{ root: classes.tagInputCheck }}
-                  />}
-                label = {
-                  <span>いいね</span>
-                }
-                className={classes.postingInlineNetabareBox}
-              />
-            {/* <div className="c-section-container"> */}
-              <h2 className={classes.postingH2}>採点評価</h2>
-              <FormControl className={classes.FCtensuu}>
-                <TextInput
-                  fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
-                  rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
-                />
-              </FormControl>
-              <h2 className={classes.postingH2}>タグ/属性</h2> 
-              {/* <Grid container item spacing={0} justify={"center"} alignItems="center">  
-                <Button onClick={() => {
-                  setShowGenre(!showGenre)
-                }}> 
-                  {(showGenre == true) ? "タグ全体を非表示" : "タグを選択する(任意)"}
-                </Button>
-              </Grid> */}
-              <FormGroup className={classes.tagFormGroup}>
-                <FormControl margin="none">
-                  <Collapse in={showGenre} timeout={1000}>
-                    <Grid container classes={{ root: classes.tagMasterGrid}} alignContent="space-between" spacing={0}>
-                      {/* //whiteSpaceは認識しないようなので削除してみる。 */}
-                      {/* <Grid container classes={{ root: classes.tagMasterGrid}} whiteSpace="nowrap" alignContent="space-between" spacing={0}> */}
-                      {(() => {
-                        let tagList = []
-                        let displayFlag = true
-
-                        for(let j = 0;j < Object.keys(tagMap).length;j++){
-                          tagList = [...tagList , 
-                            <>
-                              {(() => {
-                                switch(j) {
-                                  case 0 : //ジャンル
-                                    return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
-                                  case showMoreGenre : 
-                                    displayFlag = false 
-                                    if(showMoreGenre != totalCountGenre){
-                                      break
-                                    }
-                                  case totalCountGenre: //印象
-                                    displayFlag = true
-                                    return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
-                                  case showMoreImpression :
-                                    displayFlag = false
-                                    if(showMoreImpression != (totalCountImpression)){
-                                      break
-                                    }
-                                  case totalCountImpression : // 原作
-                                    displayFlag = true
-                                    return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
-                                  case showMoreOriginal :
-                                  // case totalCountImpression + 5 :
-                                    displayFlag = false                                
-                                    if(showMoreOriginal != (totalCountOriginal)){
-                                      break
-                                    }
-                                    // break
-                                  case totalCountOriginal : //人
-                                    displayFlag = true
-                                    return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
-                                  case showMorePosition :
-                                    displayFlag = false
-                                    if(showMorePosition != (totalCountPosition)){
-                                      break
-                                    }
-                                    // break
-                                  default :
-                                    break
-                                }
-                              })()}
-
-                              {/* //チェックボックス 部分 */}
-                              <Grid container item xs={4} sm={3} md={2} spacing={0} 
-                                classes={{root: classes.tagItemGrid}} 
-                                // classes={displayFlag ? {root: classes.tagItemGrid} : {root: classes.tagItemGridHidden}} 
-                                justify="space-evenly"
-                              >
-                                <Collapse in={displayFlag} timeout={1000}>
-                                  <FormControlLabel 
-                                    control={
-                                      <CheckIconBox
-                                      checked={tagCheckBox[Object.keys(tagMap)[j]]} onChange={tagCheckBoxHandleChange} 
-                                      name={Object.keys(tagMap)[j]} color={"secondary"}
-                                      classes={{ root: classes.tagInputCheck }}
-                                      />
-                                    }
-                                    label = {
-                                      [tagMap[Object.keys(tagMap)[j]].key]
-                                    }
-                                    // className = {classes.formControlLabel}
-                                    
-                                    classes={{root: classes.tagFormControlLabel}}
-                                    // classes={displayFlag ? {root: classes.tagFormControlLabel} : { root: classes.tagFormControlLabelHidden}}
-                                      // : (classes={{ root: classes.tagFormControlLabelHidden}})
-                                    labelPlacement="bottom"
-                                    // lineHeight={1}
-                                  />
-                                </Collapse>
-                              </Grid>
-
-                              {(() => {
-                                switch(j) {
-                                  case (showMoreGenre -1) :
-                                  return (
-                                      <Grid container item spacing={0} justify={
-                                        (showMoreGenre != totalCountGenre) 
-                                          ? "flex-end" 
-                                          : "flex-start"
-                                        }
-                                        alignItems="flex-start"
-                                      >  
-                                        <Button onClick={() => {
-                                          // setShowMoreGenre(showMoreGenre + 3) 
-                                          setShowMoreGenre((preShowMoreGenre) => { 
-                                            if(showMoreGenre != totalCountGenre){　 //全てが表示されてるかいなか
-                                              preShowMoreGenre = preShowMoreGenre + 54
-                                              if (preShowMoreGenre > totalCountGenre) {
-                                                  return totalCountGenre
-                                              } else {
-                                                return preShowMoreGenre
-                                              }
-                                            } else {
-                                              return firstCheckBoxDisp
-                                            }
-                                          })
-                                        }}> 
-                                          {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
-                                        </Button>
-                                      </Grid>
-                                    )
-                                  case (showMoreImpression - 1) :
-                                  return (
-                                      <Grid container item spacing={0} justify={
-                                        (showMoreImpression != (totalCountImpression))
-                                          ? "flex-end" 
-                                          : "flex-start"
-                                        }
-                                        alignItems="flex-start"
-                                      >  
-                                        <Button onClick={() => {
-                                          // setShowMoreGenre(showMoreGenre + 3) 
-                                          setShowMoreImpression((preShowMoreImpressions) => { 
-                                            if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
-                                              preShowMoreImpressions = preShowMoreImpressions + 54
-                                              if (preShowMoreImpressions > (totalCountImpression)) {
-                                                  return (totalCountImpression)
-                                              } else {
-                                                return preShowMoreImpressions
-                                              }
-                                            } else {
-                                              return (totalCountGenre + firstCheckBoxDisp)
-                                            }
-                                          })
-                                        }}> 
-                                          {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
-                                        </Button>
-                                      </Grid>
-                                    )
-                                  case (showMoreOriginal - 1) :
-                                  return (
-                                      <Grid container item spacing={0} justify={
-                                        (showMoreOriginal != (totalCountOriginal))
-                                          ? "flex-end" 
-                                          : "flex-start"
-                                        }
-                                        alignItems="flex-start"
-                                      >  
-                                        <Button onClick={() => {
-                                          // setShowMoreGenre(showMoreGenre + 3) 
-                                          setShowMoreOriginal((preShowMoreOriginal) => { 
-                                            if(showMoreOriginal != (totalCountOriginal)){ //全てが表示されてるかいなか
-                                              preShowMoreOriginal = preShowMoreOriginal + 54
-                                              if (preShowMoreOriginal > (totalCountOriginal)) {
-                                                  return (totalCountOriginal)
-                                              } else {
-                                                return preShowMoreOriginal
-                                              }
-                                            } else {
-                                              return (totalCountImpression + firstCheckBoxDisp)
-                                            }
-                                          })
-                                        }}> 
-                                          {(showMoreOriginal == (totalCountOriginal) ) ? "　縮める" :  "もっと見る　"}
-                                        </Button>
-                                      </Grid>
-                                    )
-                                  case (showMorePosition - 1) :
-                                  return (
-                                      <Grid container item spacing={0} justify={
-                                        (showMorePosition != (totalCountPosition))
-                                          ? "flex-end" 
-                                          : "flex-start"
-                                        }
-                                        alignItems="flex-start"
-                                      >  
-                                        <Button onClick={() => {
-                                          // setShowMoreGenre(showMoreGenre + 3) 
-                                          setShowMorePosition((preShowMorePosition) => { 
-                                            if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
-                                              preShowMorePosition = preShowMorePosition + 54
-                                              if (preShowMorePosition > (totalCountPosition)) {
-                                                  console.log("retorun max ")
-                                                  return (totalCountPosition)
-                                              } else {
-                                                return preShowMorePosition
-                                              }
-                                            } else {
-                                              return (totalCountOriginal + firstCheckBoxDisp)
-                                            }
-                                          })
-                                        }}> 
-                                          {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
-                                        </Button>
-                                      </Grid>
-                                    )
-                                  default :
-                                    break                          
-                                }
-                              })()}
-                            </>
-                          ]
-                        }
-                        return <>{tagList}</>
-                      })()}
-                    </Grid>
-                  </Collapse>
-                </FormControl>
-              </FormGroup>
-
-              <Grid container item spacing={0} justify={"center"} alignItems="center">  
-                <Button onClick={() => {
-                  setShowGenre(!showGenre)
-                }}> 
-                  {(showGenre == true) ? "タグ全体を非表示" : "タグを表示"}
-                </Button>
-              </Grid>
-
-              <h2 className={classes.postingInlineH2}>コメント</h2>
-              {/* <FormControlLabel
+          <>
+            <FormControlLabel
               control={
                 <CheckIconBox
-                  checked={isSpoiler} 
-                  onChange={isSpoilerHandleChange} 
-                  name={"ネタバレコメント"}
-                  color={"primary"}
-                />
-              } 
-              label = {"ネタバレ"}
-              /> */}
-              <FormControlLabel
-                control={
-                  <StyledCheckbox isSr={isSpoiler} isSH={isSpoilerHandleChange} />
-                }
-                label = {
-                  <span className={classes.postingInlineNetabareText}>ネタバレ</span>
-                }
-                className={classes.postingInlineNetabareBox}
-              />
+                checked={isLiked} onChange={isLikedHandleChange} 
+                name={"isLiked"} color={"secondary"}
+                // classes={{ root: classes.tagInputCheck }}
+                />}
+              label = {
+                <span>いいね</span>
+              }
+              className={classes.postingInlineNetabareBox}
+            />
+          {/* <div className="c-section-container"> */}
+            <h2 className={classes.postingH2}>採点評価</h2>
+            <FormControl className={classes.FCtensuu}>
               <TextInput
-                fullWidth={true} label={"コメント(5000字以内)"} multiline={true} required={true}
-                rows={1} value={workComment} type={"text"} onChange={inputWorkComment}
+                fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
+                rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
               />
+            </FormControl>
+            <h2 className={classes.postingH2}>タグ/属性</h2> 
+            {/* <Grid container item spacing={0} justify={"center"} alignItems="center">  
+              <Button onClick={() => {
+                setShowGenre(!showGenre)
+              }}> 
+                {(showGenre == true) ? "タグ全体を非表示" : "タグを選択する(任意)"}
+              </Button>
+            </Grid> */}
+            <FormGroup className={classes.tagFormGroup}>
+              <FormControl margin="none">
+                <Collapse in={showGenre} timeout={1000}>
+                  <Grid container classes={{ root: classes.tagMasterGrid}} alignContent="space-between" spacing={0}>
+                    {/* //whiteSpaceは認識しないようなので削除してみる。 */}
+                    {/* <Grid container classes={{ root: classes.tagMasterGrid}} whiteSpace="nowrap" alignContent="space-between" spacing={0}> */}
+                    {(() => {
+                      let tagList = []
+                      let displayFlag = true
 
-              {/* <FormGroup row> */}
-              {/* </FormGroup> */}
-              {/* 
-              <FormGroup row>
-                <FormControlLabel
-                control={
-                  <CheckIconBox
-                  checked={isPublic} onChange={isPublicHandleChange} 
-                  name={"一般公開"} color={"primary"}
-                  />
-                } label = {
-                  <Typography> 
-                    "投稿内容を一般公開する"
-                  </Typography>}
-                />
-              </FormGroup> */}
+                      for(let j = 0;j < Object.keys(tagMap).length;j++){
+                        tagList = [...tagList , 
+                          <>
+                            {(() => {
+                              switch(j) {
+                                case 0 : //ジャンル
+                                  return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
+                                case showMoreGenre : 
+                                  displayFlag = false 
+                                  if(showMoreGenre != totalCountGenre){
+                                    break
+                                  }
+                                case totalCountGenre: //印象
+                                  displayFlag = true
+                                  return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
+                                case showMoreImpression :
+                                  displayFlag = false
+                                  if(showMoreImpression != (totalCountImpression)){
+                                    break
+                                  }
+                                case totalCountImpression : // 原作
+                                  displayFlag = true
+                                  return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
+                                case showMoreOriginal :
+                                // case totalCountImpression + 5 :
+                                  displayFlag = false                                
+                                  if(showMoreOriginal != (totalCountOriginal)){
+                                    break
+                                  }
+                                  // break
+                                case totalCountOriginal : //人
+                                  displayFlag = true
+                                  return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
+                                case showMorePosition :
+                                  displayFlag = false
+                                  if(showMorePosition != (totalCountPosition)){
+                                    break
+                                  }
+                                  // break
+                                default :
+                                  break
+                              }
+                            })()}
 
-              {/* 投稿ボタン */}
-              <FormGroup row>
-                <Grid container item xs={12} classes={{root : classes.postingGrid}}
-                                                // classes={{ root: classes.tagInputCheck }}
-                >
-                  <Grid container item xs={6} justify="center">
-                    <Button
-                      variant="contained"
-                      color="default"
-                      size="large"
-                      // className={classes.button}
-                      // startIcon={<SaveAltIcon />}
-                      startIcon={<SaveAltIcon 
-                        // classes={{root: classes.postingIcon}}
-                      />}
-                      // fullWidth="true"
-                      classes={{root : classes.postingButton}}
-                      onClick={() => {
-                        // isPublic = false;
-                        // changeIsPublic(false)
-                        changeIsPublic((preIsPublic) => false)
-                        postButtonClicked(false)
-                      }}
-                    >
-                      <Grid container item xs={12}>
-                        <Grid item xs={12} className={classes.postingBox}>
-                          <Typography classes={{root : classes.postingTypology}}>
-                            投稿
-                        </Typography>
-                        </Grid>
-                        <Grid item xs={12} className={classes.postingBox}>
-                          <Typography classes={{root : classes.postingSubTypology}}>
-                            個人記録
-                        </Typography>
-                        </Grid>
-                      </Grid>
-                    </Button>
+                            {/* //チェックボックス 部分 */}
+                            <Grid container item xs={4} sm={3} md={2} spacing={0} 
+                              classes={{root: classes.tagItemGrid}} 
+                              // classes={displayFlag ? {root: classes.tagItemGrid} : {root: classes.tagItemGridHidden}} 
+                              justify="space-evenly"
+                            >
+                              <Collapse in={displayFlag} timeout={1000}>
+                                <FormControlLabel 
+                                  control={
+                                    <CheckIconBox
+                                    checked={tagCheckBox[Object.keys(tagMap)[j]]} onChange={tagCheckBoxHandleChange} 
+                                    name={Object.keys(tagMap)[j]} color={"secondary"}
+                                    classes={{ root: classes.tagInputCheck }}
+                                    />
+                                  }
+                                  label = {
+                                    [tagMap[Object.keys(tagMap)[j]].key]
+                                  }
+                                  // className = {classes.formControlLabel}
+                                  
+                                  classes={{root: classes.tagFormControlLabel}}
+                                  // classes={displayFlag ? {root: classes.tagFormControlLabel} : { root: classes.tagFormControlLabelHidden}}
+                                    // : (classes={{ root: classes.tagFormControlLabelHidden}})
+                                  labelPlacement="bottom"
+                                  // lineHeight={1}
+                                />
+                              </Collapse>
+                            </Grid>
+
+                            {(() => {
+                              switch(j) {
+                                case (showMoreGenre -1) :
+                                return (
+                                    <Grid container item spacing={0} justify={
+                                      (showMoreGenre != totalCountGenre) 
+                                        ? "flex-end" 
+                                        : "flex-start"
+                                      }
+                                      alignItems="flex-start"
+                                    >  
+                                      <Button onClick={() => {
+                                        // setShowMoreGenre(showMoreGenre + 3) 
+                                        setShowMoreGenre((preShowMoreGenre) => { 
+                                          if(showMoreGenre != totalCountGenre){　 //全てが表示されてるかいなか
+                                            preShowMoreGenre = preShowMoreGenre + 54
+                                            if (preShowMoreGenre > totalCountGenre) {
+                                                return totalCountGenre
+                                            } else {
+                                              return preShowMoreGenre
+                                            }
+                                          } else {
+                                            return firstCheckBoxDisp
+                                          }
+                                        })
+                                      }}> 
+                                        {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
+                                      </Button>
+                                    </Grid>
+                                  )
+                                case (showMoreImpression - 1) :
+                                return (
+                                    <Grid container item spacing={0} justify={
+                                      (showMoreImpression != (totalCountImpression))
+                                        ? "flex-end" 
+                                        : "flex-start"
+                                      }
+                                      alignItems="flex-start"
+                                    >  
+                                      <Button onClick={() => {
+                                        // setShowMoreGenre(showMoreGenre + 3) 
+                                        setShowMoreImpression((preShowMoreImpressions) => { 
+                                          if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
+                                            preShowMoreImpressions = preShowMoreImpressions + 54
+                                            if (preShowMoreImpressions > (totalCountImpression)) {
+                                                return (totalCountImpression)
+                                            } else {
+                                              return preShowMoreImpressions
+                                            }
+                                          } else {
+                                            return (totalCountGenre + firstCheckBoxDisp)
+                                          }
+                                        })
+                                      }}> 
+                                        {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
+                                      </Button>
+                                    </Grid>
+                                  )
+                                case (showMoreOriginal - 1) :
+                                return (
+                                    <Grid container item spacing={0} justify={
+                                      (showMoreOriginal != (totalCountOriginal))
+                                        ? "flex-end" 
+                                        : "flex-start"
+                                      }
+                                      alignItems="flex-start"
+                                    >  
+                                      <Button onClick={() => {
+                                        // setShowMoreGenre(showMoreGenre + 3) 
+                                        setShowMoreOriginal((preShowMoreOriginal) => { 
+                                          if(showMoreOriginal != (totalCountOriginal)){ //全てが表示されてるかいなか
+                                            preShowMoreOriginal = preShowMoreOriginal + 54
+                                            if (preShowMoreOriginal > (totalCountOriginal)) {
+                                                return (totalCountOriginal)
+                                            } else {
+                                              return preShowMoreOriginal
+                                            }
+                                          } else {
+                                            return (totalCountImpression + firstCheckBoxDisp)
+                                          }
+                                        })
+                                      }}> 
+                                        {(showMoreOriginal == (totalCountOriginal) ) ? "　縮める" :  "もっと見る　"}
+                                      </Button>
+                                    </Grid>
+                                  )
+                                case (showMorePosition - 1) :
+                                return (
+                                    <Grid container item spacing={0} justify={
+                                      (showMorePosition != (totalCountPosition))
+                                        ? "flex-end" 
+                                        : "flex-start"
+                                      }
+                                      alignItems="flex-start"
+                                    >  
+                                      <Button onClick={() => {
+                                        // setShowMoreGenre(showMoreGenre + 3) 
+                                        setShowMorePosition((preShowMorePosition) => { 
+                                          if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
+                                            preShowMorePosition = preShowMorePosition + 54
+                                            if (preShowMorePosition > (totalCountPosition)) {
+                                                console.log("retorun max ")
+                                                return (totalCountPosition)
+                                            } else {
+                                              return preShowMorePosition
+                                            }
+                                          } else {
+                                            return (totalCountOriginal + firstCheckBoxDisp)
+                                          }
+                                        })
+                                      }}> 
+                                        {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
+                                      </Button>
+                                    </Grid>
+                                  )
+                                default :
+                                  break                          
+                              }
+                            })()}
+                          </>
+                        ]
+                      }
+                      return <>{tagList}</>
+                    })()}
                   </Grid>
+                </Collapse>
+              </FormControl>
+            </FormGroup>
 
-                  <Grid container item xs={6} justify="center">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      // className={classes.button}
-                      startIcon={<PublishIcon />}
-                      classes={{root : classes.postingButton}}
-                      onClick={() => {
-                        // isPublic = true;
-                        changeIsPublic(true)
-                        postButtonClicked(true)
-                      }}
-                    >
-                      <Grid container item xs={12}>
-                        <Grid item xs={12} className={classes.postingBox}>
-                          <Typography classes={{root : classes.postingTypology}}>
-                            投稿
-                        </Typography>
-                        </Grid>
-                        <Grid item xs={12} className={classes.postingBox}>
-                          <Typography classes={{root : classes.postingSubTypology}}>
-                            一般公開
-                        </Typography>
-                        </Grid>
+            <Grid container item spacing={0} justify={"center"} alignItems="center">  
+              <Button onClick={() => {
+                setShowGenre(!showGenre)
+              }}> 
+                {(showGenre == true) ? "タグ全体を非表示" : "タグを表示"}
+              </Button>
+            </Grid>
+
+            <h2 className={classes.postingInlineH2}>コメント</h2>
+
+            <FormControlLabel
+              control={
+                <StyledCheckbox isSr={isSpoiler} isSH={isSpoilerHandleChange} />
+              }
+              label = {
+                <span className={classes.postingInlineNetabareText}>ネタバレ</span>
+              }
+              className={classes.postingInlineNetabareBox}
+            />
+            <TextInput
+              fullWidth={true} label={"コメント(5000字以内)"} multiline={true} required={true}
+              rows={1} value={workComment} type={"text"} onChange={inputWorkComment}
+            />
+
+            {/* 投稿ボタン */}
+            <FormGroup row>
+              <Grid container item xs={12} classes={{root : classes.postingGrid}}
+              >
+                <Grid container item xs={6} justify="center">
+                  <Button
+                    variant="contained"
+                    color="default"
+                    size="large"
+                    // className={classes.button}
+                    // startIcon={<SaveAltIcon />}
+                    startIcon={<SaveAltIcon 
+                      // classes={{root: classes.postingIcon}}
+                    />}
+                    // fullWidth="true"
+                    classes={{root : classes.postingButton}}
+                    onClick={() => {
+                      // isPublic = false;
+                      // changeIsPublic(false)
+                      changeIsPublic((preIsPublic) => false)
+                      postButtonClicked(false)
+                    }}
+                  >
+                    <Grid container item xs={12}>
+                      <Grid item xs={12} className={classes.postingBox}>
+                        <Typography classes={{root : classes.postingTypology}}>
+                          投稿
+                      </Typography>
                       </Grid>
-                    </Button>
-                  </Grid>
+                      <Grid item xs={12} className={classes.postingBox}>
+                        <Typography classes={{root : classes.postingSubTypology}}>
+                          個人記録
+                      </Typography>
+                      </Grid>
+                    </Grid>
+                  </Button>
                 </Grid>
-              </FormGroup>
 
-              {/* <PrimaryButton label={"投稿"} onClick={postButtonClicked} /> */}
+                <Grid container item xs={6} justify="center">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    // className={classes.button}
+                    startIcon={<PublishIcon />}
+                    classes={{root : classes.postingButton}}
+                    onClick={() => {
+                      // isPublic = true;
+                      changeIsPublic(true)
+                      postButtonClicked(true)
+                    }}
+                  >
+                    <Grid container item xs={12}>
+                      <Grid item xs={12} className={classes.postingBox}>
+                        <Typography classes={{root : classes.postingTypology}}>
+                          投稿
+                      </Typography>
+                      </Grid>
+                      <Grid item xs={12} className={classes.postingBox}>
+                        <Typography classes={{root : classes.postingSubTypology}}>
+                          一般公開
+                      </Typography>
+                      </Grid>
+                    </Grid>
+                  </Button>
+                </Grid>
+              </Grid>
+            </FormGroup>
 
-              <h2>作品情報を入力(オプション)</h2>
-              <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
+            {/* <PrimaryButton label={"投稿"} onClick={postButtonClicked} /> */}
 
-              {(firstPostFlag != 1 && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
-              {(firstPostFlag != 1 && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
-            </div>
-          )
-        : (
-          <>
-            アカウントがある方はログイン、ない方はアカウント作成をしてください。
-            <ul>
-              <li>
-                <Link
-                  href={{
-                  pathname: "/auth/signup",
-                  query: { hist : "Signup" },
-                }}>
-                  <a>SignUp</a>
-                </Link>
-              </li>
-              <li>
-                {/* //ログインしているときにはsignout画面に遷移 */}
-                <Link
-                  href={{
-                  pathname: "/auth/signin",
-                  query: { hist : "Signin" },
-                }}>
-                  <a>SignIn</a>
-                </Link>
-              </li>
-            </ul>
+            <h2>作品情報を入力(オプション)</h2>
+            <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
+
+            {(firstPostFlag != 1 && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
+            {(firstPostFlag != 1 && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
           </>
-        )}
-
-      <Footer />
+        <Footer />
       </>
-    )
-  } else {
-    return (
-      <>loading...</>
     )
   }
 }
