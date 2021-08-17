@@ -255,7 +255,6 @@ export const signUp = (
                     const workId = "99"
                     const workName = "dummyData"
                     const workMedia = "dummyData"
-
                     const userInitialData = {
                         uid: uid,
                         userName: userName,
