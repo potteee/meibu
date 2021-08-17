@@ -347,7 +347,7 @@ const Post = (props) => {
           : false
         , 
         //ログインユーザが評価した作品の公開有無
-        isMyAssessmentPublic : RdAssessmentWorks?.[workId]["isPublic"] 
+        isMyAssessmentPublic : RdAssessmentWorks?.[workId]?.["isPublic"] 
           ? true 
           : false
         , 
