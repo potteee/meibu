@@ -104,9 +104,21 @@ const SignIn = () => {
         {/* <div className="module-spacer--medium" /> */}
         <div className="center">
             <PrimaryButton label={"ログイン"} onClick={loginButtonClicked} />
+          <p>テストアカウント　test/test123</p>
             <div className="module-spacer--small" />
             {/* <p className="u-text-small" onClick={() => dispatch(push('/signin/reset'))}>パスワードを忘れた方はこちら</p> */}
-            <p className="u-text-small" onClick={() => dispatch(router.push('/auth/signup'))}>アカウント登録がまだですか？</p>
+            <p className="u-text-small" onClick={() => {
+              router.push({
+                pathname: '/auth/signup',
+                query: { 
+                  hist : hist,
+                  searchWord : searchWord,
+                  infoMedia : infoMedia,
+                  workId : workId,
+                  firstPostFlag : firstPostFlag,
+                },
+              })
+            }}>アカウント登録がまだですか？</p>
         </div>
           {/* </div> */}
         <Footer />

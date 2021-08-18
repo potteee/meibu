@@ -223,7 +223,9 @@ export const signUp = (
     confirmPassword,
     router,
     hist,
-    searchWord,
+    searchWord = "searchWordDummy",
+    infoMedia = "infoMediaDummy",
+    workId = 99,
     firstPostFlag
     ) => {
     // const router = useRouter() ///ここダメって言われる。onClickのなかはだめ
@@ -264,9 +266,9 @@ export const signUp = (
                     console.log("auth success222!!!")
                     const uid = user.uid
                     const timestamp = FirebaseTimestamp.now()
-                    const workId = "99"
-                    const workName = "dummyData"
-                    const workMedia = "dummyData"
+                    // const workId = "99"
+                    // const workName = "dummyData"
+                    // const workMedia = "dummyData"
                     const userInitialData = {
                         uid: uid,
                         userName: userName,
@@ -328,8 +330,10 @@ export const signUp = (
                         query: { 
                             email : email,
                             searchWord: searchWord ,
+                            infoMedia : infoMedia,
+                            workId : workId,
                             firstPostFlag : firstPostFlag,
-                            hist: hist ,
+                            hist: hist ,///////////////ここ修正星
                         }
                     })
 
@@ -353,9 +357,22 @@ export const signUp = (
                     // })
                 }
             }).catch((error) => {
-                // dispatch(hideLoadingAction())
-                alert('アカウント登録に失敗しました。もう１度お試しください。')
+                // Error Codes
+                // auth/email-already-in-use
+                //     Thrown if there already exists an account with the given email address.
+                // auth/invalid-email
+                //     Thrown if the email address is not valid.
+                // auth/operation-not-allowed
+                //     Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
+                // auth/weak-password
+                //     Thrown if the password is not strong enough.
+                if(error.code == "auth/email-already-in-use"){
+                    alert('既に使用されているメールアドレスです。')
+                } else {
+                    alert('アカウント登録に失敗しました。もう１度お試しください。')
+                }
                 // throw new Error(error)
+                console.log(error+error.code+"signup error")
                 return false
             })
     }
