@@ -29,10 +29,6 @@ export default function PleaseSignUpIn () {
                             infoMedia : infoMedia,
                             workId : workId,
                             firstPostFlag : firstPostFlag,
-                            // hist : "Posting",
-                            // searchWord : query,
-                            // searchWord: state.workName,
-                            // firstPostFlag : firstPostFlag,
                         },
                     }}>
                         ログイン

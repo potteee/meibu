@@ -97,6 +97,24 @@ const SignUp = () => {
             onClick={accountButtonClicked}
           />
         </div>
+        <br/>
+        <p>アカウントを既にお持ちの方</p>
+        <PrimaryButton
+          label={"ログインはこちら"}
+          onClick={() => {
+            router.push({
+              pathname: "/auth/signin",
+              query: { 
+                hist : hist,
+                searchWord : searchWord, 
+                infoMedia : infoMedia,
+                workId : workId,
+                firstPostFlag : firstPostFlag,
+                email : email,
+              },
+            })
+          }}
+        />
         {/* </div> */}
         <Footer />
       </>
