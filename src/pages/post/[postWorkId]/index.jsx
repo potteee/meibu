@@ -214,7 +214,6 @@ const getOriginalDBData = async(params,history) => {
 
 }
 
-
 //作品情報閲覧ページ
 const Post = (props) => {
   const selector = useSelector((state) => state)
@@ -310,7 +309,6 @@ const Post = (props) => {
 
     await dispatch({type:"loadDB" ,
       payload : {
-
         //wInfoSnapshot
         isLoading : false,
         workName : wInfoSnapshot.workName,
@@ -331,7 +329,6 @@ const Post = (props) => {
         //assessmentSnapshot
         assessmentData : (assessmentSnapshot && state.assessmentData.length == 0) ? [...assessmentSnapshot] : state.assessmentData,
         isAssessmenter : isAssessmenterFlag,
-
         //privateUsersSnapshot
         isBookmark : RdIsBookmark
           ? Object.keys(RdIsBookmark).includes(workId) ? true : false 
@@ -351,30 +348,22 @@ const Post = (props) => {
           ? true 
           : false
         , 
-        
         //スピードダイアルのボタン
         sdpActions : [],
-    }
+      }
     })
   }
-  // })
-  
   useEffect(() => {
-    if (isReady) { //これ挟まないとnext/routerのバグ(初期表示時にasPathがundefinedになる)を踏んでしまう。
+    if(isReady){ //これ挟まないとnext/routerのバグ(初期表示時にasPathがundefinedになる)を踏んでしまう。
       getDBData()
     } 
   },[isReady]) //isReadyに変化があった場合は再描写してくれるからこれでいい。はず。
-
   console.log("state@[postWorkId]/index.js")
   console.table(state)
-
   console.log(JSON.stringify(RdInstantChangedWorksId)+"+RdInstantChangedWorkId")
-
   if(state.isLoading){
     return(
-      <>
-        <GLoading />
-      </>
+      <GLoading />
     )
   } else {
     let isLoginUserAssessment = false

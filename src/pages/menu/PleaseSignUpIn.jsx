@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 
 export default function PleaseSignUpIn () {
     const router = useRouter()
-    const { hist,searchWord,firstPostFlag } = router.query
+    const { hist,searchWord,infoMedia,workId,firstPostFlag } = router.query
     return (
         <>
             <ApplicationBar title="ログイン"/>
@@ -26,7 +26,13 @@ export default function PleaseSignUpIn () {
                         query: { 
                             hist : hist,
                             searchWord : searchWord, 
+                            infoMedia : infoMedia,
+                            workId : workId,
                             firstPostFlag : firstPostFlag,
+                            // hist : "Posting",
+                            // searchWord : query,
+                            // searchWord: state.workName,
+                            // firstPostFlag : firstPostFlag,
                         },
                     }}>
                         ログイン
@@ -38,7 +44,9 @@ export default function PleaseSignUpIn () {
                         pathname: "/auth/signup",
                         query: { 
                             hist : hist,
-                            searchWord : searchWord, 
+                            searchWord : searchWord,
+                            infoMedia : infoMedia,
+                            workId : workId,
                             firstPostFlag : firstPostFlag,
                         },
                         }}>

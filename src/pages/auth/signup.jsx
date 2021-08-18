@@ -24,7 +24,7 @@ const SignUp = () => {
         [confirmPassword, setConfirmPassword] = useState("");
 
   const [signupPush,setSignupPush] = useState(false)
-  const { hist,searchWord,firstPostFlag } = router.query
+  const { hist,searchWord,infoMedia,workId,firstPostFlag } = router.query
 
   //useCallbackを使った方がパフォーマンスが良い
   const inputUserName = useCallback((event)=> {
@@ -54,6 +54,8 @@ const SignUp = () => {
       router,
       hist,
       searchWord,
+      infoMedia,
+      workId,
       firstPostFlag
     ));
 

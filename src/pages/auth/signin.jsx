@@ -16,7 +16,7 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const router = useRouter()
   // const uid = useSelector(state => state)
-  const { hist,searchWord,firstPostFlag } = router.query
+  const { hist,searchWord,infoMedia,workId,firstPostFlag} = router.query
   const oriQuery = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
 
   // const tmpEmail = /\?email=/.test(query) ? query.split('email=')[1] : ""
@@ -53,7 +53,7 @@ const SignIn = () => {
 
   //useCallbackに入れてあげないと、dispatch(signInAction...のところで再レンダリングされる。
   const signInModule = useCallback(async(email,password, router) => {
-    return await dispatch(signIn(email, password, router,hist,searchWord,firstPostFlag))
+    return await dispatch(signIn(email, password, router,hist,searchWord,infoMedia,workId,firstPostFlag))
   },[]);
 
   const loginButtonClicked = async() => {

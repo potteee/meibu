@@ -34,7 +34,7 @@ import { parseCookies } from 'nookies'
 import { is, set } from 'immutable'
 import {useDispatch,useSelector} from 'react-redux'
 
-import {getUserId,getUserName,getIsSignedIn} from "../../reducks/users/selectors";
+import {getUserId,getUserName,getIsSignedIn ,getUserAssessmentWorks} from "../../reducks/users/selectors";
 // import { postWorkCreate } from '../../reducks/works/operations'
 import { addPostedWork } from '../../reducks/users/operations'
 
@@ -297,12 +297,14 @@ const Posting = () => {
 
   console.log(JSON.stringify(selector,null,2)+"+selector")
   //上記よりこっちの方が処理漏れ少ない？
-  const uid = getUserId(selector);
-  const isSignin = getIsSignedIn(selector);
-  const userName = getUserName(selector);
+  const RdUserId = getUserId(selector);
+  const RdIsSignin = getIsSignedIn(selector);
+  const RdUserName = getUserName(selector);
+  const RdAssessmentWorks = getUserAssessmentWorks(selector)
   const classes = useStyles();
 
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
+  const { hist } = router.query
   const { isReady } = useRouter()
 
   // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
@@ -338,6 +340,12 @@ const Posting = () => {
     // const firstPostFlag = router.query.firstPostFlag
     firstPostFlag = decodeURIComponent(/\&/.test(oriQuery.split('&firstPostFlag=')[1]) ? (oriQuery.split('&firstPostFlag=')[1]).split('&')[0] : oriQuery.split('&firstPostFlag=')[1])
     console.log(firstPostFlag+"+firstPostFlag first")
+
+    if(hist == "SignIn"){ // サインインから来た時は上書きする。
+      firstPostFlag = Object.keys(RdAssessmentWorks).includes(preWorkId) 
+        ? 2 
+        : 1
+    }
   } else {
     console.log("no oriQuery")
   }
@@ -454,7 +462,7 @@ const Posting = () => {
 
   //useEffect
   useEffect(() => {
-    if(oriQuery && isSignin){
+    if(oriQuery && RdIsSignin){
       (async() => {
         if(query && qInfoMedia){
           setWorkName(query)
@@ -466,11 +474,11 @@ const Posting = () => {
   
         //既に評価済みの評価を編集する場合
         if(firstPostFlag == 2){
-          if(uid != "uid initial"){
+          if(RdUserId != "RdUserId initial"){
             console.log("firstPostFlag = 2 effect start")
-            console.log(uid+"+uid +++")
+            console.log(RdUserId+"+RdUserId +++")
             console.log(preWorkId+"preWorkId +++")
-            await db.collection('privateUsers').doc(uid)
+            await db.collection('privateUsers').doc(RdUserId)
             .collection('postedWorksId').doc(preWorkId)
             .get()
             .then((snapshot) => {
@@ -503,7 +511,7 @@ const Posting = () => {
               throw new Error(error)
             })
           } else {
-            console.log(uid+"+uid")
+            console.log(RdUserId+"+RdUserId")
           }
           await db.collection('wInfo').doc(preWorkId)
           .get()
@@ -545,15 +553,19 @@ const Posting = () => {
           })
         }
       })()
-    } else if(!isSignin) {
+    } else if(!RdIsSignin && oriQuery) {
       router.replace({
         pathname: '/menu/PleaseSignUpIn',
         query: {
           hist : "Posting",
           searchWord : query,
+          // searchWord: state.workName,
+          infoMedia : workMedia,
+          workId : preWorkId,
+          firstPostFlag : firstPostFlag,
         }
       })
-    } else {
+    } else { 
       router.replace({
         pathname: '/menu/search',
         query: {
@@ -618,17 +630,17 @@ const Posting = () => {
     )
 
     // ユーザに紐づく作品データをDBに登録(redux/works(db))
-    // const workId = await dispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,uid))
+    // const workId = await dispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,RdUserId))
 
-    console.log(userName+"+userName a")
+    console.log(RdUserName+"+RdUserName a")
     // 作品の固有データをDBに登録
     // 新規登録なのでScoreは入力値のまま　*-*- (wInfo)
     await dispatch(postWInfoCreate( //セキュアなでーたがあるならapi下でやった方がいい。
       workName,
       workMedia,
       workScore,
-      uid,
-      userName,
+      RdUserId,
+      RdUserName,
       goCheckBoxState,
       goTagCheckBoxState,
       workComment,
@@ -643,7 +655,7 @@ const Posting = () => {
       console.log(workId+"+workId posting m")
       // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
       await dispatch(addPostedWork( //これ上のとPromise.all()で良さそ。
-        uid,
+        RdUserId,
         workId,
         workName,
         workMedia,
@@ -660,7 +672,7 @@ const Posting = () => {
       ))
 
       router.push({
-        pathname: '/post/'+workId+'/'+uid,
+        pathname: '/post/'+workId+'/'+RdUserId,
       })
     }).catch((error) => {
       alert('failed get workId')
@@ -669,7 +681,7 @@ const Posting = () => {
   }
 
   // if(!isReady || !standbyState){
-  if(!isReady || !oriQuery || !isSignin){
+  if(!isReady || !oriQuery || !RdIsSignin){
     return(
       <GLoading />
     )
@@ -677,12 +689,12 @@ const Posting = () => {
     return (
       <>
         <ApplicationBar title="新規登録"/>
-        {/* {isSignin === true
+        {/* {RdIsSignin === true
         ? (  */}
         {/* <> */}
           {firstPostFlag == 0 && (
             <>
-            {/* <ApplicationBar title="新規登録" auth={uid} /> */}
+            {/* <ApplicationBar title="新規登録" auth={RdUserId} /> */}
             {/* <h2>新規評価</h2> */}
             <Typography className={classes.h5WorksTitle}>
               {"作品名"}

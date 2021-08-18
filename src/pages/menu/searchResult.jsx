@@ -146,7 +146,7 @@ const searchResult = () => {
       query: {
         searchWord: searchWord,
         infoMedia : "",
-        workId : "NoData because firstPost",
+        workId : "",
         firstPostFlag : 1,
         hist: "Posting",//Postingにすることで、ログイン後にPostingにいくようにする。
       }

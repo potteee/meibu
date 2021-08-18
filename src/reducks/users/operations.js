@@ -14,7 +14,15 @@ const usersRef = db.collection('users')
 const privateUserRef = db.collection('privateUsers')
 // const selector = useSelector((state) => state)
 
-export const signIn = (email,password,router,hist,searchWord,firstPostFlag) => {
+export const signIn = (
+    email,
+    password,
+    router,
+    hist,
+    searchWord,
+    infoMedia,
+    workId,
+    firstPostFlag) => {
     // const router = useRouter()    
     // async (dispatch) => {
     return async (dispatch) => {
@@ -135,18 +143,18 @@ export const signIn = (email,password,router,hist,searchWord,firstPostFlag) => {
                 pathname: '/auth/signin',
                 query: { 
                     status: 'requiredMail',
-                    hist: hist,
                     searchWord: searchWord,
+                    infoMedia: infoMedia,
+                    workId: workId,
+                    firstPostFlag : firstPostFlag,
+                    hist: hist,
                 }
             })
             return false
         } 
-
-    　　if(signInFail){
+        if(signInFail){
             return false
         }
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-
         return await auth.signInWithEmailAndPassword(email, password)
         .then(async (result) => {
             const userState = result.user
@@ -175,8 +183,12 @@ export const signIn = (email,password,router,hist,searchWord,firstPostFlag) => {
                     pathname: hist != "Posting" ? '/menu/mypage' : '/post/posting',
                     query: { 
                         searchWord: searchWord ,
-                        firstPostFlag : firstPostFlag,
-                        hist: hist ,
+                        infoMedia : infoMedia,
+                        workId : workId,
+                        firstPostFlag : firstPostFlag,                        
+                        // searchWord: searchWord,
+                        // firstPostFlag : 1,
+                        hist: "SignIn" ,
                     }
                 })
                 
