@@ -1,6 +1,8 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
 
+import {ONE_CLICK_APPEARANCE_IN_POSTING} from 'src/foundations/share/GlobalConstant'
+
 //material UI
 import FormGroup from '@material-ui/core/FormGroup'
 import FormControl from '@material-ui/core/FormControl';
@@ -17,6 +19,7 @@ import Icon from '@material-ui/core/Icon';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import PublishIcon from '@material-ui/icons/Publish';
 import Collapse from '@material-ui/core/Collapse';
+import Chip from '@material-ui/core/Chip';
 
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -103,12 +106,27 @@ const useStyles = makeStyles((theme) => ({
   },
   tagMasterGrid: {
     position : "relative",
+    justifyContent : "space-evenly",
+    // justifyContent : "space-evenly"
   },
   cateItemGrid: {
     position : "relative",
   },
+  // tagItemGrid: {
+  //   // display: 'flex',
+  //   // justifyContent: 'center',
+  //   // flexWrap: 'wrap',
+  //   // '& > *': {
+    //   //   margin: theme.spacing(0.5),
+  //   // },
+  // },
   tagItemGrid: {
-    position : "relative",
+    '& > *': {
+      margin: theme.spacing(0.5),
+    },
+    // justifyContent : "space-evenly",
+    textAlign : "center",
+    // position : "relative",
   },
   tagItemGridHidden: {
     position : "relative",
@@ -362,7 +380,7 @@ const Posting = () => {
 
   const [showGenre, setShowGenre] = useState(false)
 
-  const firstCheckBoxDisp = 6
+  const firstCheckBoxDisp = 22
   const totalCountGenre = tagExtraData.Genre.count
   const totalCountImpression = totalCountGenre + tagExtraData.Impression.count
   const totalCountOriginal = totalCountImpression + tagExtraData.Original.count
@@ -371,7 +389,12 @@ const Posting = () => {
   //showmore
   const [showMoreGenre ,setShowMoreGenre] = useState(firstCheckBoxDisp)
   const [showMoreImpression ,setShowMoreImpression] = useState(totalCountGenre + firstCheckBoxDisp)
-  const [showMoreOriginal ,setShowMoreOriginal] = useState(totalCountImpression + firstCheckBoxDisp)
+  const [showMoreOriginal ,setShowMoreOriginal] = useState(totalCountImpression + 
+    tagExtraData.Original.count <= firstCheckBoxDisp 
+      ? tagExtraData.Original.count
+      : firstCheckBoxDisp
+    )
+  // const [showMoreOriginal ,setShowMoreOriginal] = useState(totalCountImpression + firstCheckBoxDisp)
   const [showMorePosition ,setShowMorePosition] = useState(totalCountOriginal + firstCheckBoxDisp)
 
   // const [standbyState , setStandbyState] = useState(false)
@@ -416,9 +439,16 @@ const Posting = () => {
     setCheckBoxState({...checkBoxState,[event.target.name]: event.target.checked})
   },[checkBoxState])
 
-  const tagCheckBoxHandleChange = useCallback((event) => {
-    setTagCheckBox({...tagCheckBox,[event.target.name]: event.target.checked})
+  const tagCheckBoxHandleChange = useCallback(({name,isClicked}) => {
+    setTagCheckBox({...tagCheckBox, [name] : !isClicked})
+    // setTagCheckBox({...tagCheckBox,[event.target.name]: event.target.checked})
+    // console.log(JSON.stringify(tagCheckBox)+"tagCheckBox")
+    // console.log(name+"+event.target.name")
+    // console.log(isClicked+"+event.target.isClicked")
   },[tagCheckBox])
+  // const tagCheckBoxHandleChange = useCallback((event) => {
+  //   setTagCheckBox({...tagCheckBox,[event.target.name]: event.target.checked})
+  // },[tagCheckBox])
   
   const inputWorkComment = useCallback((event) => {
     setWorkComment(event.target.value)
@@ -842,12 +872,16 @@ const Posting = () => {
                 {(showGenre == true) ? "タグ全体を非表示" : "タグを選択する(任意)"}
               </Button>
             </Grid> */}
+            {/* タグ部 */}
             <FormGroup className={classes.tagFormGroup}>
               <FormControl margin="none">
                 <Collapse in={showGenre} timeout={1000}>
-                  <Grid container classes={{ root: classes.tagMasterGrid}} alignContent="space-between" spacing={0}>
+                  <Grid container classes={{ root: classes.tagMasterGrid}}>
+                  {/* <Grid container classes={{ root: classes.tagMasterGrid}} alignContent="space-between" spacing={0}> */}
                     {/* //whiteSpaceは認識しないようなので削除してみる。 */}
                     {/* <Grid container classes={{ root: classes.tagMasterGrid}} whiteSpace="nowrap" alignContent="space-between" spacing={0}> */}
+
+                    {/* タグ　表示制御 */}
                     {(() => {
                       let tagList = []
                       let displayFlag = true
@@ -882,7 +916,7 @@ const Posting = () => {
                                     break
                                   }
                                   // break
-                                case totalCountOriginal : //人
+                                case totalCountOriginal : // 人
                                   displayFlag = true
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
                                 case showMorePosition :
@@ -890,156 +924,159 @@ const Posting = () => {
                                   if(showMorePosition != (totalCountPosition)){
                                     break
                                   }
+                                  
+                                case totalCountPosition :
+                                  displayFlag = true
+                                  return null
                                   // break
+
                                 default :
                                   break
                               }
                             })()}
 
-                            {/* //チェックボックス 部分 */}
-                            <Grid container item xs={4} sm={3} md={2} spacing={0} 
-                              classes={{root: classes.tagItemGrid}} 
-                              // classes={displayFlag ? {root: classes.tagItemGrid} : {root: classes.tagItemGridHidden}} 
-                              justify="space-evenly"
-                            >
-                              <Collapse in={displayFlag} timeout={1000}>
-                                <FormControlLabel 
-                                  control={
-                                    <CheckIconBox
-                                    checked={tagCheckBox[Object.keys(tagMap)[j]]} onChange={tagCheckBoxHandleChange} 
-                                    name={Object.keys(tagMap)[j]} color={"secondary"}
-                                    classes={{ root: classes.tagInputCheck }}
-                                    />
-                                  }
-                                  label = {
-                                    [tagMap[Object.keys(tagMap)[j]].key]
-                                  }
-                                  // className = {classes.formControlLabel}
-                                  
-                                  classes={{root: classes.tagFormControlLabel}}
-                                  // classes={displayFlag ? {root: classes.tagFormControlLabel} : { root: classes.tagFormControlLabelHidden}}
-                                    // : (classes={{ root: classes.tagFormControlLabelHidden}})
-                                  labelPlacement="bottom"
-                                  // lineHeight={1}
+                            {/* //チップ(タグ) 表示部 */}
+                            {/* <Grid container item xs={4} sm={3} md={2} spacing={0}  */}
+                            <Collapse in={displayFlag} timeout={1000}>
+                              <Grid container item xs spacing={0} 
+                                classes={{root: classes.tagItemGrid}}
+                              >
+                                <Chip
+                                  // avatar={<Avatar>M</Avatar>}
+                                  // label={tagCheckBox[Object.keys(tagMap)[j]]}
+                                  size="small"
+                                  // checked={tagCheckBox[Object.keys(tagMap)[j]]}
+                                  label={[tagMap[Object.keys(tagMap)[j]].key]}
+                                  clickable
+                                  color={tagCheckBox[Object.keys(tagMap)[j]] ? "primary" : "default" }
+                                  onClick={() => { tagCheckBoxHandleChange({
+                                    name : Object.keys(tagMap)[j] ,
+                                    isClicked : tagCheckBox[Object.keys(tagMap)[j]]
+                                  })}}
+                                  // name={Object.keys(tagMap)[j]}
+                                  // isClicked={tagCheckBox[Object.keys(tagMap)[j]]} 
+                                  // onDelete={handleDelete}
+                                  // deleteIcon={<DoneIcon />}
                                 />
-                              </Collapse>
-                            </Grid>
+                              </Grid>
+                            </Collapse>
 
+                            {/* //Tag開閉処理部分 //もっと見る表示部分 */}
                             {(() => {
                               switch(j) {
                                 case (showMoreGenre -1) :
                                 return (
-                                    <Grid container item spacing={0} justify={
-                                      (showMoreGenre != totalCountGenre) 
-                                        ? "flex-end" 
-                                        : "flex-start"
-                                      }
-                                      alignItems="flex-start"
-                                    >  
-                                      <Button onClick={() => {
-                                        // setShowMoreGenre(showMoreGenre + 3) 
-                                        setShowMoreGenre((preShowMoreGenre) => { 
-                                          if(showMoreGenre != totalCountGenre){　 //全てが表示されてるかいなか
-                                            preShowMoreGenre = preShowMoreGenre + 54
-                                            if (preShowMoreGenre > totalCountGenre) {
-                                                return totalCountGenre
-                                            } else {
-                                              return preShowMoreGenre
-                                            }
+                                  <Grid container item spacing={0} justify={
+                                    (showMoreGenre != totalCountGenre) 
+                                      ? "flex-end" 
+                                      : "flex-start"
+                                    }
+                                    alignItems="flex-start"
+                                  >  
+                                    <Button onClick={() => {
+                                      // setShowMoreGenre(showMoreGenre + 3) 
+                                      setShowMoreGenre((preShowMoreGenre) => { 
+                                        if(showMoreGenre != totalCountGenre){　 //全てが表示されてるかいなか
+                                          preShowMoreGenre = preShowMoreGenre + ONE_CLICK_APPEARANCE_IN_POSTING
+                                          if (preShowMoreGenre > totalCountGenre) {
+                                              return totalCountGenre
                                           } else {
-                                            return firstCheckBoxDisp
+                                            return preShowMoreGenre
                                           }
-                                        })
-                                      }}> 
-                                        {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
-                                      </Button>
-                                    </Grid>
-                                  )
+                                        } else {
+                                          return firstCheckBoxDisp
+                                        }
+                                      })
+                                    }}> 
+                                      {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
+                                    </Button>
+                                  </Grid>
+                                )
                                 case (showMoreImpression - 1) :
                                 return (
-                                    <Grid container item spacing={0} justify={
-                                      (showMoreImpression != (totalCountImpression))
-                                        ? "flex-end" 
-                                        : "flex-start"
-                                      }
-                                      alignItems="flex-start"
-                                    >  
-                                      <Button onClick={() => {
-                                        // setShowMoreGenre(showMoreGenre + 3) 
-                                        setShowMoreImpression((preShowMoreImpressions) => { 
-                                          if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
-                                            preShowMoreImpressions = preShowMoreImpressions + 54
-                                            if (preShowMoreImpressions > (totalCountImpression)) {
-                                                return (totalCountImpression)
-                                            } else {
-                                              return preShowMoreImpressions
-                                            }
+                                  <Grid container item spacing={0} justify={
+                                    (showMoreImpression != (totalCountImpression))
+                                      ? "flex-end" 
+                                      : "flex-start"
+                                    }
+                                    alignItems="flex-start"
+                                  >  
+                                    <Button onClick={() => {
+                                      // setShowMoreGenre(showMoreGenre + 3) 
+                                      setShowMoreImpression((preShowMoreImpressions) => { 
+                                        if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
+                                          preShowMoreImpressions = preShowMoreImpressions + ONE_CLICK_APPEARANCE_IN_POSTING
+                                          if (preShowMoreImpressions > (totalCountImpression)) {
+                                              return (totalCountImpression)
                                           } else {
-                                            return (totalCountGenre + firstCheckBoxDisp)
+                                            return preShowMoreImpressions
                                           }
-                                        })
-                                      }}> 
-                                        {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
-                                      </Button>
-                                    </Grid>
-                                  )
-                                case (showMoreOriginal - 1) :
-                                return (
-                                    <Grid container item spacing={0} justify={
-                                      (showMoreOriginal != (totalCountOriginal))
-                                        ? "flex-end" 
-                                        : "flex-start"
-                                      }
-                                      alignItems="flex-start"
-                                    >  
-                                      <Button onClick={() => {
-                                        // setShowMoreGenre(showMoreGenre + 3) 
-                                        setShowMoreOriginal((preShowMoreOriginal) => { 
-                                          if(showMoreOriginal != (totalCountOriginal)){ //全てが表示されてるかいなか
-                                            preShowMoreOriginal = preShowMoreOriginal + 54
-                                            if (preShowMoreOriginal > (totalCountOriginal)) {
-                                                return (totalCountOriginal)
-                                            } else {
-                                              return preShowMoreOriginal
-                                            }
-                                          } else {
-                                            return (totalCountImpression + firstCheckBoxDisp)
-                                          }
-                                        })
-                                      }}> 
-                                        {(showMoreOriginal == (totalCountOriginal) ) ? "　縮める" :  "もっと見る　"}
-                                      </Button>
-                                    </Grid>
-                                  )
+                                        } else {
+                                          return (totalCountGenre + firstCheckBoxDisp)
+                                        }
+                                      })
+                                    }}> 
+                                      {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
+                                    </Button>
+                                  </Grid>
+                                )
+                                // case (showMoreOriginal - 1) :
+                                // return (
+                                //   <Grid container item spacing={0} justify={
+                                //     (showMoreOriginal != (totalCountOriginal))
+                                //       ? "flex-end" 
+                                //       : "flex-start"
+                                //     }
+                                //     alignItems="flex-start"
+                                //   >  
+                                //     <Button onClick={() => {
+                                //       // setShowMoreGenre(showMoreGenre + 3) 
+                                //       setShowMoreOriginal((preShowMoreOriginal) => { 
+                                //         if(showMoreOriginal != (totalCountOriginal)){ //全てが表示されてるかいなか
+                                //           preShowMoreOriginal = preShowMoreOriginal + ONE_CLICK_APPEARANCE_IN_POSTING
+                                //           if (preShowMoreOriginal > (totalCountOriginal)) {
+                                //               return (totalCountOriginal)
+                                //           } else {
+                                //             return preShowMoreOriginal
+                                //           }
+                                //         } else {
+                                //           return (totalCountImpression + firstCheckBoxDisp)
+                                //         }
+                                //       })
+                                //     }}> 
+                                //       {(showMoreOriginal == (totalCountOriginal) ) ? "　縮める" :  "もっと見る　"}
+                                //     </Button>
+                                //   </Grid>
+                                // )
                                 case (showMorePosition - 1) :
                                 return (
-                                    <Grid container item spacing={0} justify={
-                                      (showMorePosition != (totalCountPosition))
-                                        ? "flex-end" 
-                                        : "flex-start"
-                                      }
-                                      alignItems="flex-start"
-                                    >  
-                                      <Button onClick={() => {
-                                        // setShowMoreGenre(showMoreGenre + 3) 
-                                        setShowMorePosition((preShowMorePosition) => { 
-                                          if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
-                                            preShowMorePosition = preShowMorePosition + 54
-                                            if (preShowMorePosition > (totalCountPosition)) {
-                                                console.log("retorun max ")
-                                                return (totalCountPosition)
-                                            } else {
-                                              return preShowMorePosition
-                                            }
+                                  <Grid container item spacing={0} justify={
+                                    (showMorePosition != (totalCountPosition))
+                                      ? "flex-end" 
+                                      : "flex-start"
+                                    }
+                                    alignItems="flex-start"
+                                  >  
+                                    <Button onClick={() => {
+                                      // setShowMoreGenre(showMoreGenre + 3) 
+                                      setShowMorePosition((preShowMorePosition) => { 
+                                        if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
+                                          preShowMorePosition = preShowMorePosition + ONE_CLICK_APPEARANCE_IN_POSTING
+                                          if (preShowMorePosition > (totalCountPosition)) {
+                                            console.log("retorun max ")
+                                            return (totalCountPosition)
                                           } else {
-                                            return (totalCountOriginal + firstCheckBoxDisp)
+                                            return preShowMorePosition
                                           }
-                                        })
-                                      }}> 
-                                        {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
-                                      </Button>
-                                    </Grid>
-                                  )
+                                        } else {
+                                          return (totalCountOriginal + firstCheckBoxDisp)
+                                        }
+                                      })
+                                    }}> 
+                                      {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
+                                    </Button>
+                                  </Grid>
+                                )
                                 default :
                                   break                          
                               }

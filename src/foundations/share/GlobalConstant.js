@@ -8,3 +8,4 @@
 // define('SSG_WAIT_SEC',90)
 
 export const SSG_WAIT_SEC = 86400;
+export const ONE_CLICK_APPEARANCE_IN_POSTING = 54;
