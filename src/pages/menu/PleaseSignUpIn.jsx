@@ -12,7 +12,9 @@ export default function PleaseSignUpIn () {
     const { hist,searchWord,infoMedia,workId,firstPostFlag } = router.query
 
     if(!isReady){
-        <GLoading />
+        return(
+            <GLoading />
+        )
     } else {
         return (
             <>
