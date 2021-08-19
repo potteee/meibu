@@ -7,17 +7,17 @@ import {ServerStyleSheets as MaterialUIStyleSheets} from '@material-ui/core/styl
 import {ServerStyleSheet as StyledComponentsStyleSheets} from "styled-components";
 
 export default class MyDocument extends Document {
-  render() {
-      return (
-          <Html lang="ja">
-              <Head/>
-              <body>
-              <Main/>
-              <NextScript/>
-              </body>
-          </Html>
-      );
-  }
+    render() {
+        return (
+            <Html lang="ja">
+                <Head/>
+                <body>
+                <Main/>
+                <NextScript/>
+                </body>
+            </Html>
+        );
+    }
 }
 
 // export default class MyDocument extends Document {
