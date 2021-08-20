@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 120,
   },
   tagMasterGrid: {
-    position : "relative",
+    // position : "relative",
     justifyContent : "space-evenly",
     // justifyContent : "space-evenly"
   },
@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(0.5),
     },
     // justifyContent : "space-evenly",
-    textAlign : "center",
+    // textAlign : "center",
     // position : "relative",
   },
   tagItemGridHidden: {
@@ -389,10 +389,10 @@ const Posting = () => {
   //showmore
   const [showMoreGenre ,setShowMoreGenre] = useState(firstCheckBoxDisp)
   const [showMoreImpression ,setShowMoreImpression] = useState(totalCountGenre + firstCheckBoxDisp)
-  const [showMoreOriginal ,setShowMoreOriginal] = useState(totalCountImpression + 
-    tagExtraData.Original.count <= firstCheckBoxDisp 
-      ? tagExtraData.Original.count
-      : firstCheckBoxDisp
+  const [showMoreOriginal ,setShowMoreOriginal] = useState( 
+    (tagExtraData.Original.count <= firstCheckBoxDisp)
+      ? totalCountImpression + tagExtraData.Original.count
+      : totalCountImpression + firstCheckBoxDisp
     )
   // const [showMoreOriginal ,setShowMoreOriginal] = useState(totalCountImpression + firstCheckBoxDisp)
   const [showMorePosition ,setShowMorePosition] = useState(totalCountOriginal + firstCheckBoxDisp)
@@ -892,42 +892,51 @@ const Posting = () => {
                             {(() => {
                               switch(j) {
                                 case 0 : //ジャンル
+                                  console.log(displayFlag ? "true" +"+displayFlag@0" :　"false" + "+displayFlag@0")
+                                  displayFlag = true //→ついき：多分なくてもいい。
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
                                 case showMoreGenre : 
-                                  displayFlag = false 
+                                  console.log(displayFlag ? "true" +"+displayFlag@showMoreGenre" : "false" +"+displayFlag@showMoreGenre")
+                                  console.log(showMoreGenre+"+showMoreGenre") 
+                                  displayFlag = false
                                   if(showMoreGenre != totalCountGenre){
                                     break
                                   }
-                                case totalCountGenre: //印象
+
+                                case totalCountGenre : //印象
                                   displayFlag = true
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
                                 case showMoreImpression :
+                                  console.log(j+"+showMoreImpression")
                                   displayFlag = false
-                                  if(showMoreImpression != (totalCountImpression)){
+                                  if(showMoreImpression != totalCountImpression){
                                     break
                                   }
+                                  
                                 case totalCountImpression : // 原作
                                   displayFlag = true
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
                                 case showMoreOriginal :
-                                // case totalCountImpression + 5 :
+                                    // case totalCountImpression + 5 :
+                                  console.log(j+"+showMoreOriginal")
                                   displayFlag = false                                
                                   if(showMoreOriginal != (totalCountOriginal)){
                                     break
                                   }
-                                  // break
+                                  
                                 case totalCountOriginal : // 人
                                   displayFlag = true
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
                                 case showMorePosition :
+                                  console.log(j+"+showMorePosition")
                                   displayFlag = false
                                   if(showMorePosition != (totalCountPosition)){
                                     break
                                   }
                                   
-                                case totalCountPosition :
-                                  displayFlag = true
-                                  return null
+                                // case totalCountPosition :
+                                //   displayFlag = true
+                                //   return null
                                   // break
 
                                 default :
@@ -936,27 +945,20 @@ const Posting = () => {
                             })()}
 
                             {/* //チップ(タグ) 表示部 */}
-                            {/* <Grid container item xs={4} sm={3} md={2} spacing={0}  */}
                             <Collapse in={displayFlag} timeout={1000}>
-                              <Grid container item xs spacing={0} 
+                              <Grid
+                                container item xs spacing={0}
                                 classes={{root: classes.tagItemGrid}}
                               >
                                 <Chip
-                                  // avatar={<Avatar>M</Avatar>}
-                                  // label={tagCheckBox[Object.keys(tagMap)[j]]}
                                   size="small"
-                                  // checked={tagCheckBox[Object.keys(tagMap)[j]]}
                                   label={[tagMap[Object.keys(tagMap)[j]].key]}
                                   clickable
                                   color={tagCheckBox[Object.keys(tagMap)[j]] ? "primary" : "default" }
-                                  onClick={() => { tagCheckBoxHandleChange({
+                                  onClick={() => { return tagCheckBoxHandleChange({
                                     name : Object.keys(tagMap)[j] ,
                                     isClicked : tagCheckBox[Object.keys(tagMap)[j]]
                                   })}}
-                                  // name={Object.keys(tagMap)[j]}
-                                  // isClicked={tagCheckBox[Object.keys(tagMap)[j]]} 
-                                  // onDelete={handleDelete}
-                                  // deleteIcon={<DoneIcon />}
                                 />
                               </Grid>
                             </Collapse>
@@ -964,62 +966,65 @@ const Posting = () => {
                             {/* //Tag開閉処理部分 //もっと見る表示部分 */}
                             {(() => {
                               switch(j) {
-                                case (showMoreGenre -1) :
-                                return (
-                                  <Grid container item spacing={0} justify={
-                                    (showMoreGenre != totalCountGenre) 
-                                      ? "flex-end" 
-                                      : "flex-start"
-                                    }
-                                    alignItems="flex-start"
-                                  >  
-                                    <Button onClick={() => {
-                                      // setShowMoreGenre(showMoreGenre + 3) 
-                                      setShowMoreGenre((preShowMoreGenre) => { 
-                                        if(showMoreGenre != totalCountGenre){　 //全てが表示されてるかいなか
-                                          preShowMoreGenre = preShowMoreGenre + ONE_CLICK_APPEARANCE_IN_POSTING
-                                          if (preShowMoreGenre > totalCountGenre) {
+                                case (showMoreGenre - 1) :
+                                  return (
+                                    <Grid container item spacing={0} justify={
+                                      (showMoreGenre != totalCountGenre) 
+                                        ? "flex-end" 
+                                        : "flex-start"
+                                      }
+                                      alignItems="flex-start"
+                                    >  
+                                      <Button onClick={() => {
+                                        // setShowMoreGenre(showMoreGenre + 3) 
+                                        setShowMoreGenre((preShowMoreGenre) => { 
+                                          if(showMoreGenre != totalCountGenre){　 //全てが表示されていない
+                                            preShowMoreGenre = preShowMoreGenre + ONE_CLICK_APPEARANCE_IN_POSTING
+                                            console.log(preShowMoreGenre+"+preShowMoreGenre")
+                                            console.log(totalCountGenre+"+totalCountGenre")
+                                            if (preShowMoreGenre > (totalCountGenre)) {
                                               return totalCountGenre
-                                          } else {
-                                            return preShowMoreGenre
+                                            } else {
+                                              console.log("preShowMoreGenre")
+                                              return preShowMoreGenre
+                                            }
+                                          } else {// 現在Maxに達しているか
+                                            return firstCheckBoxDisp
                                           }
-                                        } else {
-                                          return firstCheckBoxDisp
-                                        }
-                                      })
-                                    }}> 
-                                      {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
-                                    </Button>
-                                  </Grid>
-                                )
+                                        })
+                                      }}> 
+                                        {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
+                                      </Button>
+                                    </Grid>
+                                  )
                                 case (showMoreImpression - 1) :
-                                return (
-                                  <Grid container item spacing={0} justify={
-                                    (showMoreImpression != (totalCountImpression))
-                                      ? "flex-end" 
-                                      : "flex-start"
-                                    }
-                                    alignItems="flex-start"
-                                  >  
-                                    <Button onClick={() => {
-                                      // setShowMoreGenre(showMoreGenre + 3) 
-                                      setShowMoreImpression((preShowMoreImpressions) => { 
-                                        if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
-                                          preShowMoreImpressions = preShowMoreImpressions + ONE_CLICK_APPEARANCE_IN_POSTING
-                                          if (preShowMoreImpressions > (totalCountImpression)) {
-                                              return (totalCountImpression)
+                                  return (
+                                    <Grid container item spacing={0} justify={
+                                      (showMoreImpression != totalCountImpression)
+                                        ? "flex-end" 
+                                        : "flex-start"
+                                      }
+                                      alignItems="flex-start"
+                                    >  
+                                      <Button onClick={() => {
+                                        // setShowMoreGenre(showMoreGenre + 3) 
+                                        setShowMoreImpression((preShowMoreImpressions) => { 
+                                          if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
+                                            preShowMoreImpressions = preShowMoreImpressions + ONE_CLICK_APPEARANCE_IN_POSTING
+                                            if (preShowMoreImpressions > (totalCountImpression)) {
+                                                return totalCountImpression
+                                            } else {
+                                              return preShowMoreImpressions
+                                            }
                                           } else {
-                                            return preShowMoreImpressions
+                                            return (totalCountGenre + firstCheckBoxDisp)
                                           }
-                                        } else {
-                                          return (totalCountGenre + firstCheckBoxDisp)
-                                        }
-                                      })
-                                    }}> 
-                                      {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
-                                    </Button>
-                                  </Grid>
-                                )
+                                        })
+                                      }}> 
+                                        {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
+                                      </Button>
+                                    </Grid>
+                                  )
                                 // case (showMoreOriginal - 1) :
                                 // return (
                                 //   <Grid container item spacing={0} justify={
@@ -1049,34 +1054,34 @@ const Posting = () => {
                                 //   </Grid>
                                 // )
                                 case (showMorePosition - 1) :
-                                return (
-                                  <Grid container item spacing={0} justify={
-                                    (showMorePosition != (totalCountPosition))
-                                      ? "flex-end" 
-                                      : "flex-start"
-                                    }
-                                    alignItems="flex-start"
-                                  >  
-                                    <Button onClick={() => {
-                                      // setShowMoreGenre(showMoreGenre + 3) 
-                                      setShowMorePosition((preShowMorePosition) => { 
-                                        if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
-                                          preShowMorePosition = preShowMorePosition + ONE_CLICK_APPEARANCE_IN_POSTING
-                                          if (preShowMorePosition > (totalCountPosition)) {
-                                            console.log("retorun max ")
-                                            return (totalCountPosition)
+                                  return (
+                                    <Grid container item spacing={0} justify={
+                                      (showMorePosition != (totalCountPosition))
+                                        ? "flex-end" 
+                                        : "flex-start"
+                                      }
+                                      alignItems="flex-start"
+                                    >  
+                                      <Button onClick={() => {
+                                        // setShowMoreGenre(showMoreGenre + 3) 
+                                        setShowMorePosition((preShowMorePosition) => { 
+                                          if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
+                                            preShowMorePosition = preShowMorePosition + ONE_CLICK_APPEARANCE_IN_POSTING
+                                            if (preShowMorePosition > (totalCountPosition)) {
+                                              console.log("retorun max ")
+                                              return (totalCountPosition)
+                                            } else {
+                                              return preShowMorePosition
+                                            }
                                           } else {
-                                            return preShowMorePosition
+                                            return (totalCountOriginal + firstCheckBoxDisp)
                                           }
-                                        } else {
-                                          return (totalCountOriginal + firstCheckBoxDisp)
-                                        }
-                                      })
-                                    }}> 
-                                      {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
-                                    </Button>
-                                  </Grid>
-                                )
+                                        })
+                                      }}> 
+                                        {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
+                                      </Button>
+                                    </Grid>
+                                  )
                                 default :
                                   break                          
                               }
