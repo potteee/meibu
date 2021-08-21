@@ -235,8 +235,8 @@ export const tagMap = {
 }
 
 export const tagExtraData = {
-    Impression : {key : "印象" , count : 40 , order : 1},
-    Position : {key: "人" , count : 38 , order : 3},
-    Original : {key: "原作" , count : 7 , order : 2},
-    Genre : {key: "ジャンル" , count : 144 ,order : 0},
+    Impression : {key : "印象" , count : Object.values(tagMap).filter(e => e.class === "Impression").length , order : 1},
+    Position : {key: "人" , count : Object.values(tagMap).filter(e => e.class === "Position").length , order : 3},
+    Original : {key: "原作" , count : Object.values(tagMap).filter(e => e.class === "Original").length , order : 2},
+    Genre : {key: "ジャンル" , count : Object.values(tagMap).filter(e => e.class === "Genre").length,order : 0},
 }

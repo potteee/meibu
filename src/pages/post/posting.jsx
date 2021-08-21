@@ -367,9 +367,12 @@ const Posting = () => {
     console.log(firstPostFlag+"+firstPostFlag first")
 
     if(hist == "SignIn"){ // サインインから来た時は上書きする。
-      firstPostFlag = Object.keys(RdAssessmentWorks).includes(preWorkId) 
-        ? 2 
-        : 1
+      firstPostFlag = preWorkId 
+      ? Object.keys(RdAssessmentWorks).includes(preWorkId) 
+        ? 2 //評価編集
+        : 0 //自分は未評価投稿
+      : 1
+      console.log(firstPostFlag+"firstPostFlag@SignInChanged")
     }
   } else {
     console.log("no oriQuery")
@@ -445,8 +448,8 @@ const Posting = () => {
   }, [])
 
   const inputTagAutoCompleteValue = useCallback((value,reason) => {
-    console.log(JSON.stringify(value)+"+value@inputTagAutoCompleteValue")
-    console.log(reason+"+reason")
+    // console.log(JSON.stringify(value)+"+value@inputTagAutoCompleteValue")
+    // console.log(reason+"+reason")
     setTagAutoCompleteValue(reason == "reset" ? "" : value)
     // if(reason == "reset"){
     //   setTagAutoCompleteValue("")

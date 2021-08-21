@@ -6,12 +6,19 @@ import Header from '../components/header'
 import ApplicationBar from '../components/applicationBar'
 import Footer from '../components/footer'
 import SpeedDialPosting from '../components/speedDialPosting'
+import { useRouter } from 'next/router';
+import GLoading from '../components/GLoading';
 
 const News = ({worksData}) => {
 
   // console.log(JSON.stringify(worksData,null ,2)+"+worksData@J");
+  const {isReady} = useRouter()
 
-  if(worksData){
+  if(!worksData || !isReady){
+    return (
+      <GLoading/>
+    )
+  } else {
     return (
     <>
       <ApplicationBar title="NEWS"/>
@@ -44,8 +51,6 @@ const News = ({worksData}) => {
       <Footer />
     </>
     )
-  } else {
-    return <>loading...</>
   }
 }
 
