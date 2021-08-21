@@ -20,6 +20,8 @@ import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import PublishIcon from '@material-ui/icons/Publish';
 import Collapse from '@material-ui/core/Collapse';
 import Chip from '@material-ui/core/Chip';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
 
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -54,6 +56,12 @@ import PleaseSignUpIn from '../menu/PleaseSignUpIn'
 import GLoading from '../../components/GLoading';
 
 const useStyles = makeStyles((theme) => ({
+  autoCompleteStyle : {
+    // '$root.MuiAutocomplete-option &' : {
+      padding : "0px",
+      minHeight : "30px",
+    // }
+  },
   button: {
     // display: 'block', 
     marginTop: theme.spacing(1),
@@ -84,18 +92,12 @@ const useStyles = makeStyles((theme) => ({
   },
 
   cateInputCheck: {
-    // height: "20px",
-    // margin : "20px 0px 0px 0px",
     margin : "0px",
-    // top : "20px",
     padding: "0px 0px 0px 0px",
     boxSizing: "content-box" // <-- add this
   },
   tagInputCheck: {
-    // height: "20px",
-    // margin : "20px 0px 0px 0px",
     margin : "0px",
-    // top : "20px",
     padding: "0px 0px 0px 0px",
     boxSizing: "content-box" // <-- add this
   },
@@ -179,7 +181,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     textAlign : "center",
     // margin: theme.auto,
-    margin : "0px 0px 20px 0px"
+    margin : "0px 0px 7px 0px"
   },
   h3TagKey: {
     margin : "12px 0px 0px 0px",
@@ -212,6 +214,11 @@ const useStyles = makeStyles((theme) => ({
   },
   FCtensuu: {
     margin : "0px 0px 4px 0px",
+    // color : "red",
+  },
+  FCfreeWordSearchTag: {
+    margin : "0px 0px 4px 0px",
+    minWidth : "14em",
     // color : "red",
   },
   root: {
@@ -380,6 +387,8 @@ const Posting = () => {
 
   const [showGenre, setShowGenre] = useState(false)
 
+  const [tagAutoCompleteValue ,setTagAutoCompleteValue] = useState("useStateInitial")
+
   const firstCheckBoxDisp = 22
   const totalCountGenre = tagExtraData.Genre.count
   const totalCountImpression = totalCountGenre + tagExtraData.Impression.count
@@ -434,6 +443,18 @@ const Posting = () => {
   const inputWorkScore = useCallback((event) => {
     setWorkScore(event.target.value)
   }, [])
+
+  const inputTagAutoCompleteValue = useCallback((value,reason) => {
+    console.log(JSON.stringify(value)+"+value@inputTagAutoCompleteValue")
+    console.log(reason+"+reason")
+    setTagAutoCompleteValue(reason == "reset" ? "" : value)
+    // if(reason == "reset"){
+    //   setTagAutoCompleteValue("")
+    // } else {
+    //   setTagAutoCompleteValue(value)
+    // }
+  },[])
+  // },[tagAutoCompleteValue])
   
   const checkBoxHandleChange = useCallback((event) => {
     setCheckBoxState({...checkBoxState,[event.target.name]: event.target.checked})
@@ -865,13 +886,55 @@ const Posting = () => {
               />
             </FormControl>
             <h2 className={classes.postingH2}>タグ/属性</h2> 
-            {/* <Grid container item spacing={0} justify={"center"} alignItems="center">  
-              <Button onClick={() => {
-                setShowGenre(!showGenre)
-              }}> 
-                {(showGenre == true) ? "タグ全体を非表示" : "タグを選択する(任意)"}
-              </Button>
-            </Grid> */}
+            {(() => {
+              let postedTag = []
+              for(let j = 0;j < Object.keys(tagMap).length;j++){
+                // console.log(tagCheckBox[Object.keys(tagMap)[j]] ? "true+tagtag" : "false+tagtag")
+                if(tagCheckBox[Object.keys(tagMap)[j]]){
+                  postedTag = [...postedTag , 
+                    <Chip
+                      size="small"
+                      label={[tagMap[Object.keys(tagMap)[j]].key]}
+                      // clickable
+                      color="primary"
+                      onDelete={() => { return tagCheckBoxHandleChange({
+                        name : Object.keys(tagMap)[j] ,
+                        isClicked : true
+                      })}}
+                    />
+                  ]
+                } 
+              }
+              return <Grid
+                container item xs spacing={0}
+                classes={{root: classes.tagItemGrid}}
+              > 
+                {postedTag}
+              </Grid>
+            })()}
+
+            {/* フリーワード検索部 */}
+            <FormControl className={classes.FCfreeWordSearchTag}>
+              <Autocomplete
+                classes={{option: classes.autoCompleteStyle}} //.Muiを編集したい時はこれ。
+                id="tagSearch"
+                options={Object.values(tagMap)}
+                getOptionLabel={(option) => option.key}
+                clearOnEscape
+                inputValue = {tagAutoCompleteValue}
+                onInputChange = {(event,newInputValue,reason) => {
+                  inputTagAutoCompleteValue(newInputValue,reason)
+                }}
+                onChange = {(event,selectedValue) => {
+                  tagCheckBoxHandleChange({
+                    name : selectedValue?.originalKey ,
+                    isClicked : false
+                  })
+                  return true
+                }}
+                renderInput={(params) => <TextField {...params} label="タグを検索" margin="none" />}
+              />
+            </FormControl>
             {/* タグ部 */}
             <FormGroup className={classes.tagFormGroup}>
               <FormControl margin="none">
@@ -880,15 +943,15 @@ const Posting = () => {
                   {/* <Grid container classes={{ root: classes.tagMasterGrid}} alignContent="space-between" spacing={0}> */}
                     {/* //whiteSpaceは認識しないようなので削除してみる。 */}
                     {/* <Grid container classes={{ root: classes.tagMasterGrid}} whiteSpace="nowrap" alignContent="space-between" spacing={0}> */}
-
                     {/* タグ　表示制御 */}
                     {(() => {
                       let tagList = []
                       let displayFlag = true
-
+                      
                       for(let j = 0;j < Object.keys(tagMap).length;j++){
                         tagList = [...tagList , 
                           <>
+
                             {(() => {
                               switch(j) {
                                 case 0 : //ジャンル
@@ -1100,7 +1163,7 @@ const Posting = () => {
               <Button onClick={() => {
                 setShowGenre(!showGenre)
               }}> 
-                {(showGenre == true) ? "タグ全体を非表示" : "タグを表示"}
+                {(showGenre == true) ? "タグ候補全体を非表示" : "タグ候補を表示"}
               </Button>
             </Grid>
 

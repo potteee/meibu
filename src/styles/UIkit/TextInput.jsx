@@ -6,7 +6,7 @@ const TextInput = (props) => {
         <TextField
             fullWidth={props.fullWidth}
             label={props.label}
-            margin="none"
+            margin={props.margin ? props.margin : "none"} 
             // margin="dense"
             multiline={props.multiline}
             required={props.requiredF}
