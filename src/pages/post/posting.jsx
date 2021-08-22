@@ -935,17 +935,6 @@ const Posting = () => {
                     }
                   </FormControl>
                 </Grid>
-                {/* <FormControlLabel
-                  control={
-                    <CheckIconBox
-                    checked={isLiked} onChange={isLikedHandleChange} 
-                    name={"isLiked"} color={"secondary"}
-                    />}
-                  label = {
-                    <span>いいね</span>
-                  }
-                  className={classes.postingInlineNetabareBox}
-                /> */}
               </Grid>
 
             </Grid>
