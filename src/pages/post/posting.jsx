@@ -404,7 +404,7 @@ const Posting = () => {
   const [workMedia, setWorkMedia] = useState(qInfoMedia);
   const [open, setOpen] = useState(false);
 
-  const [workScore, setWorkScore] = useState("")
+  const [workScore, setWorkScore] = useState(null)
   const [workComment, setWorkComment] = useState("")
 
   const [showGenre, setShowGenre] = useState(false)
@@ -576,7 +576,8 @@ const Posting = () => {
                   }
                 })
               })            
-              setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
+              setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : null)
+              // setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
               setWorkComment(snapshot.data().workComment)
               setIsPublic(snapshot.data().isPublic)
               // isPublic = snapshot.data().isPublic
@@ -904,7 +905,7 @@ const Posting = () => {
                 </Grid>
                 <Grid container item xs={7}>
                   <Slider
-                    value={typeof value === 'number' ? value : 0}
+                    value={typeof workScore === 'number' ? workScore : 0}
                     onChange={handleSliderChange}
                     aria-labelledby="input-slider"
                     />    
