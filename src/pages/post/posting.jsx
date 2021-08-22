@@ -462,24 +462,19 @@ const Posting = () => {
     setWorkName(event.target.value)
   }, [])
   
-  const inputWorkScore = (event) => {
+  const inputWorkScore = useCallback((event) => {
     setWorkScore(event.target.value === '' ? '' : Number(event.target.value))
     // setWorkScore(event.target.value)
-  }
+  },[workScore])
 
-  const handleSliderChange = (event, newValue) => {
+  const handleSliderChange = useCallback((event, newValue) => {
     setWorkScore(newValue)
-  } 
+  },[workScore])
 
   const inputTagAutoCompleteValue = useCallback((value,reason) => {
     // console.log(JSON.stringify(value)+"+value@inputTagAutoCompleteValue")
     // console.log(reason+"+reason")
     setTagAutoCompleteValue(reason == "reset" ? "" : value)
-    // if(reason == "reset"){
-    //   setTagAutoCompleteValue("")
-    // } else {
-    //   setTagAutoCompleteValue(value)
-    // }
   },[])
   // },[tagAutoCompleteValue])
   
