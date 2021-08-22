@@ -207,6 +207,7 @@ const useStyles = makeStyles((theme) => ({
     // marginLeft : "4em",
   },
   likedIconPosition: {
+    justifyContent : "center",
     alignItems : "flex-start",
     marginLeft : "4px",
     position : "relative",
@@ -892,11 +893,20 @@ const Posting = () => {
           {/* <div className="c-section-container"> */}
             <h2 className={classes.postingH2}>評価</h2>
             <Grid container item xs={12} spacing={0}>
-              <Grid container item xs={6} spacing={0}>
-                <Grid container item xs={3}>
+              <Grid container item xs={8} spacing={0}>
+                <Grid container item xs={12}>
                   <Typography className={classes.h5WorksTitle}>
                     {"採点"}
                   </Typography>
+                </Grid>
+                <Grid container item xs={3}>
+                  <FormControl className={classes.FCtensuu}>
+                    <TextInput
+                      fullWidth={true} label={"点"} multiline={false} required={true}
+                      // fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
+                      rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
+                    />
+                  </FormControl>
                 </Grid>
                 <Grid container item xs={7}>
                   <Slider
@@ -905,18 +915,10 @@ const Posting = () => {
                     aria-labelledby="input-slider"
                     />    
                 </Grid>
-                <Grid container item xs={12}>
-                  <FormControl className={classes.FCtensuu}>
-                    <TextInput
-                      fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
-                      rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
-                    />
-                  </FormControl>
-                </Grid>
               </Grid>
 
-              <Grid container item xs={6} spacing={0} className={classes.likedPosition}>
-                <Grid container item xs={12}>
+              <Grid container item xs={4} spacing={0} className={classes.likedPosition}>
+                <Grid container item xs={12} className={classes.likedIconPosition}>
                   <Typography className={classes.h5WorksLikeTitle}>
                     {"いいね"}
                   </Typography>
