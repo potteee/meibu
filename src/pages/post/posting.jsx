@@ -404,7 +404,7 @@ const Posting = () => {
   const [workMedia, setWorkMedia] = useState(qInfoMedia);
   const [open, setOpen] = useState(false);
 
-  const [workScore, setWorkScore] = useState(null)
+  const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
 
   const [showGenre, setShowGenre] = useState(false)
@@ -576,7 +576,7 @@ const Posting = () => {
                   }
                 })
               })            
-              setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : null)
+              setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
               // setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
               setWorkComment(snapshot.data().workComment)
               setIsPublic(snapshot.data().isPublic)
