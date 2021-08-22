@@ -17,6 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Icon from '@material-ui/core/Icon';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import Slider from '@material-ui/core/Slider';
 import PublishIcon from '@material-ui/icons/Publish';
 import Collapse from '@material-ui/core/Collapse';
 import Chip from '@material-ui/core/Chip';
@@ -29,6 +30,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 ///material icon 
 import PublicIcon from '@material-ui/icons/Public';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -193,6 +196,22 @@ const useStyles = makeStyles((theme) => ({
     // margin : "12px 0px 0px 0px",
     // color : "#203744", //褐返かちかえし
     // color : "#aacf53", //萌黄
+  },
+  h5WorksLikeTitle: {
+    margin : "9px 0px 0px 0px",
+    color : "#393e4f", //青褐あおかち
+    fontSize : "0.8em",
+  },
+  likedPosition: {
+    // marginLeft : "20px",
+    // marginLeft : "4em",
+  },
+  likedIconPosition: {
+    alignItems : "flex-start",
+    marginLeft : "4px",
+    position : "relative",
+    top : -5,
+    // marginLeft : "4em",
   },
   h3WorksNamePosting: {
     margin : "0px 4px",
@@ -371,7 +390,7 @@ const Posting = () => {
       ? Object.keys(RdAssessmentWorks).includes(preWorkId) 
         ? 2 //評価編集
         : 0 //自分は未評価投稿
-      : 1
+      : 1 //新規評価
       console.log(firstPostFlag+"firstPostFlag@SignInChanged")
     }
   } else {
@@ -443,9 +462,14 @@ const Posting = () => {
     setWorkName(event.target.value)
   }, [])
   
-  const inputWorkScore = useCallback((event) => {
-    setWorkScore(event.target.value)
-  }, [])
+  const inputWorkScore = (event) => {
+    setWorkScore(event.target.value === '' ? '' : Number(event.target.value))
+    // setWorkScore(event.target.value)
+  }
+
+  const handleSliderChange = (event, newValue) => {
+    setWorkScore(newValue)
+  } 
 
   const inputTagAutoCompleteValue = useCallback((value,reason) => {
     // console.log(JSON.stringify(value)+"+value@inputTagAutoCompleteValue")
@@ -483,9 +507,9 @@ const Posting = () => {
     // },[checkBoxState])
   },[isSpoiler])
 
-  const isLikedHandleChange = useCallback((event) => {
-    setIsLiked(event.target.checked)
-    // },[checkBoxState])
+  const isLikedHandleChange = useCallback(() => {
+    // setIsLiked(event.target.checked)
+    setIsLiked(isLiked => !isLiked)
   },[isLiked])
   
   // const inputWorkInfo = useCallback((event) => {
@@ -868,26 +892,65 @@ const Posting = () => {
             </>
           )}
           <>
-            <FormControlLabel
-              control={
-                <CheckIconBox
-                checked={isLiked} onChange={isLikedHandleChange} 
-                name={"isLiked"} color={"secondary"}
-                // classes={{ root: classes.tagInputCheck }}
-                />}
-              label = {
-                <span>いいね</span>
-              }
-              className={classes.postingInlineNetabareBox}
-            />
+
           {/* <div className="c-section-container"> */}
-            <h2 className={classes.postingH2}>採点評価</h2>
-            <FormControl className={classes.FCtensuu}>
-              <TextInput
-                fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
-                rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
-              />
-            </FormControl>
+            <h2 className={classes.postingH2}>評価</h2>
+            <Grid container item xs={12} spacing={0}>
+              <Grid container item xs={6} spacing={0}>
+                <Grid container item xs={3}>
+                  <Typography className={classes.h5WorksTitle}>
+                    {"採点"}
+                  </Typography>
+                </Grid>
+                <Grid container item xs={7}>
+                  <Slider
+                    value={typeof value === 'number' ? value : 0}
+                    onChange={handleSliderChange}
+                    aria-labelledby="input-slider"
+                    />    
+                </Grid>
+                <Grid container item xs={12}>
+                  <FormControl className={classes.FCtensuu}>
+                    <TextInput
+                      fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
+                      rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+
+              <Grid container item xs={6} spacing={0} className={classes.likedPosition}>
+                <Grid container item xs={12}>
+                  <Typography className={classes.h5WorksLikeTitle}>
+                    {"いいね"}
+                  </Typography>
+                </Grid>
+                <Grid container item xs={12} className={classes.likedIconPosition}>
+                  <FormControl>
+                    {isLiked
+                      ? <FavoriteIcon
+                        onClick={isLikedHandleChange}
+                        />
+                      : <FavoriteBorder
+                        onClick={isLikedHandleChange}
+                      />
+                    }
+                  </FormControl>
+                </Grid>
+                {/* <FormControlLabel
+                  control={
+                    <CheckIconBox
+                    checked={isLiked} onChange={isLikedHandleChange} 
+                    name={"isLiked"} color={"secondary"}
+                    />}
+                  label = {
+                    <span>いいね</span>
+                  }
+                  className={classes.postingInlineNetabareBox}
+                /> */}
+              </Grid>
+
+            </Grid>
             <h2 className={classes.postingH2}>タグ/属性</h2> 
             {(() => {
               let postedTag = []
