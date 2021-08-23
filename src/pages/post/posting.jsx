@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
+import { H2CenterLine } from "src/styles/SC/shared/typografy/centerLine"
 
 import {ONE_CLICK_APPEARANCE_IN_POSTING} from 'src/foundations/share/GlobalConstant'
 
@@ -206,17 +207,60 @@ const useStyles = makeStyles((theme) => ({
     fontSize : "0.8em",
   },
   likedPosition: {
-    // marginLeft : "20px",
-    // marginLeft : "4em",
+    justifyContent : "center",
+    alignItems : "center",
+    flexDirection : "column",
+  },
+  scorePosition: {
+    justifyContent : "center",
+    alignItems : "center",
+    flexDirection : "column",
   },
   likedIconPosition: {
-    justifyContent : "center",
-    alignItems : "flex-start",
-    marginLeft : "4px",
+    // justifyContent : "center",
+    // alignItems : "center",
+    // marginLeft : "4px",
     position : "relative",
+    marginBottom : "5px",
     top : -5,
-    // marginLeft : "4em",
   },
+  // h2CenterLine: {
+  //   display: "flex",
+  //   alignItems: "center", /* 垂直中心 */
+  //   justifyContent: "center", /* 水平中心 */
+  //   fontSize : "1.4em",
+    
+  //   // '&:before, &:after' :{
+  //   //   // borderTop: "3px solid",
+  //   //   // borderTopWidth: 1,
+  //   //   // borderWidth: 5, borderWidth: 5,
+  //   //   // borderColor: 'red',
+  //   //   // borderStyle: 'solid',
+  //   //   // content : "",
+  //   //   // width : "3em", /* 線の長さ */
+  //   // },
+  //   '&:before' : {
+  //     content: 'abc',
+  //     position : "relative",
+  //     // position : "fixed",
+  //     // flexGrow: 1,
+  //     // left : "10px",
+  //     width : "3em", /* 線の長さ */
+  //     borderWidth: 1,
+  //     borderTopWidth: 1,
+  //     // borderWidth: 5,
+  //     borderColor: 'red',
+  //     borderStyle: 'solid',
+  //     // display : "inline-block",
+  //     // paddintTop: "-0.7em", /* 文字の右隣 */
+  //     marginRight: "3em", /* 文字の右隣 */
+  //     marginLeft: "3em", /* 文字の右隣 */
+  //   },
+  //   '&:after': {
+  //     // marginLeft: "1em", /* 文字の左隣 */
+  //   },
+  // },
+
   h3WorksNamePosting: {
     margin : "0px 4px",
   },
@@ -236,8 +280,9 @@ const useStyles = makeStyles((theme) => ({
     // color : "red",
   },
   FCtensuu: {
-    margin : "0px 0px 4px 0px",
-    // color : "red",
+    // margin : "0px 0px 4px 0px",
+    textAlign : "center",
+    color : "red",
   },
   FCfreeWordSearchTag: {
     margin : "0px 0px 4px 0px",
@@ -343,7 +388,7 @@ const Posting = () => {
   const dispatch = useDispatch()
   const selector = useSelector((state) => state)
 
-  console.log(JSON.stringify(selector,null,2)+"+selector")
+  // console.log(JSON.stringify(selector,null,2)+"+selector")
   //上記よりこっちの方が処理漏れ少ない？
   const RdUserId = getUserId(selector);
   const RdIsSignin = getIsSignedIn(selector);
@@ -352,7 +397,8 @@ const Posting = () => {
   const classes = useStyles();
 
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
-  const { hist } = router.query
+  // const { hist,searchWord,infoMedia ,workId,firstPostFlag } = router.query
+  const props = router.query
   const { isReady } = useRouter()
 
   // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
@@ -361,33 +407,35 @@ const Posting = () => {
   console.log(oriQuery+"+oriQuery")
   // const qInfoMedia = router.query.infoMedia 
 
-  console.log("bunruiMap")
-  console.log(bunruiMap)
-  console.log(Object.keys(bunruiMap)+"Ob bunruiMap")
-  console.log(bunruiMap[Object.keys(bunruiMap)[0]]+"+Ob")
+  // console.log("bunruiMap")
+  // console.log(bunruiMap)
+  // console.log(Object.keys(bunruiMap)+"Ob bunruiMap")
+  // console.log(bunruiMap[Object.keys(bunruiMap)[0]]+"+Ob")
 
-  let query = ""
-  let qInfoMedia = ""
-  let preWorkId = ""
-  let firstPostFlag = ""
+  let hist = props.hist
+  let preWorkName = props.searchWord
+  let qInfoMedia = props.infoMedia
+  let preWorkId = props.workId
+  let firstPostFlag = props.firstPostFlag
+  // let query = ""
+  // let qInfoMedia = ""
+  // let preWorkId = ""
+  // let firstPostFlag = ""
 
   if(oriQuery){
-    query = /\&/.test(oriQuery.split('?searchWord=')[1]) ? (oriQuery.split('?searchWord=')[1]).split('&')[0] : oriQuery.split('?searchWord=')[1]
-    // query = decodeURIComponent(/\&/.test(oriQuery.split('?searchWord=')[1]) ? (oriQuery.split('?searchWord=')[1]).split('&')[0] : oriQuery.split('?searchWord=')[1])
-    console.log(query+"+query first")
-    query = decodeURIComponent(query.replace(/\+/g,' '))
-    console.log(query+"+query second")
+    // query = /\&/.test(oriQuery.split('?searchWord=')[1]) ? (oriQuery.split('?searchWord=')[1]).split('&')[0] : oriQuery.split('?searchWord=')[1]
+    // console.log(query+"+query first")
+    // query = decodeURIComponent(query.replace(/\+/g,' '))
+    // console.log(query+"+query second")
 
-    qInfoMedia = decodeURIComponent(/\&/.test(oriQuery.split('&infoMedia=')[1]) ? (oriQuery.split('&infoMedia=')[1]).split('&')[0] : oriQuery.split('&infoMedia=')[1])
-    console.log(qInfoMedia+"+qInfoMedia first")
+    // qInfoMedia = decodeURIComponent(/\&/.test(oriQuery.split('&infoMedia=')[1]) ? (oriQuery.split('&infoMedia=')[1]).split('&')[0] : oriQuery.split('&infoMedia=')[1])
+    // console.log(qInfoMedia+"+qInfoMedia first")
 
-    // const preWorkId = router.query.workId //既に存在する作品の場合定義される。
-    preWorkId = decodeURIComponent(/\&/.test(oriQuery.split('&workId=')[1]) ? (oriQuery.split('&workId=')[1]).split('&')[0] : oriQuery.split('&workId=')[1])
-    console.log(preWorkId+"+preWorkId first")
+    // preWorkId = decodeURIComponent(/\&/.test(oriQuery.split('&workId=')[1]) ? (oriQuery.split('&workId=')[1]).split('&')[0] : oriQuery.split('&workId=')[1])
+    // console.log(preWorkId+"+preWorkId first")
 
-    // const firstPostFlag = router.query.firstPostFlag
-    firstPostFlag = decodeURIComponent(/\&/.test(oriQuery.split('&firstPostFlag=')[1]) ? (oriQuery.split('&firstPostFlag=')[1]).split('&')[0] : oriQuery.split('&firstPostFlag=')[1])
-    console.log(firstPostFlag+"+firstPostFlag first")
+    // firstPostFlag = decodeURIComponent(/\&/.test(oriQuery.split('&firstPostFlag=')[1]) ? (oriQuery.split('&firstPostFlag=')[1]).split('&')[0] : oriQuery.split('&firstPostFlag=')[1])
+    // console.log(firstPostFlag+"+firstPostFlag first")
 
     if(hist == "SignIn"){ // サインインから来た時は上書きする。
       firstPostFlag = preWorkId 
@@ -401,9 +449,9 @@ const Posting = () => {
     console.log("no oriQuery")
   }
 
-  console.log(query+"++query")
+  // console.log(query+"++query")
   // console.log(querysWorkName+"+querysWorkName")
-  const [workName, setWorkName] = useState(query)
+  const [workName, setWorkName] = useState(preWorkName)
 
   const [workMedia, setWorkMedia] = useState(qInfoMedia);
   const [open, setOpen] = useState(false);
@@ -473,6 +521,7 @@ const Posting = () => {
 
   const handleSliderChange = useCallback((event, newValue) => {
     setWorkScore(newValue)
+    console.log("handleSliderChange")
   },[workScore])
 
   const inputTagAutoCompleteValue = useCallback((value,reason) => {
@@ -508,6 +557,7 @@ const Posting = () => {
 
   const isLikedHandleChange = useCallback(() => {
     // setIsLiked(event.target.checked)
+    // console.log("isLikedHandleChange")
     setIsLiked(isLiked => !isLiked)
   },[isLiked])
   
@@ -517,6 +567,7 @@ const Posting = () => {
 
   const handleChange = (event) => {
     setWorkMedia(event.target.value);
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
   };
 
   const handleClose = () => {
@@ -536,13 +587,12 @@ const Posting = () => {
     return tokenMap
   }
 
-
   //useEffect
   useEffect(() => {
     if(oriQuery && RdIsSignin){
       (async() => {
-        if(query && qInfoMedia){
-          setWorkName(query)
+        if(preWorkName && qInfoMedia){
+          setWorkName(preWorkName)
           setWorkMedia(qInfoMedia)
         }
         console.log(workName+"+workName")
@@ -636,7 +686,7 @@ const Posting = () => {
         pathname: '/menu/PleaseSignUpIn',
         query: {
           hist : "Posting",
-          searchWord : query,
+          searchWord : preWorkName,
           // searchWord: state.workName,
           infoMedia : workMedia,
           workId : preWorkId,
@@ -652,10 +702,10 @@ const Posting = () => {
       })
     }
     //setStandbyState(true)
-  },[selector])
+  },[])
   
-  console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J chuu")
-  console.log(checkBoxState+"+checkBoxState chuu")
+  // console.log(JSON.stringify(checkBoxState)+"+checkBoxState@J chuu")
+  // console.log(checkBoxState+"+checkBoxState chuu")
 
   const postButtonClicked = async(pushIsPublic) => {
     //バリデーション
@@ -770,6 +820,10 @@ const Posting = () => {
         {/* {RdIsSignin === true
         ? (  */}
         {/* <> */}
+        {/* <a className={classes.h2CenterLine}> */}
+        {/* <Typography variant={"overline"} className={classes.postingH2}> */}
+        <H2CenterLine> {"作品情報"} </H2CenterLine>
+        {/* </a> */}
           {firstPostFlag == 0 && (
             <>
             {/* <ApplicationBar title="新規登録" auth={RdUserId} /> */}
@@ -894,54 +948,58 @@ const Posting = () => {
           <>
 
           {/* <div className="c-section-container"> */}
-            <h2 className={classes.postingH2}>評価</h2>
-            <Grid container xs={12} spacing={0}>
-              <Grid container item xs={10} spacing={0}>
-                <Grid item container xs={12}>
-                  <Typography className={classes.h3WorksTitle}>
-                    {"採点"}
-                  </Typography>
-                </Grid>
-                <Grid item container xs={12} justifyContent={"center"} spacing={1}>
-                  <Grid item xs={2} spacing={0}>
-                    <FormControl className={classes.FCtensuu}>
-                      <TextInput
-                        fullWidth={true} label={"点"} multiline={false} required={true}
-                        // fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
-                        rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={10} spacing={0}>
-                    <Slider
-                      value={typeof workScore === 'number' ? workScore : 0}
-                      onChange={handleSliderChange}
-                      aria-labelledby="input-slider"
-                      />    
-                  </Grid>
-                </Grid>
-              </Grid>
+            {/* <h2 className={classes.postingH2}>評価</h2> */}
+            <H2CenterLine style={{marginTop:"10px"}}> 　評価　 </H2CenterLine>
 
-              <Grid container item xs={2} spacing={0} className={classes.likedPosition}>
-                <Grid container item xs={12} className={classes.likedIconPosition}>
-                  <Typography className={classes.h5WorksLikeTitle}>
-                    {"Like"}
-                  </Typography>
-                </Grid>
-                <Grid container item xs={12} className={classes.likedIconPosition}>
-                  <FormControl>
-                    {isLiked
-                      ? <FavoriteIcon
-                        onClick={isLikedHandleChange}
-                        />
-                      : <FavoriteBorder
-                        onClick={isLikedHandleChange}
-                      />
-                    }
-                  </FormControl>
-                </Grid>
+            <Grid container xs={12} spacing={0} className={classes.likedPosition}>
+              <Grid item xs={6} className={classes.likedIconPosition}>
+                <Typography className={classes.h5WorksLikeTitle}>
+                  {"Like"}
+                </Typography>
               </Grid>
+              <Grid item xs={6} className={classes.likedIconPosition}>
+                <FormControl>
+                  {isLiked
+                    ? <FavoriteIcon
+                      onClick={isLikedHandleChange}
+                      />
+                    : <FavoriteBorder
+                      onClick={isLikedHandleChange}
+                    />
+                  }
+                </FormControl>
+              </Grid>
+            </Grid>
 
+
+            <Grid container item xs={12} spacing={0} className={classes.scorePosition}>
+              <Grid item xs={12}>
+                <Typography className={classes.h5WorksLikeTitle}>
+                  {"採点"}
+                </Typography>
+              </Grid>
+              <Grid item xs={1}>
+                {/* <FormControl className={classes.FCtensuu}> */}
+                <TextField
+                  fullWidth={true} label={""} multiline={false} required={true}
+                  // fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
+                  rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
+                  // className={classes.FCtensuu}
+                  inputProps={{min: 0, style: { textAlign: 'center' }}}
+                  InputProps= {classes.FCtensuu}
+                  // classes={{option: classes.autoCompleteStyle}} //.Muiを編集したい時はこれ。
+                />
+                {/* </FormControl> */}
+              </Grid>
+              <Grid container item xs={10} justifyContent={"center"}>
+                {/* <Grid item xs={12}> */}
+                  <Slider
+                    value={typeof workScore === 'number' ? workScore : 0}
+                    onChange={handleSliderChange}
+                    aria-labelledby="input-slider"
+                    />    
+                {/* </Grid> */}
+              </Grid>
             </Grid>
             <Typography className={classes.h3WorksTitle}>タグ/属性</Typography> 
             {(() => {
@@ -998,10 +1056,6 @@ const Posting = () => {
               <FormControl margin="none">
                 <Collapse in={showGenre} timeout={1000}>
                   <Grid container classes={{ root: classes.tagMasterGrid}}>
-                  {/* <Grid container classes={{ root: classes.tagMasterGrid}} alignContent="space-between" spacing={0}> */}
-                    {/* //whiteSpaceは認識しないようなので削除してみる。 */}
-                    {/* <Grid container classes={{ root: classes.tagMasterGrid}} whiteSpace="nowrap" alignContent="space-between" spacing={0}> */}
-                    {/* タグ　表示制御 */}
                     {(() => {
                       let tagList = []
                       let displayFlag = true
