@@ -193,9 +193,12 @@ const useStyles = makeStyles((theme) => ({
     margin : "9px 0px 0px 0px",
     color : "#393e4f", //青褐あおかち
     fontSize : "0.8em",
-    // margin : "12px 0px 0px 0px",
-    // color : "#203744", //褐返かちかえし
-    // color : "#aacf53", //萌黄
+  },
+  h3WorksTitle: {
+    margin : "9px 0px 0px 0px",
+    color : "#393e4f", //青褐あおかち
+    fontSize : "1.2em",
+    fontWeight : "bold",
   },
   h5WorksLikeTitle: {
     margin : "9px 0px 0px 0px",
@@ -892,35 +895,37 @@ const Posting = () => {
 
           {/* <div className="c-section-container"> */}
             <h2 className={classes.postingH2}>評価</h2>
-            <Grid container item xs={12} spacing={0}>
-              <Grid container item xs={8} spacing={0}>
-                <Grid container item xs={12}>
-                  <Typography className={classes.h5WorksTitle}>
+            <Grid container xs={12} spacing={0}>
+              <Grid container item xs={10} spacing={0}>
+                <Grid item container xs={12}>
+                  <Typography className={classes.h3WorksTitle}>
                     {"採点"}
                   </Typography>
                 </Grid>
-                <Grid container item xs={3}>
-                  <FormControl className={classes.FCtensuu}>
-                    <TextInput
-                      fullWidth={true} label={"点"} multiline={false} required={true}
-                      // fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
-                      rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid container item xs={7}>
-                  <Slider
-                    value={typeof workScore === 'number' ? workScore : 0}
-                    onChange={handleSliderChange}
-                    aria-labelledby="input-slider"
-                    />    
+                <Grid item container xs={12} justifyContent={"center"} spacing={1}>
+                  <Grid item xs={2} spacing={0}>
+                    <FormControl className={classes.FCtensuu}>
+                      <TextInput
+                        fullWidth={true} label={"点"} multiline={false} required={true}
+                        // fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
+                        rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={10} spacing={0}>
+                    <Slider
+                      value={typeof workScore === 'number' ? workScore : 0}
+                      onChange={handleSliderChange}
+                      aria-labelledby="input-slider"
+                      />    
+                  </Grid>
                 </Grid>
               </Grid>
 
-              <Grid container item xs={4} spacing={0} className={classes.likedPosition}>
+              <Grid container item xs={2} spacing={0} className={classes.likedPosition}>
                 <Grid container item xs={12} className={classes.likedIconPosition}>
                   <Typography className={classes.h5WorksLikeTitle}>
-                    {"いいね"}
+                    {"Like"}
                   </Typography>
                 </Grid>
                 <Grid container item xs={12} className={classes.likedIconPosition}>
@@ -938,7 +943,7 @@ const Posting = () => {
               </Grid>
 
             </Grid>
-            <h2 className={classes.postingH2}>タグ/属性</h2> 
+            <Typography className={classes.h3WorksTitle}>タグ/属性</Typography> 
             {(() => {
               let postedTag = []
               for(let j = 0;j < Object.keys(tagMap).length;j++){
@@ -1049,12 +1054,6 @@ const Posting = () => {
                                   if(showMorePosition != (totalCountPosition)){
                                     break
                                   }
-                                  
-                                // case totalCountPosition :
-                                //   displayFlag = true
-                                //   return null
-                                  // break
-
                                 default :
                                   break
                               }
@@ -1220,7 +1219,9 @@ const Posting = () => {
               </Button>
             </Grid>
 
-            <h2 className={classes.postingInlineH2}>コメント</h2>
+            <Typography className={classes.h3WorksTitle}>コメント</Typography>
+            {/* <h2 className={classes.h3WorksTitle}>コメント</h2> */}
+            {/* <h2 className={classes.postingInlineH2}>コメント</h2> */}
 
             <FormControlLabel
               control={
