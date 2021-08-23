@@ -404,7 +404,7 @@ const Posting = () => {
   // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
   // console.log(asPath+"+asPath first")
   const oriQuery = /^\/post\/posting\?searchWord=/.test(asPath) ? asPath.split('\/post\/posting')[1] : ""
-  console.log(oriQuery+"+oriQuery")
+  // console.log(oriQuery+"+oriQuery")
   // const qInfoMedia = router.query.infoMedia 
 
   // console.log("bunruiMap")
@@ -443,7 +443,7 @@ const Posting = () => {
         ? 2 //評価編集
         : 0 //自分は未評価投稿
       : 1 //新規評価
-      console.log(firstPostFlag+"firstPostFlag@SignInChanged")
+      // console.log(firstPostFlag+"firstPostFlag@SignInChanged")
     }
   } else {
     console.log("no oriQuery")
@@ -521,7 +521,7 @@ const Posting = () => {
 
   const handleSliderChange = useCallback((event, newValue) => {
     setWorkScore(newValue)
-    console.log("handleSliderChange")
+    // console.log("handleSliderChange")
   },[workScore])
 
   const inputTagAutoCompleteValue = useCallback((value,reason) => {
@@ -979,17 +979,13 @@ const Posting = () => {
                 </Typography>
               </Grid>
               <Grid item xs={1}>
-                {/* <FormControl className={classes.FCtensuu}> */}
                 <TextField
                   fullWidth={true} label={""} multiline={false} required={true}
                   // fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
                   rows={1} value={workScore} type={"number"} onChange={inputWorkScore}
-                  // className={classes.FCtensuu}
                   inputProps={{min: 0, style: { textAlign: 'center' }}}
-                  InputProps= {classes.FCtensuu}
-                  // classes={{option: classes.autoCompleteStyle}} //.Muiを編集したい時はこれ。
+                  InputProps= {classes.FCtensuu} //.Muiを編集したい時はこれ。Part2  
                 />
-                {/* </FormControl> */}
               </Grid>
               <Grid container item xs={10} justifyContent={"center"}>
                 {/* <Grid item xs={12}> */}
@@ -1071,8 +1067,8 @@ const Posting = () => {
                                   displayFlag = true //→ついき：多分なくてもいい。
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
                                 case showMoreGenre : 
-                                  console.log(displayFlag ? "true" +"+displayFlag@showMoreGenre" : "false" +"+displayFlag@showMoreGenre")
-                                  console.log(showMoreGenre+"+showMoreGenre") 
+                                  // console.log(displayFlag ? "true" +"+displayFlag@showMoreGenre" : "false" +"+displayFlag@showMoreGenre")
+                                  // console.log(showMoreGenre+"+showMoreGenre") 
                                   displayFlag = false
                                   if(showMoreGenre != totalCountGenre){
                                     break
@@ -1082,7 +1078,7 @@ const Posting = () => {
                                   displayFlag = true
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
                                 case showMoreImpression :
-                                  console.log(j+"+showMoreImpression")
+                                  // console.log(j+"+showMoreImpression")
                                   displayFlag = false
                                   if(showMoreImpression != totalCountImpression){
                                     break
@@ -1093,7 +1089,7 @@ const Posting = () => {
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
                                 case showMoreOriginal :
                                     // case totalCountImpression + 5 :
-                                  console.log(j+"+showMoreOriginal")
+                                  // console.log(j+"+showMoreOriginal")
                                   displayFlag = false                                
                                   if(showMoreOriginal != (totalCountOriginal)){
                                     break
@@ -1103,7 +1099,7 @@ const Posting = () => {
                                   displayFlag = true
                                   return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
                                 case showMorePosition :
-                                  console.log(j+"+showMorePosition")
+                                  // console.log(j+"+showMorePosition")
                                   displayFlag = false
                                   if(showMorePosition != (totalCountPosition)){
                                     break
