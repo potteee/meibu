@@ -28,6 +28,7 @@ const initialState = {
   workScore : "",
   workCategory : "",
   workTag : [],
+  workComment : "",
   isLiked : false,
   workInfomation : "",
   workUpdateTime : "",
@@ -194,12 +195,14 @@ const handlerPostUserId = (props) => {
         workScore : postedWorksIdSnapshot.workScore,
         workCategory : wInfoSnapshot.winfoCategory,
         workTag : postedWorksIdSnapshot.assessmentWorkTag,
+        workComment : postedWorksIdSnapshot.workComment,
         isLiked : postedWorksIdSnapshot.isLiked,
         workInfomation : wInfoSnapshot.winfoInfomation,
         workCreateTime : postedWorksIdSnapshot.created_at,
         workUpdateTime : postedWorksIdSnapshot.updated_at,
         assessmentComment : assessmentSnapshot 
-          ? assessmentSnapshot.workComment
+          ? assessmentSnapshot.assessmentComment
+          // ? assessmentSnapshot.workComment
           : undefined
         , 
         assessmentLike : assessmentSnapshot 

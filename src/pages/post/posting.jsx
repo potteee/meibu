@@ -19,6 +19,7 @@ import Box from '@material-ui/core/Box';
 import Icon from '@material-ui/core/Icon';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import Slider from '@material-ui/core/Slider';
+import Switch from '@material-ui/core/Switch';
 import PublishIcon from '@material-ui/icons/Publish';
 import Collapse from '@material-ui/core/Collapse';
 import Chip from '@material-ui/core/Chip';
@@ -92,11 +93,20 @@ const useStyles = makeStyles((theme) => ({
     left : 20,
   },
   postingInlineNetabareText: {
-    display : "inline",
-    // padding : "30px 0px 0px 0px", //margin,paddin意味ない
-    position : "relative",
-    top : 2,
-    left : 3,
+    // display : "inline",
+    // // padding : "30px 0px 0px 0px", //margin,paddin意味ない
+    // position : "relative",
+    // top : 2,
+    // left : 3,
+    fontSize : "10px",
+  },
+  flexEnd: {
+    justifyContent:"flex-end",
+    alignItems:"flex-end"
+  },
+  flexCenter: {
+    justifyContent:"center",
+    alignItems:"center"
   },
 
   cateInputCheck: {
@@ -108,6 +118,9 @@ const useStyles = makeStyles((theme) => ({
     margin : "0px",
     padding: "0px 0px 0px 0px",
     boxSizing: "content-box" // <-- add this
+  },
+  commentField: {
+    maxWidth : 630,
   },
   bunruiFormControl: {
     // margin: theme.spacing(1),
@@ -1301,28 +1314,34 @@ const Posting = () => {
             </Grid>
 
             <Grid container xs className={classes.likedPosition}>
-              {/* <Grid item xs> */}
-                <Typography className={classes.h5WorksLikeTitle}>
-                  コメント
-                </Typography>
-              {/* </Grid> */}
+              <Typography className={classes.h5WorksLikeTitle}>
+                コメント
+              </Typography>
             </Grid>
             {/* <h2 className={classes.h3WorksTitle}>コメント</h2> */}
             {/* <h2 className={classes.postingInlineH2}>コメント</h2> */}
 
-            <FormControlLabel
-              control={
-                <StyledCheckbox isSr={isSpoiler} isSH={isSpoilerHandleChange} />
-              }
-              label = {
-                <span className={classes.postingInlineNetabareText}>ネタバレ</span>
-              }
-              className={classes.postingInlineNetabareBox}
-            />
-            <TextInput
-              fullWidth={true} label={"コメント(5000字以内)"} multiline={true} required={true}
-              rows={1} value={workComment} type={"text"} onChange={inputWorkComment}
-            />
+            <Grid container xs={12} className={classes.flexEnd}>
+              <Grid container item xs={3} justify={"flex-start"}>
+                <FormControlLabel
+                  control={
+                    <Switch size="small" checked={isSpoiler} onChange={isSpoilerHandleChange} />
+                  }
+                  label = {
+                    <span className={classes.postingInlineNetabareText}>ネタバレ</span>
+                  }
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container xs={12} flexGrow={1} justify={"center"}>
+              <TextField
+                fullWidth={true} label={"コメント"} multiline={true} required={true}
+                rows={1} value={workComment} type={"text"} onChange={inputWorkComment}
+                className={classes.commentField} 
+                placeholder={"感想、評価などを5000字以内"}
+              />
+            </Grid>
 
             {/* 投稿ボタン */}
             <FormGroup row>
