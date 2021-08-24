@@ -103,13 +103,17 @@ const useStyles = makeStyles((theme) => ({
   postingNetabarePosition: {
     position : "relative",
     // left : "1.0em",
-    justifyContent:"flex-end",
-    alignItems:"flex-end"
+    // justify:"center",
+    justifyContent:"center",
+    alignItems:"flex-end",
+    maxWidth : 630,
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   postingCommentPosition: {
     position : "relative",
     top : "-2.0em",
-    justifyContent:"flex-end",
+    justifyContent:"center",
     alignItems:"flex-end"
   },
   flexCenter: {
@@ -826,9 +830,7 @@ const Posting = () => {
         workId,
         workName,
         workMedia,
-        // setIsPublic((preIsPublic) => {return preIsPublic}),
         pushIsPublic,
-        // isPublic,
         isSpoiler,
         isLiked,
         workScore,
@@ -889,8 +891,6 @@ const Posting = () => {
                     {workMedia}
                   </div>
                 </Grid>
-              {/* </Grid>
-              <Grid container item xs={6} justify={"center"}> */}
               </Grid>
 
               <Grid container item xs={6} justifyContent={"center"}>
@@ -899,17 +899,7 @@ const Posting = () => {
                     {"カテゴリ"}
                   </Typography>
                 </Grid>
-                {/* <Grid container item xs={12} justify={"center"}>
-                  <h3 className={classes.h4LinkTag}>
-                    {Object.keys(checkBoxState).map((map) => (
-                      <>{checkBoxState[map] == true && (
-                        <a>{categoryMap[map]} </a>
-                      )}</>
-                    ))}
-                  </h3>
-                </Grid> */}
                 <Grid container item xs={12} justify={"center"}>
-                  {/* <h3 className={classes.h4LinkTag}> */}
                     {Object.keys(checkBoxState).map((map) => (
                       <>{checkBoxState[map] == true && (
                         <Grid container item xs={5} 
@@ -920,7 +910,6 @@ const Posting = () => {
                         </Grid>
                       )}</>
                     ))}
-                  {/* </h3> */}
                 </Grid>
               </Grid> 
             </Grid>
@@ -1334,7 +1323,7 @@ const Posting = () => {
         {/* <h2 className={classes.postingInlineH2}>コメント</h2> */}
 
         <Grid container xs={12} className={classes.postingNetabarePosition}>
-          <Grid container item xs={2} justify={"flex-start"}>
+          <Grid container item xs={12} justify={"flex-end"}>
             <FormControlLabel
               control={
                 <Switch size="small" checked={isSpoiler} onChange={isSpoilerHandleChange} />
