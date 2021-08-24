@@ -63,8 +63,12 @@ const useStyles = makeStyles((theme) => ({
   autoCompleteStyle : {
     // '$root.MuiAutocomplete-option &' : {
       padding : "0px",
-      minHeight : "30px",
+      minHeight : "0.7em",
+      // minHeight : "30px",
     // }
+  },
+  autoCompleteStylePop : {
+    maxHeight : "12em",
   },
   button: {
     // display: 'block', 
@@ -118,21 +122,25 @@ const useStyles = makeStyles((theme) => ({
   cateItemGrid: {
     position : "relative",
   },
-  // tagItemGrid: {
-  //   // display: 'flex',
-  //   // justifyContent: 'center',
-  //   // flexWrap: 'wrap',
-  //   // '& > *': {
-    //   //   margin: theme.spacing(0.5),
-  //   // },
-  // },
-  tagItemGrid: {
+  firstTagItemGrid: {
+    position : "relative",
+    top : 6,
+    marginBottom : 14,
+    justifyContent : "center",
     '& > *': {
       margin: theme.spacing(0.5),
     },
-    // justifyContent : "space-evenly",
-    // textAlign : "center",
-    // position : "relative",
+  },
+  secondTagItemGrid: {
+    justifyContent : "center",
+    '& > *': {
+      margin: theme.spacing(0.5),
+    },
+  },
+  tagItemSelectGrid: {
+    justifyContent : "center",
+    alignItems : "center",
+    flexDirection : "row",
   },
   tagItemGridHidden: {
     position : "relative",
@@ -287,7 +295,12 @@ const useStyles = makeStyles((theme) => ({
   FCfreeWordSearchTag: {
     margin : "0px 0px 4px 0px",
     minWidth : "14em",
-    // color : "red",
+  },
+  freeWordSearchTag: {
+    position : "relative",
+    top : -10,
+    justifyContent : "center",
+    alignItems : "center",
   },
   root: {
     '&:hover': {
@@ -945,8 +958,8 @@ const Posting = () => {
             </h3>
             </>
           )}
-          <>
 
+          <>
           {/* <div className="c-section-container"> */}
             {/* <h2 className={classes.postingH2}>評価</h2> */}
             <H2CenterLine style={{marginTop:"10px"}}> 　評価　 </H2CenterLine>
@@ -987,17 +1000,17 @@ const Posting = () => {
                   InputProps= {classes.FCtensuu} //.Muiを編集したい時はこれ。Part2  
                 />
               </Grid>
-              <Grid container item xs={10} justifyContent={"center"}>
-                {/* <Grid item xs={12}> */}
-                  <Slider
-                    value={typeof workScore === 'number' ? workScore : 0}
-                    onChange={handleSliderChange}
-                    aria-labelledby="input-slider"
-                    />    
-                {/* </Grid> */}
-              </Grid>
+              {/* <Grid container item xs={10} justifyContent={"center"}>
+                <Slider
+                  value={typeof workScore === 'number' ? workScore : 0}
+                  onChange={handleSliderChange}
+                  aria-labelledby="input-slider"
+                  />    
+              </Grid> */}
             </Grid>
-            <Typography className={classes.h3WorksTitle}>タグ/属性</Typography> 
+            <Grid container item xs={12} spacing={0} className={classes.scorePosition} style={{marginTop:"10px"}}>
+              <Typography className={classes.h5WorksLikeTitle}>タグ</Typography> 
+            </Grid>
             {(() => {
               let postedTag = []
               for(let j = 0;j < Object.keys(tagMap).length;j++){
@@ -1019,35 +1032,53 @@ const Posting = () => {
               }
               return <Grid
                 container item xs spacing={0}
-                classes={{root: classes.tagItemGrid}}
+                classes={{root:classes.firstTagItemGrid}}
               > 
+                {/* <Grid item xs={12}> */}
                 {postedTag}
+                {/* </Grid> */}
               </Grid>
             })()}
 
             {/* フリーワード検索部 */}
-            <FormControl className={classes.FCfreeWordSearchTag}>
-              <Autocomplete
-                classes={{option: classes.autoCompleteStyle}} //.Muiを編集したい時はこれ。
-                id="tagSearch"
-                options={Object.values(tagMap)}
-                getOptionLabel={(option) => option.key}
-                clearOnEscape
-                inputValue = {tagAutoCompleteValue}
-                onInputChange = {(event,newInputValue,reason) => {
-                  inputTagAutoCompleteValue(newInputValue,reason)
-                }}
-                onChange = {(event,selectedValue) => {
-                  tagCheckBoxHandleChange({
-                    name : selectedValue?.originalKey ,
-                    isClicked : false
-                  })
-                  return true
-                }}
-                renderInput={(params) => <TextField {...params} label="タグを検索" margin="none" />}
-              />
-            </FormControl>
-            {/* タグ部 */}
+            <Grid container xs spacing={0} className={classes.freeWordSearchTag}>
+              <FormControl className={classes.FCfreeWordSearchTag}>
+                <Autocomplete
+                  classes={{
+                    option: classes.autoCompleteStyle,
+                    listbox: classes.autoCompleteStylePop
+                    }}//.Muiを編集したい時はこれ。
+                  id="tagSearch"
+                  options={Object.values(tagMap)}
+                  getOptionLabel={(option) => option.key}
+                  clearOnEscape
+                  inputValue = {tagAutoCompleteValue}
+                  onInputChange = {(event,newInputValue,reason) => {
+                    inputTagAutoCompleteValue(newInputValue,reason)
+                  }}
+                  onChange = {(event,selectedValue) => {
+                    tagCheckBoxHandleChange({
+                      name : selectedValue?.originalKey ,
+                      isClicked : false
+                    })
+                    return true
+                  }}
+                  renderInput={(params) => <TextField {...params} label="タグを検索" margin="none" />}
+                  />
+              </FormControl>
+            </Grid> 
+
+            <Collapse in={showGenre} timeout={300}>
+              <Grid container item spacing={0} justify={"center"} alignItems="center">  
+                <Button onClick={() => {
+                  setShowGenre(!showGenre)
+                }}> 
+                  {(showGenre == true) ? "タグ候補を非表示" : null}
+                </Button>
+              </Grid>
+            </Collapse>
+
+            {/* タグ候補 表示部 */}
             <FormGroup className={classes.tagFormGroup}>
               <FormControl margin="none">
                 <Collapse in={showGenre} timeout={1000}>
@@ -1113,7 +1144,7 @@ const Posting = () => {
                             <Collapse in={displayFlag} timeout={1000}>
                               <Grid
                                 container item xs spacing={0}
-                                classes={{root: classes.tagItemGrid}}
+                                classes={{root: classes.secondTagItemGrid}}
                               >
                                 <Chip
                                   size="small"
@@ -1265,11 +1296,17 @@ const Posting = () => {
               <Button onClick={() => {
                 setShowGenre(!showGenre)
               }}> 
-                {(showGenre == true) ? "タグ候補全体を非表示" : "タグ候補を表示"}
+                {(showGenre == true) ? "タグ候補を非表示" : "タグ候補を表示"}
               </Button>
             </Grid>
 
-            <Typography className={classes.h3WorksTitle}>コメント</Typography>
+            <Grid container xs className={classes.likedPosition}>
+              {/* <Grid item xs> */}
+                <Typography className={classes.h5WorksLikeTitle}>
+                  コメント
+                </Typography>
+              {/* </Grid> */}
+            </Grid>
             {/* <h2 className={classes.h3WorksTitle}>コメント</h2> */}
             {/* <h2 className={classes.postingInlineH2}>コメント</h2> */}
 
