@@ -7,6 +7,9 @@ import {getIsSignedIn} from "../reducks/users/selectors";
 import { auth, db, FirebaseTimestamp } from "../firebase/index"
 import SignIn from './auth/signin';
 
+import nprogress from 'nprogress'
+import 'nprogress/nprogress.css'
+
 import { makeStyles } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline';
 
@@ -28,7 +31,14 @@ import GetUserRedux　from 'src/foundations/share/getUserRedux'
 //   },
 // }))
 
+nprogress.configure({ showSpinner: true, speed: 400, minimum: 0.25 })
+
 const WrappedApp = ({Component, pageProps}) => {
+
+  if (process.browser) {
+    // バーの表示開始
+    nprogress.start()
+  }
 
   //cookie情報からuidの確認
   const selector = useSelector(state => state)
@@ -133,6 +143,7 @@ const WrappedApp = ({Component, pageProps}) => {
       //   console.log("delete jss")
       // }  
     firstAction()
+    nprogress.done()
       //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
       // ssssetRenderTriger(!renderTriger)
   },[])
