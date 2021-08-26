@@ -2,7 +2,12 @@ import React, {useState, useEffect, useCallback} from 'react'
 import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
 import { H2CenterLine } from "src/styles/SC/shared/typografy/centerLine"
 
-import {ONE_CLICK_APPEARANCE_IN_POSTING} from 'src/foundations/share/GlobalConstant'
+import {
+  ONE_CLICK_APPEARANCE_IN_POSTING,
+  ANOTHER_ONLY_POSTED_FLAG,
+  NOT_POSTED_FLAG,
+  I_POSTED_FLAG,
+} from 'src/foundations/share/GlobalConstant'
 
 //material UI
 import FormGroup from '@material-ui/core/FormGroup'
@@ -54,6 +59,8 @@ import { tokenize } from '../api/allStringSearch/text-processor';
 
 import { db, FirebaseTimestamp } from "../../firebase/index";
 
+import {textToNumber} from 'src/foundations/share/textToNumber'
+
 import {tagMap,tagExtraData} from "../../models/tagMap"
 import {categoryMap} from "../../models/categoryMap"
 import {bunruiMap} from "../../models/bunruiMap"
@@ -93,17 +100,10 @@ const useStyles = makeStyles((theme) => ({
     left : 20,
   },
   postingInlineNetabareText: {
-    // display : "inline",
-    // // padding : "30px 0px 0px 0px", //margin,paddin意味ない
-    // position : "relative",
-    // top : 2,
-    // left : 3,
     fontSize : "10px",
   },
   postingNetabarePosition: {
     position : "relative",
-    // left : "1.0em",
-    // justify:"center",
     justifyContent:"center",
     alignItems:"flex-end",
     maxWidth : 630,
@@ -167,57 +167,34 @@ const useStyles = makeStyles((theme) => ({
     alignItems : "center",
     flexDirection : "row",
   },
-  // tagItemGridHidden: {
-  //   position : "relative",
-  //   display : "none"
-  // },
-  // tagFormControlHide: {
-  //   display : "none",
-  // },
-  // tagFormControl: {
-  //   // display : "none",
-  // },
+
   cateFormControlLabel: {
     textAlign : "center",
     margin: "0px 0px 10px 0px",
     boxSizing: "content-box", // <-- add this
-    // display: "none",
-    // display: "inline-block",
-    // width: "auto",
-    // height: "80px",
   },
   tagFormControlLabel: {
     textAlign : "center",
     margin: "0px 0px 10px 0px",
     boxSizing: "content-box", // <-- add this
-    // display: "none",
-    // display: "inline-block",
-    // width: "auto",
-    // height: "80px",
   },
   tagFormControlLabelHidden: {
     textAlign : "center",
     margin: "0px 0px 22px 0px",
     boxSizing: "content-box", // <-- add this
     display: "none",
-    // display: "inline-block",
-    // width: "auto",
-    // height: "80px",
   },
   tagFormGroup:{
     position: "relative",
-    // position: relative,
   },
   gridTagKey: {
     flexGrow: 1,
     textAlign : "center",
-    // margin: theme.auto,
     margin : "0px"
   },
   inputTagKey: {
     flexGrow: 1,
     textAlign : "center",
-    // margin: theme.auto,
     margin : "0px 0px 7px 0px"
   },
   h3TagKey: {
@@ -250,49 +227,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection : "column",
   },
   likedIconPosition: {
-    // justifyContent : "center",
-    // alignItems : "center",
-    // marginLeft : "4px",
     position : "relative",
     marginBottom : "5px",
     top : -5,
   },
-  // h2CenterLine: {
-  //   display: "flex",
-  //   alignItems: "center", /* 垂直中心 */
-  //   justifyContent: "center", /* 水平中心 */
-  //   fontSize : "1.4em",
-    
-  //   // '&:before, &:after' :{
-  //   //   // borderTop: "3px solid",
-  //   //   // borderTopWidth: 1,
-  //   //   // borderWidth: 5, borderWidth: 5,
-  //   //   // borderColor: 'red',
-  //   //   // borderStyle: 'solid',
-  //   //   // content : "",
-  //   //   // width : "3em", /* 線の長さ */
-  //   // },
-  //   '&:before' : {
-  //     content: 'abc',
-  //     position : "relative",
-  //     // position : "fixed",
-  //     // flexGrow: 1,
-  //     // left : "10px",
-  //     width : "3em", /* 線の長さ */
-  //     borderWidth: 1,
-  //     borderTopWidth: 1,
-  //     // borderWidth: 5,
-  //     borderColor: 'red',
-  //     borderStyle: 'solid',
-  //     // display : "inline-block",
-  //     // paddintTop: "-0.7em", /* 文字の右隣 */
-  //     marginRight: "3em", /* 文字の右隣 */
-  //     marginLeft: "3em", /* 文字の右隣 */
-  //   },
-  //   '&:after': {
-  //     // marginLeft: "1em", /* 文字の左隣 */
-  //   },
-  // },
 
   h4LinkTag: {
     fontSize : "12.5px",
@@ -301,11 +239,9 @@ const useStyles = makeStyles((theme) => ({
     color : "#000080",
   },
   inputHissu: {
-    // margin : "0px 0px 4px 0px",
     color : "red",
   },
   inputSmallHissu: {
-    // margin : "0px 0px 4px 0px",
     position : "relative",
     top : -6,
     fontSize : 12,
@@ -313,7 +249,6 @@ const useStyles = makeStyles((theme) => ({
   },
   FCHissu: {
     margin : "0px 0px 4px 0px",
-    // color : "red",
   },
   FCtensuu: {
     maxWidth : 45,
@@ -382,14 +317,7 @@ const useStyles = makeStyles((theme) => ({
   },
   postingBox : {
     margin : "0px 5px 0px 15px",
-    // component : "h3",
-
-    // color : "red",
-    // fontSize : 20,
   },
-  // postingSubBox : {
-  //   margin : "0px 5px 0px 15px"
-  // },
   postingTypology : {
     fontSize : 20,
   },
@@ -404,81 +332,38 @@ const useStyles = makeStyles((theme) => ({
 
 }))
 
-const StyledCheckbox = (props) => {
-  const classes = useStyles();
-
-  return (
-    <Checkbox
-      className={classes.root}
-      disableRipple
-      color="default"
-      checkedIcon={<span className={clsx(classes.icon, classes.checkedIcon)} />}
-      icon={<span className={classes.icon} />}
-      inputProps={{ 'aria-label': 'decorative checkbox' }}
-      checked={props.isSr} 
-      onChange={props.isSH} 
-      name={"ネタバレコメント"}
-      // {...props}
-    />
-  );
-}
-
 // 作品投稿ページ
 const Posting = () => {
 
+  //default
   const router = useRouter()
-  // const { id } = router.query
   const dispatch = useDispatch()
+  
+  //Redux
   const selector = useSelector((state) => state)
-
-  // console.log(JSON.stringify(selector,null,2)+"+selector")
-  //上記よりこっちの方が処理漏れ少ない？
   const RdUserId = getUserId(selector);
   const RdIsSignin = getIsSignedIn(selector);
   const RdUserName = getUserName(selector);
   const RdAssessmentWorks = getUserAssessmentWorks(selector)
+
+  //style
   const classes = useStyles();
 
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
-  // const { hist,searchWord,infoMedia ,workId,firstPostFlag } = router.query
   const props = router.query
   const { isReady } = useRouter()
 
-  // const query = router.query.searchWord // これだと初回useEffect時に読んでくれない
-  // console.log(asPath+"+asPath first")
-  const oriQuery = /^\/post\/posting\?searchWord=/.test(asPath) ? asPath.split('\/post\/posting')[1] : ""
-  // console.log(oriQuery+"+oriQuery")
-  // const qInfoMedia = router.query.infoMedia 
-
-  // console.log("bunruiMap")
-  // console.log(bunruiMap)
-  // console.log(Object.keys(bunruiMap)+"Ob bunruiMap")
-  // console.log(bunruiMap[Object.keys(bunruiMap)[0]]+"+Ob")
-
+  
+  //props
   let hist = props.hist
   let preWorkName = props.searchWord
   let qInfoMedia = props.infoMedia
   let preWorkId = props.workId
   let firstPostFlag = props.firstPostFlag
-  // let query = ""
-  // let qInfoMedia = ""
-  // let preWorkId = ""
-  // let firstPostFlag = ""
+  
+  const oriQuery = /^\/post\/posting\?searchWord=/.test(asPath) ? asPath.split('\/post\/posting')[1] : ""
 
   if(oriQuery){
-    // query = /\&/.test(oriQuery.split('?searchWord=')[1]) ? (oriQuery.split('?searchWord=')[1]).split('&')[0] : oriQuery.split('?searchWord=')[1]
-    // console.log(query+"+query first")
-    // query = decodeURIComponent(query.replace(/\+/g,' '))
-    // console.log(query+"+query second")
-
-    // qInfoMedia = decodeURIComponent(/\&/.test(oriQuery.split('&infoMedia=')[1]) ? (oriQuery.split('&infoMedia=')[1]).split('&')[0] : oriQuery.split('&infoMedia=')[1])
-    // console.log(qInfoMedia+"+qInfoMedia first")
-
-    // preWorkId = decodeURIComponent(/\&/.test(oriQuery.split('&workId=')[1]) ? (oriQuery.split('&workId=')[1]).split('&')[0] : oriQuery.split('&workId=')[1])
-    // console.log(preWorkId+"+preWorkId first")
-
-    // firstPostFlag = decodeURIComponent(/\&/.test(oriQuery.split('&firstPostFlag=')[1]) ? (oriQuery.split('&firstPostFlag=')[1]).split('&')[0] : oriQuery.split('&firstPostFlag=')[1])
-    // console.log(firstPostFlag+"+firstPostFlag first")
 
     if(hist == "SignIn"){ // サインインから来た時は上書きする。
       firstPostFlag = preWorkId 
@@ -486,14 +371,14 @@ const Posting = () => {
         ? 2 //評価編集
         : 0 //自分は未評価投稿
       : 1 //新規評価
-      // console.log(firstPostFlag+"firstPostFlag@SignInChanged")
     }
   } else {
     console.log("no oriQuery")
   }
 
-  // console.log(query+"++query")
-  // console.log(querysWorkName+"+querysWorkName")
+  //useState
+
+  ////input
   const [workName, setWorkName] = useState(preWorkName)
 
   const [workMedia, setWorkMedia] = useState(qInfoMedia);
@@ -501,18 +386,21 @@ const Posting = () => {
 
   const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
-
+  
   const [showGenre, setShowGenre] = useState(false)
-
   const [tagAutoCompleteValue ,setTagAutoCompleteValue] = useState("useStateInitial")
-
+  
+  const [isPublic,setIsPublic] = useState(true)
+  const [isSpoiler,setIsSpoiler] = useState(false)
+  const [isLiked,setIsLiked] = useState(false)
+  
+  ////showmore
   const firstCheckBoxDisp = 22
   const totalCountGenre = tagExtraData.Genre.count
   const totalCountImpression = totalCountGenre + tagExtraData.Impression.count
   const totalCountOriginal = totalCountImpression + tagExtraData.Original.count
   const totalCountPosition = totalCountOriginal + tagExtraData.Position.count  
 
-  //showmore
   const [showMoreGenre ,setShowMoreGenre] = useState(firstCheckBoxDisp)
   const [showMoreImpression ,setShowMoreImpression] = useState(totalCountGenre + firstCheckBoxDisp)
   const [showMoreOriginal ,setShowMoreOriginal] = useState( 
@@ -520,11 +408,9 @@ const Posting = () => {
       ? totalCountImpression + tagExtraData.Original.count
       : totalCountImpression + firstCheckBoxDisp
     )
-  // const [showMoreOriginal ,setShowMoreOriginal] = useState(totalCountImpression + firstCheckBoxDisp)
   const [showMorePosition ,setShowMorePosition] = useState(totalCountOriginal + firstCheckBoxDisp)
 
-  // const [standbyState , setStandbyState] = useState(false)
-
+  ////tagResult
   let tagResult = {}
 
   Object.keys(tagMap).map((map) => 
@@ -532,7 +418,8 @@ const Posting = () => {
   )
 
   const [tagCheckBox, setTagCheckBox] = useState(tagResult)
-  
+
+  ////cateResult
   let cateResult = {}
 
   Object.keys(categoryMap).map((map) => 
@@ -541,14 +428,8 @@ const Posting = () => {
 
   const [checkBoxState, setCheckBoxState] = useState(cateResult)
 
-  const [isPublic,setIsPublic] = useState(true)
-  // let isPublic = true
-  const [isSpoiler,setIsSpoiler] = useState(false)
-  // const [workInfo, setWorkInfo] = useState("")
-  const [isLiked,setIsLiked] = useState(false)
-  
-  // console.log(id+"+id@post/index")
-  
+
+  //input function
   const changeIsPublic = useCallback((state) => {
     setIsPublic(state)
   }, [])
@@ -558,8 +439,9 @@ const Posting = () => {
   }, [])
   
   const inputWorkScore = useCallback((event) => {
-    setWorkScore(event.target.value === '' ? '' : Number(event.target.value))
-    // setWorkScore(event.target.value)
+    const valueOfNumber = textToNumber(event.target.value)
+    console.log(valueOfNumber+"valueOfNumber@posting")
+    setWorkScore(valueOfNumber === '' ? '' : valueOfNumber)
   },[workScore])
 
   const handleSliderChange = useCallback((event, newValue) => {
@@ -580,14 +462,7 @@ const Posting = () => {
 
   const tagCheckBoxHandleChange = useCallback(({name,isClicked}) => {
     setTagCheckBox({...tagCheckBox, [name] : !isClicked})
-    // setTagCheckBox({...tagCheckBox,[event.target.name]: event.target.checked})
-    // console.log(JSON.stringify(tagCheckBox)+"tagCheckBox")
-    // console.log(name+"+event.target.name")
-    // console.log(isClicked+"+event.target.isClicked")
   },[tagCheckBox])
-  // const tagCheckBoxHandleChange = useCallback((event) => {
-  //   setTagCheckBox({...tagCheckBox,[event.target.name]: event.target.checked})
-  // },[tagCheckBox])
   
   const inputWorkComment = useCallback((event) => {
     setWorkComment(event.target.value)
@@ -599,14 +474,8 @@ const Posting = () => {
   },[isSpoiler])
 
   const isLikedHandleChange = useCallback(() => {
-    // setIsLiked(event.target.checked)
-    // console.log("isLikedHandleChange")
     setIsLiked(isLiked => !isLiked)
   },[isLiked])
-  
-  // const inputWorkInfo = useCallback((event) => {
-    //   setWorkInfo(event.target.value)
-    // }, [])
 
   const handleChange = (event) => {
     setWorkMedia(event.target.value);
@@ -630,7 +499,6 @@ const Posting = () => {
     return tokenMap
   }
 
-  //useEffect
   useEffect(() => {
     if(oriQuery && RdIsSignin){
       (async() => {
@@ -643,7 +511,7 @@ const Posting = () => {
         console.log(firstPostFlag+"+firstPostFlag")
   
         //既に評価済みの評価を編集する場合
-        if(firstPostFlag == 2){
+        if(firstPostFlag == I_POSTED_FLAG){
           if(RdUserId != "RdUserId initial"){
             console.log("firstPostFlag = 2 effect start")
             console.log(RdUserId+"+RdUserId +++")
@@ -669,10 +537,8 @@ const Posting = () => {
                 })
               })            
               setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
-              // setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
               setWorkComment(snapshot.data().workComment)
               setIsPublic(snapshot.data().isPublic)
-              // isPublic = snapshot.data().isPublic
               setIsSpoiler(snapshot.data().isSpoiler)
               setIsLiked(snapshot.data().isLiked)
               console.log(snapshot.data().isLiked+"+setIsLiked")
@@ -703,7 +569,7 @@ const Posting = () => {
           })
         }
         //未評価の既に登録されている作品
-        if(firstPostFlag == 0){
+        if(firstPostFlag == ANOTHER_ONLY_POSTED_FLAG){
           console.log("firstPostFlag = 0 effect start")
           await db.collection('wInfo').doc(preWorkId)
           .get()
@@ -861,7 +727,7 @@ const Posting = () => {
 
         <H2CenterLine> {"作品情報"} </H2CenterLine>
 
-        {(firstPostFlag == 0 || firstPostFlag == 2 ) && (
+        {(firstPostFlag == ANOTHER_ONLY_POSTED_FLAG || firstPostFlag == I_POSTED_FLAG ) && (
           <>
             <Grid container item xs={12} justify={"center"}>
               <Typography className={classes.h5WorksTitle}>
@@ -917,7 +783,7 @@ const Posting = () => {
         )}
           
         {/* // 新規登録 */}
-        {firstPostFlag == 1 && (
+        {firstPostFlag == NOT_POSTED_FLAG && (
           <>
             {/* <h2>新規登録/評価</h2> */}
             <ApplicationBar title="新規登録/評価"/>
@@ -1014,13 +880,6 @@ const Posting = () => {
               className = {classes.FCtensuu} //.Muiを編集したい時はこれ。Part2  
             />
           </Grid>
-          {/* <Grid container item xs={10} justifyContent={"center"}>
-            <Slider
-              value={typeof workScore === 'number' ? workScore : 0}
-              onChange={handleSliderChange}
-              aria-labelledby="input-slider"
-              />    
-          </Grid> */}
         </Grid>
         <Grid container item xs={12} spacing={0} className={classes.scorePosition} style={{marginTop:"10px"}}>
           <Typography className={classes.h5WorksLikeTitle}>タグ</Typography> 
@@ -1048,9 +907,7 @@ const Posting = () => {
             container item xs spacing={0}
             classes={{root:classes.firstTagItemGrid}}
           > 
-            {/* <Grid item xs={12}> */}
             {postedTag}
-            {/* </Grid> */}
           </Grid>
         })()}
 
@@ -1417,13 +1274,11 @@ const Posting = () => {
           </Grid>
         </FormGroup>
 
-        {/* <PrimaryButton label={"投稿"} onClick={postButtonClicked} /> */}
-
         <h2>作品情報を入力(オプション)</h2>
         <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
 
-        {(firstPostFlag != 1 && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
-        {(firstPostFlag != 1 && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
+        {(firstPostFlag != NOT_POSTED_FLAG && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
+        {(firstPostFlag != NOT_POSTED_FLAG && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
           {/* </> */}
         <Footer />
       </>
