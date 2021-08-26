@@ -144,6 +144,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent : "space-evenly",
     // justifyContent : "space-evenly"
   },
+  cateMasterGrid: {
+    // position : "relative",
+    justifyContent : "space-between",
+    // justifyContent : "space-evenly"
+  },
   cateItemGrid: {
     position : "relative",
   },
@@ -439,9 +444,9 @@ const Posting = () => {
   }, [])
   
   const inputWorkScore = useCallback((event) => {
-    const valueOfNumber = textToNumber(event.target.value)
-    console.log(valueOfNumber+"valueOfNumber@posting")
-    setWorkScore(valueOfNumber === '' ? '' : valueOfNumber)
+    // const valueOfNumber = 
+    // console.log(valueOfNumber+"valueOfNumber@posting")
+    setWorkScore(textToNumber(event.target.value))
   },[workScore])
 
   const handleSliderChange = useCallback((event, newValue) => {
@@ -456,8 +461,11 @@ const Posting = () => {
   },[])
   // },[tagAutoCompleteValue])
   
-  const checkBoxHandleChange = useCallback((event) => {
-    setCheckBoxState({...checkBoxState,[event.target.name]: event.target.checked})
+  const cateCheckHandleChange = useCallback(({name,isClicked}) => {
+    console.log(name+"name")
+    console.log(isClicked ? "isClicked true" : "isClicked false")
+    // setCheckBoxState({...checkBoxState,[event.target.name]: event.target.checked})
+    setCheckBoxState({...checkBoxState, [name] : !isClicked})
   },[checkBoxState])
 
   const tagCheckBoxHandleChange = useCallback(({name,isClicked}) => {
@@ -816,7 +824,7 @@ const Posting = () => {
             </FormControl>
             <h2 className={classes.postingH2}> カテゴリ　</h2> 
             <a className={classes.inputSmallHissu}>(必須)</a>
-            <FormGroup row>
+            {/* <FormGroup row>
               {Object.keys(categoryMap).map((map)=> (
                 <Grid container item xs={4} sm={3} md={2} spacing={0} 
                   // <Grid container item xs={4} md={3} lg={2} spacing={0}
@@ -837,7 +845,27 @@ const Posting = () => {
                   />
                 </Grid>
               ))}
-            </FormGroup>
+            </FormGroup> */}
+            <Grid container spacing={1} classes={{ root: classes.cateMasterGrid}}>
+              {Object.keys(checkBoxState).map((map) => (
+                <Grid
+                  container item xs spacing={0}
+                  classes={{root: classes.secondTagItemGrid}}
+                >
+                  <Chip
+                    size="small"
+                    label={categoryMap[map]}
+                    clickable
+                    color={checkBoxState[map] ? "primary" : "default" }
+                    variant={checkBoxState[map] ? "default" :"outlined"}
+                    onClick={() => { return cateCheckHandleChange({
+                      name : map ,
+                      isClicked : checkBoxState[map]
+                    })}}
+                  />
+                </Grid>
+              ))}
+            </Grid>
           </>
         )}
 

@@ -10,25 +10,11 @@ export function textToNumber(str) {
 
     //半角数字以外を除去
     const numberRe = /[0-9]+/;
-    // const bigNumberRe  = /[０-９]+/
 
-    const onlyNumberStr = numberRe.exec(shortNumberStr) ? numberRe.exec(shortNumberStr) : ""
+    const onlyNumberStr = numberRe.exec(shortNumberStr) ? Number(numberRe.exec(shortNumberStr)) : ""
     
     console.log(onlyNumberStr+"+onlyNumberStr")
 
     return onlyNumberStr;
-
-    // if(str == /[0 - 9]/){
-    //     console.log(str+"Number")
-    //     return str;
-    // } else if(str == /[０-９]/){
-    //     console.log(str+"BIGNumber")
-    //     return str.replace(/[０-９]/g, function(s) {
-    //         return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
-    //     });
-    // } else {
-    //     console.log(str+"Another")
-    //     return "";
-    // }
 
 }
