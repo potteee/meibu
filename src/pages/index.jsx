@@ -16,7 +16,10 @@ const News = ({worksData}) => {
 
   if(!worksData || !isReady){
     return (
+      <>
+       {/* Gloading... */}
       <GLoading/>
+      </>
     )
   } else {
     return (
