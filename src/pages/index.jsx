@@ -15,6 +15,7 @@ const News = ({worksData}) => {
   const {isReady} = useRouter()
 
   if(!worksData || !isReady){
+    console.log("GLoading at /index.jsx")
     return (
       <>
        Gloading...
