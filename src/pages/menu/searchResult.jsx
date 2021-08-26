@@ -20,6 +20,8 @@ import { tokenize } from '../api/allStringSearch/text-processor'
 //API
 import useSWR,{ mutate } from 'swr'
 
+import GLoading from '../../components/GLoading';
+
 const fetcher = async (url,searchTokenMap) => {
   console.log(searchTokenMap+"+searchTokemMap at fet")
   const res = await fetch(url, {
@@ -160,9 +162,6 @@ const searchResult = () => {
       return (
         <>
 　　　　   <ApplicationBar title="検索結果"/>
-          {/* <Header /> */}
-          {/* <h2>検索結果ページ</h2> */}
-          {/* render時にworkDataGetが読み込まれるうようにしたい */}
           <div>お探しの作品はありますか？</div>
           <ul>
             {hist == "Posting" && ( 
@@ -216,7 +215,6 @@ const searchResult = () => {
       return (
         <>
           <ApplicationBar title="検索結果"/>
-          {/* <Header /> */}
           <div className="c-section-container">
             <div>お探しの作品が見つかりません.</div>
             <PrimaryButton label={"新しい作品として登録する"} onClick={createNewWork} />
@@ -226,8 +224,12 @@ const searchResult = () => {
         </>
       )
     }
+    // return <>  <GLoading/> </>
   } else {
-    return <>loading...</>
+    return <>
+    {/* loading... */}
+    <GLoading/>
+    </>
   }
 }
 

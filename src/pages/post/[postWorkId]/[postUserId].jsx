@@ -18,6 +18,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import Link from 'next/link'
 
 import post from 'src/components/speedDial/post'
+import GLoading from '../../../components/GLoading'
 
 //ユーザごとの作品ページを検索
 const initialState = {
@@ -235,7 +236,10 @@ const handlerPostUserId = (props) => {
   console.log(JSON.stringify(RdInstantChangedWorksId)+"+RdInstantChangedWorkId")
 
   if(state.isLoading){
-    return <>loading...loginUserData:{state.loginUserData} RdGetUid:{RdGetUid}</>
+    return <>
+      {/* loading...loginUserData:{state.loginUserData} RdGetUid:{RdGetUid} */}
+      <GLoading />
+    </>
   } else {
     return (
       <>
