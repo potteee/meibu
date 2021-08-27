@@ -18,8 +18,8 @@ const News = ({worksData}) => {
     setIsLoading(isReady ? false : true)
   },[isReady])
 
-  if(!worksData){
-  if(!worksData || !isReady || isLoading){
+  // if(!worksData){
+  if(!worksData || isLoading){
     console.log("GLoading at /index.jsx")
     return (
       <>
