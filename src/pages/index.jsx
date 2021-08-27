@@ -10,11 +10,16 @@ import { useRouter } from 'next/router';
 import GLoading from '../components/GLoading';
 
 const News = ({worksData}) => {
-  // console.log(JSON.stringify(worksData,null ,2)+"+worksData@J");
-  // const {isReady} = useRouter()
+  // console.log(JSON.stringif(worksData,null ,2)+"+worksData@J");
+  const {isReady} = useRouter()
+  const [isLoading,setIsLoading] = useState(true)
+
+  useEffect(() => {
+    setIsLoading(isReady ? false : true)
+  },[isReady])
 
   if(!worksData){
-  // if(!worksData || !isReady){
+  if(!worksData || !isReady || isLoading){
     console.log("GLoading at /index.jsx")
     return (
       <>
