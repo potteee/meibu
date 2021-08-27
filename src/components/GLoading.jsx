@@ -21,12 +21,50 @@ export default function GLoading () {
 
     return (
         <>
-        　　 <ApplicationBar title="読み込み中"/>
-            <Box className={classes.circlePosition}>
-                <CircularProgress/>
-            </Box>
-            <Footer />
+        {/* 　　 <ApplicationBar title="読み込み中"/> */}
+            {/* <Box className={classes.circlePosition}> */}
+                {/* <CircularProgress/> */}
+            {/* </Box>
+            <Footer /> */}
         </>
     )
 }
 
+        
+// export default function GLoading ({loadingData}) {
+//     console.log(loadingData+"+loadingData")
+//     return (
+//         <>{loadingData}</>
+//     )
+
+// }
+
+
+// export async function getStaticProps(context) {
+//     // const [worksData, setWorksData] = useState(false);
+//     const useStyles = makeStyles((theme) => ({
+//         circlePosition : {
+//             margin : "auto",
+//             position : "fixed",
+//             top: "46%",
+//             left : "46%",
+//         }
+//     }))
+
+//     const classes = useStyles();
+
+//     const loadingData = `
+//         <>
+//         　　 <ApplicationBar title="読み込み中"/>
+//             <Box className={classes.circlePosition}>
+//                 <CircularProgress/>
+//             </Box>
+//             <Footer />
+//         </>
+//     `
+//     console.log(loadingData+"loadingData@SSR")
+
+//     return {
+//       props : {loadingData},
+//     }
+// }

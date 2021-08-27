@@ -18,8 +18,8 @@ const News = ({worksData}) => {
     console.log("GLoading at /index.jsx")
     return (
       <>
-       Gloading...
-      {/* <GLoading/> */}
+        {/* Gloading... */}
+        <GLoading/>
       </>
     )
   } else {
