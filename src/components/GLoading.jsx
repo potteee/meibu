@@ -7,20 +7,24 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import { flexbox } from '@material-ui/system';
 
-const useStyles = makeStyles((theme) => ({
-    circlePosition : {
-        margin : "auto",
-        position : "fixed",
-        top: "46%",
-        left : "46%",
-    }
-}))
+// const useStyles = makeStyles((theme) => ({
+//     circlePosition : {
+//         margin : "auto",
+//         position : "fixed",
+//         top: "46%",
+//         left : "46%",
+//     }
+// }))
 
 export default function GLoading () {
-    const classes = useStyles();
+    // const classes = useStyles();
 
     return (
         <>
+        {/* ここでスタイルやコンポーネントを読み込むと、スーパーリロード時にそれらが読み込まれずに表示が崩れる
+        許容できるのはせいぜい、テキスト */}
+            ...GLoading...
+
         {/* 　　 <ApplicationBar title="読み込み中"/> */}
             {/* <Box className={classes.circlePosition}> */}
                 {/* <CircularProgress/> */}

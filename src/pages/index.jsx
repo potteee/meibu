@@ -10,11 +10,11 @@ import { useRouter } from 'next/router';
 import GLoading from '../components/GLoading';
 
 const News = ({worksData}) => {
-
   // console.log(JSON.stringify(worksData,null ,2)+"+worksData@J");
-  const {isReady} = useRouter()
+  // const {isReady} = useRouter()
 
-  if(!worksData || !isReady){
+  if(!worksData){
+  // if(!worksData || !isReady){
     console.log("GLoading at /index.jsx")
     return (
       <>

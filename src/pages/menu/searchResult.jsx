@@ -14,6 +14,7 @@ import {getIsSignedIn, getUserId} from "../../reducks/users/selectors";
 
 // import { getWorkData } from '../../reducks/works/operations'
 import { DiscFull } from '@material-ui/icons'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { tokenize } from '../api/allStringSearch/text-processor'
 
@@ -54,6 +55,7 @@ const searchResult = () => {
   const isSignIn = getIsSignedIn(selector);
 
   const router = useRouter()
+  const {isReady} = useRouter()
 
   let hist = ""
   let searchWord = ""
@@ -137,7 +139,7 @@ const searchResult = () => {
         }
       }
     })()
-  },[data]) 
+  },[data,isReady]) 
   //uid->最初のレンダリングではselectorが読み込まれないので。
   //data->最初のレンダリング後にdataが書き換わった後に再度レンダリングされるがその際にassessmentWroksIdが
   //書き換わらないとloading...のままになってしまう。
@@ -157,11 +159,25 @@ const searchResult = () => {
 
   //前半の条件：データ取得後且つ、ユーザが評価した作品を取得後（何も評価したことがないユーザでもデフォルト値99が入っている
   //後半の条件：ログインしていなユーザが検索した場合assessmentWorksIdの条件は要らなくなるので、uid未定義をフラグとした。
-  if((data && assessmentWorksId[0] != undefined) || (data && uid === "uid initial")) {
+  if(!isReady) {
+    return (<>
+    {/* loading... */}
+    <GLoading/>
+    </>)
+  } else if(!data) {
+    return (<>
+      <ApplicationBar title="読み込み中"/>
+         get_data...
+      <CircularProgress/>
+      <Footer/>
+    </>)
+  } else {
+    // data && assessmentWorksId[0] != undefined)
+    // || (data && uid === "uid initial"))
     if(data.length != 0){
       return (
         <>
-　　　　   <ApplicationBar title="検索結果"/>
+  　　　　   <ApplicationBar title="検索結果"/>
           <div>お探しの作品はありますか？</div>
           <ul>
             {hist == "Posting" && ( 
@@ -224,12 +240,6 @@ const searchResult = () => {
         </>
       )
     }
-    // return <>  <GLoading/> </>
-  } else {
-    return <>
-    {/* loading... */}
-    <GLoading/>
-    </>
   }
 }
 

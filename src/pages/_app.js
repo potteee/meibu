@@ -1,4 +1,5 @@
 import React, {useEffect,useState} from 'react'
+import {useRouter} from "next/router";
 import {wrapper} from '../reducks/store/store'
 import { parseCookies } from 'nookies'
 import {useDispatch, useSelector} from "react-redux"
@@ -7,11 +8,17 @@ import {getIsSignedIn} from "../reducks/users/selectors";
 import { auth, db, FirebaseTimestamp } from "../firebase/index"
 import SignIn from './auth/signin';
 
-import nprogress from 'nprogress'
+import ApplicationBar from '../components/applicationBar'
+import Footer from '../components/footer'
+
+
+import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 import { makeStyles } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 import { StylesProvider } from '@material-ui/styles';
 // import useStyles from '../styles/overRide'
@@ -22,24 +29,22 @@ import Box from '@material-ui/core/Box';
 import { updateUsersWithSignIn } from '../reducks/users/operations'
 import GetUserRedux　from 'src/foundations/share/getUserRedux'
 
+
 // import styled from 'styled-components'
 
 // const useStyles = makeStyles((theme) => ({
-//   appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
+  //   appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
 //     margin : "3.4rem 0.3rem 2.8rem 0.3rem",
 //     // margin : "40px 5px 52px 5px",
 //   },
 // }))
 
-nprogress.configure({ showSpinner: true, speed: 400, minimum: 0.25 })
+NProgress.configure({ showSpinner: true, speed: 400, minimum: 0.25 })
 
 const WrappedApp = ({Component, pageProps}) => {
-
-  if (process.browser) {
-    // バーの表示開始
-    nprogress.start()
-  }
-
+  
+  const {isReady} = useRouter()
+  const router = useRouter()
   //cookie情報からuidの確認
   const selector = useSelector(state => state)
   const isSignedIn = getIsSignedIn(selector)
@@ -61,6 +66,16 @@ const WrappedApp = ({Component, pageProps}) => {
   // const [faFinished,setFaFinished] = useState(false)
   
   const [renderTriger, setRenderTriger] = useState(true)
+  const [pageLoading, setPageLoading] = useState(false);
+
+  // const [isLoading, setIsLoading ] = useState(true)
+  // let isLoading = true
+
+  // if (process.browser) {
+  //   // バーの表示開始
+  //   NProgress.start()
+  // }
+
   
   //ログイン状態の確認
   // リロード時にログイン状態を保持する為の処理
@@ -142,19 +157,77 @@ const WrappedApp = ({Component, pageProps}) => {
       //   jssStyles.parentElement.removeChild(jssStyles);
       //   console.log("delete jss")
       // }  
-    firstAction()
-    nprogress.done()
+
+      firstAction()
+      // NProgress.done()
+      
       //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
       // ssssetRenderTriger(!renderTriger)
-  },[])
+    },[])
+    
+  useEffect(() => {      
+    const handleStart = () => { setPageLoading(true); };
+    const handleComplete = () => { setPageLoading(false); };
 
-  if(isSignedIn == false && userID){
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
+  },[router])
+
+  //ページ遷移時の処理
+  // Router.events.on("routeChangeStart", () => {
+  //   console.log("Router.events.on routerChangeStart")
+  //   setIsLoading(true)
+  //   NProgress.start();
+  //   // isLoading = true;
+  // });
+
+  // // if (process.browser) {
+  // //   // バーの表示開始
+  // //   NProgress.start()
+  // // }
+
+
+  // Router.events.on("routeChangeComplete", () => {
+  //   console.log("Router.events.on routeChangeComplete")
+  //   setIsLoading(false)
+  //   NProgress.done();
+  //   // isLoading = false
+  // });
+
+  //Superリロード時の処理
+
+  // RETURN
+  // if(isLoading){  //ページ遷移時処理
+  //   console.log("return isLoading")
+  //   return (
+  //     <SCmargin>
+  //       <ApplicationBar title="読み込み中"/>
+  //       _app.js...isLoading...
+  //       <CircularProgress/>
+  //       <Footer/>
+  //     </SCmargin> 
+  //   )
+  // }
+
+
+  if((isSignedIn == false && userID ) || pageLoading){
     if(faFinished == false){ //reload
       console.log("return loading...")
+      console.log(isSignedIn+"+isSignedIn")
+      console.log(pageLoading+"+pageLoading")
+      // console.log(isReady+"+isReady")
+      console.log(userID+"+userID")
       return (
-      <SCmargin>
-        loading..._app.js...
-      </SCmargin>
+        <StylesProvider injectFirst>
+          <SCmargin>
+            <CssBaseline/>
+            <ApplicationBar title="読み込み中"/>
+            _app.js...
+            <CircularProgress/>
+            <Footer/>
+          </SCmargin>
+        </StylesProvider>
       )
     } else { //ここは読み込まれないはず。
       console.log("return Comp")
