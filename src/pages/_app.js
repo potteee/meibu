@@ -11,9 +11,8 @@ import SignIn from './auth/signin';
 import ApplicationBar from '../components/applicationBar'
 import Footer from '../components/footer'
 
-
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
+// import NProgress from 'nprogress'
+// import 'nprogress/nprogress.css'
 
 import { makeStyles } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -21,8 +20,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 import { StylesProvider } from '@material-ui/styles';
-// import useStyles from '../styles/overRide'
-// import useStyles from "src/styles/overRide"
 
 import {SCmargin} from 'src/styles/SC/app/margin'
 import Box from '@material-ui/core/Box';
@@ -30,16 +27,7 @@ import { updateUsersWithSignIn } from '../reducks/users/operations'
 import GetUserRedux　from 'src/foundations/share/getUserRedux'
 
 
-// import styled from 'styled-components'
-
-// const useStyles = makeStyles((theme) => ({
-  //   appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
-//     margin : "3.4rem 0.3rem 2.8rem 0.3rem",
-//     // margin : "40px 5px 52px 5px",
-//   },
-// }))
-
-NProgress.configure({ showSpinner: true, speed: 400, minimum: 0.25 })
+// NProgress.configure({ showSpinner: true, speed: 400, minimum: 0.25 })
 
 const WrappedApp = ({Component, pageProps}) => {
   
@@ -51,38 +39,19 @@ const WrappedApp = ({Component, pageProps}) => {
   console.log(isSignedIn+"+isSignedIn")
 
   const dispatch = useDispatch();
-  // const useStyles = makeStyles((theme) => ({
-  //   appStyle : { //footer(48px)がメインコンテンツにかぶらないように調整。ちょっと多めに
-  //     margin : "3.4rem 0.3rem 2.8rem 0.3rem",
-  //     // margin : "40px 5px 52px 5px",
-  //   },
-  // }))
-  // const classes = useStyles();
 
   console.log(JSON.stringify(parseCookies().userID)+"+parse.cookie@_app")
   const userID = parseCookies().userID
 
   let faFinished = false
-  // const [faFinished,setFaFinished] = useState(false)
   
   const [renderTriger, setRenderTriger] = useState(true)
   const [pageLoading, setPageLoading] = useState(false);
-
-  // const [isLoading, setIsLoading ] = useState(true)
-  // let isLoading = true
-
-  // if (process.browser) {
-  //   // バーの表示開始
-  //   NProgress.start()
-  // }
-
   
   //ログイン状態の確認
   // リロード時にログイン状態を保持する為の処理
   // リロード時に
   // cookieにuserIDが保存されていれば、データをディスパッチ
-  
-  
   const firstAction = async() => {
     if((isSignedIn == false) && userID){
       console.log("login & reloaded")
@@ -124,13 +93,6 @@ const WrappedApp = ({Component, pageProps}) => {
       }
     } else if ((isSignedIn == false) && !userID){ //
       console.log("no login & reloaded")
-      // await dispatch(signInAction({
-        //   isSignedIn: false,
-        //     // role: usersData.role,
-        //     // uid:userID,
-        //     // userName: usersData.userName,
-        //     // userImage: usersData.userImage
-        // }))
         ///////////////ここがレンダリングされても意味ない？
         //footerの方がレンダリングされないと。
       setRenderTriger(!renderTriger)
@@ -142,27 +104,13 @@ const WrappedApp = ({Component, pageProps}) => {
       // alert("_app error 2s")
       //else if作ったからここは動かないはず
       console.log(userID+"+userID@Cookie else")
-      //これやらないとstyled-componentsが適用されない？
-      // setRenderTriger(!renderTriger)
-      // console.log("setRenderTriger")
+
       return true
     }
   }
     
   useEffect(() => {
-      //どこかで補完してくれているのか、removeしなくてもエラーにならない。　→してくれてなかった。
-      // const jssStyles = document.querySelector('#jss-server-side');
-      // console.log(jssStyles+"+jssStyles")
-      // if (jssStyles) {
-      //   jssStyles.parentElement.removeChild(jssStyles);
-      //   console.log("delete jss")
-      // }  
-
       firstAction()
-      // NProgress.done()
-      
-      //再レンダリングさせる。これやらないと_appのスタイルまで消えてしまう。
-      // ssssetRenderTriger(!renderTriger)
     },[])
     
   useEffect(() => {      
@@ -173,43 +121,6 @@ const WrappedApp = ({Component, pageProps}) => {
     router.events.on('routeChangeComplete', handleComplete);
     router.events.on('routeChangeError', handleComplete);
   },[router])
-
-  //ページ遷移時の処理
-  // Router.events.on("routeChangeStart", () => {
-  //   console.log("Router.events.on routerChangeStart")
-  //   setIsLoading(true)
-  //   NProgress.start();
-  //   // isLoading = true;
-  // });
-
-  // // if (process.browser) {
-  // //   // バーの表示開始
-  // //   NProgress.start()
-  // // }
-
-
-  // Router.events.on("routeChangeComplete", () => {
-  //   console.log("Router.events.on routeChangeComplete")
-  //   setIsLoading(false)
-  //   NProgress.done();
-  //   // isLoading = false
-  // });
-
-  //Superリロード時の処理
-
-  // RETURN
-  // if(isLoading){  //ページ遷移時処理
-  //   console.log("return isLoading")
-  //   return (
-  //     <SCmargin>
-  //       <ApplicationBar title="読み込み中"/>
-  //       _app.js...isLoading...
-  //       <CircularProgress/>
-  //       <Footer/>
-  //     </SCmargin> 
-  //   )
-  // }
-
 
   if((isSignedIn == false && userID ) || pageLoading){
     if(faFinished == false){ //reload
