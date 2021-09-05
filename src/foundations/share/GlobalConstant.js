@@ -10,6 +10,6 @@
 export const SSG_WAIT_SEC = 86400;
 export const ONE_CLICK_APPEARANCE_IN_POSTING = 54;
 
-export const ANOTHER_ONLY_POSTED_FLAG = 0;
-export const NOT_POSTED_FLAG = 1;
-export const I_POSTED_FLAG = 2;
+export const FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED = 0;
+export const FIRST_POSTED_FLAG_NOT_POSTED = 1;
+export const FIRST_POSTED_FLAG_I_POSTED = 2;

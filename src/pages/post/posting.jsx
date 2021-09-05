@@ -1,12 +1,12 @@
-import React, {useState, useEffect, useCallback} from 'react'
+import React, {useState, useEffect, useCallback,useReducer} from 'react'
 import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
 import { H2CenterLine } from "src/styles/SC/shared/typografy/centerLine"
 
 import {
   ONE_CLICK_APPEARANCE_IN_POSTING,
-  ANOTHER_ONLY_POSTED_FLAG,
-  NOT_POSTED_FLAG,
-  I_POSTED_FLAG,
+  FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED,
+  FIRST_POSTED_FLAG_NOT_POSTED,
+  FIRST_POSTED_FLAG_I_POSTED,
 } from 'src/foundations/share/GlobalConstant'
 
 //material UI
@@ -115,6 +115,16 @@ const useStyles = makeStyles((theme) => ({
     top : "-2.0em",
     justifyContent:"center",
     alignItems:"flex-end"
+  },
+  postingWinfoDatas: {
+    position : "relative",
+    // top : "-2.0em",
+    justifyContent:"center",
+    alignItems:"center",
+    flexDirection:"column",
+  },
+  postingWinfoOneData: {
+    marginTop:"10px",
   },
   flexCenter: {
     justifyContent:"center",
@@ -334,15 +344,61 @@ const useStyles = makeStyles((theme) => ({
     top : "2.4em",
     right : "0.6em",
   },
-
 }))
+
+//任意入力の作品情報
+  
+const initialState = {
+  isLoading : true,
+  winfoEditor : "",
+  winfoInfomation : "",
+  winfoCreator : [],
+  winfoPublisher : [],
+  winfoCoutry : [],
+  winfoStart : "",
+  winfoFinish : "",
+  winfoImage : "",
+  statisticsData :[],
+  winfoParent : {},
+  winfoChild : [],
+  winfoSeries : [],
+  winfoMusic : [],
+  winfoPages : "",
+  winfoMinutes : "",
+}
+
+const reducer = (state, action) => {
+  let putState = {...state,...action.payload} ///宣言的に書くっていう観点で言うとこれほんとに意味ない。
+  // putState = { ...putState ,sdpActions : sdpActions }
+
+  switch (action.type){
+    case "loadDB": {
+      return {
+        ...action.payload,
+      }
+    }
+    case "postButtonClicked" : {
+      return {
+        ...putState,
+      }
+    }
+    case "changeWinfo" : {
+      return {
+        ...putState,
+      }
+    }
+    default :{
+      throw new Error("not exect action")
+    }
+  }
+}
 
 // 作品投稿ページ
 const Posting = () => {
 
   //default
   const router = useRouter()
-  const dispatch = useDispatch()
+  const RDDispatch = useDispatch()
   
   //Redux
   const selector = useSelector((state) => state)
@@ -357,7 +413,6 @@ const Posting = () => {
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
   const props = router.query
   const { isReady } = useRouter()
-
   
   //props
   let hist = props.hist
@@ -369,7 +424,6 @@ const Posting = () => {
   const oriQuery = /^\/post\/posting\?searchWord=/.test(asPath) ? asPath.split('\/post\/posting')[1] : ""
 
   if(oriQuery){
-
     if(hist == "SignIn"){ // サインインから来た時は上書きする。
       firstPostFlag = preWorkId 
       ? Object.keys(RdAssessmentWorks).includes(preWorkId) 
@@ -381,18 +435,21 @@ const Posting = () => {
     console.log("no oriQuery")
   }
 
+  //useReduce
+  const [state,dispatch] = useReducer(reducer, initialState)
+
   //useState
 
   ////input
-  const [workName, setWorkName] = useState(preWorkName)
+  const [workName, setWorkName] = useState(preWorkName) //必須
 
-  const [workMedia, setWorkMedia] = useState(qInfoMedia);
+  const [workMedia, setWorkMedia] = useState(qInfoMedia); //必須
   const [open, setOpen] = useState(false);
 
   const [workScore, setWorkScore] = useState("")
   const [workComment, setWorkComment] = useState("")
   
-  const [showGenre, setShowGenre] = useState(false)
+  const [showGenre, setShowGenre] = useState(false) //必須
   const [tagAutoCompleteValue ,setTagAutoCompleteValue] = useState("useStateInitial")
   
   const [isPublic,setIsPublic] = useState(true)
@@ -432,7 +489,6 @@ const Posting = () => {
   )
 
   const [checkBoxState, setCheckBoxState] = useState(cateResult)
-
 
   //input function
   const changeIsPublic = useCallback((state) => {
@@ -507,98 +563,180 @@ const Posting = () => {
     return tokenMap
   }
 
+  const inputWinfoInfomation = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoInfomation : event.target.value
+      }
+    })
+  }
+
+  const inputWinfoCreator = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoCreator : event.target.value
+      }
+    })
+  }
+  const inputWinfoPublisher = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoPublisher : event.target.value
+      }
+    })
+  }
+  const inputWinfoCountry = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoCountry : event.target.value
+      }
+    })
+  }
+  const inputWinfoStart = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoStart : event.target.value
+      }
+    })
+  }
+  const inputWinfoFinish = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoFinish : event.target.value
+      }
+    })
+  }
+  const inputWinfoMusic = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoMusic : event.target.value
+      }
+    })
+  }
+  const inputWinfoPages = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoPages : event.target.value
+      }
+    })
+  }
+  const inputWinfoMinutes = (event) => {
+    dispatch({type:"changeWinfo",
+      payload : {
+        winfoMinutes : event.target.value
+      }
+    })
+  }
+
   useEffect(() => {
     if(oriQuery && RdIsSignin){
       (async() => {
+
         if(preWorkName && qInfoMedia){
           setWorkName(preWorkName)
           setWorkMedia(qInfoMedia)
         }
-        console.log(workName+"+workName")
-        console.log(tagCheckBox+"+tagCheckBox")
-        console.log(firstPostFlag+"+firstPostFlag")
-  
-        //既に評価済みの評価を編集する場合
-        if(firstPostFlag == I_POSTED_FLAG){
-          if(RdUserId != "RdUserId initial"){
-            console.log("firstPostFlag = 2 effect start")
-            console.log(RdUserId+"+RdUserId +++")
-            console.log(preWorkId+"preWorkId +++")
-            await db.collection('privateUsers').doc(RdUserId)
+
+        let DBdata = []
+        // DBから値を取得する際にPromise.allを使う
+        if(firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ||
+          firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED){
+          DBdata = await Promise.all([
+            db.collection('privateUsers').doc(RdUserId)
             .collection('postedWorksId').doc(preWorkId)
             .get()
             .then((snapshot) => {
-              // console.log(JSON.stringify(snapshot)+"+snapshot@J")
-              console.log("+snapshot")
-              console.log(snapshot)
-              console.log(snapshot.data()+"+snapshot.data()")
-              console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-              // console.log(snapshot.data().assessmentCategory+"+snapshot.data().assessmentCategory") 
-              console.log(snapshot.data().assessmentWorkTag+"+snapshot.data().assessmentWorkTag") 
-            
-              snapshot.data().assessmentWorkTag.map((tag) => {
-                console.log(tag+"+tags")
-                Object.keys(tagMap).map((map) => {
-                  if([tagMap[map].key] == tag){
-                    setTagCheckBox(tagCheckBox => ({...tagCheckBox , [map]:true}))
-                  }
-                })
-              })            
-              setWorkScore(snapshot.data().workScore != -1 ? snapshot.data().workScore : "")
-              setWorkComment(snapshot.data().workComment)
-              setIsPublic(snapshot.data().isPublic)
-              setIsSpoiler(snapshot.data().isSpoiler)
-              setIsLiked(snapshot.data().isLiked)
-              console.log(snapshot.data().isLiked+"+setIsLiked")
-            })
-            .catch((error) => {
-              alert('failed fistPostFlag 2 get postedWorksId')
+              return snapshot.data()
+            }).catch((error) => {
+              alert('failed to get postedWorksId')
               throw new Error(error)
             })
+          ,
+            db.collection('wInfo').doc(preWorkId)
+            .get()
+            .then((snapshot) => {
+              return snapshot.data()
+            }).catch((error) => {
+              alert('failed to get wInfo')
+              throw new Error(error)
+            })
+          ])
+
+          console.log(JSON.stringify(DBdata[0])+"+DBdata[0]@J")
+          console.log(JSON.stringify(DBdata[1])+"+DBdata[1]@J") 
+
+          DBdata[1].winfoCategory.map((cate) => {
+            console.log(cate+"+cates")
+            Object.keys(categoryMap).map((map) => {
+              if(categoryMap[map] == cate){
+                setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
+              }
+            })
+          })
+
+          dispatch({type:"loadDB" ,
+            payload : {
+              isLoading : false,
+              /////要変更(DBから持ってきた値を入力する。)
+              winfoEditor : DBdata[1].winfoEditor,
+              winfoInfomation : DBdata[1].winfoInfomation,
+              winfoCreator : DBdata[1].winfoCreator,
+              winfoPublisher : DBdata[1].winfoPublisher,
+              winfoCountry : DBdata[1].winfoCountry,
+              winfoStart : DBdata[1].winfoStart,
+              winfoFinish : DBdata[1].winfoFinish,
+              winfoImage : DBdata[1].winfoImage,
+              statisticsData : DBdata[1].statisticsData,
+              winfoParent : DBdata[1].winfoParent,
+              winfoChild : DBdata[1].winfoChild,
+              winfoSeries : DBdata[1].winfoSeries,
+              winfoMusic : DBdata[1].winfoMusic,
+              winfoPages : DBdata[1].winfoPages,
+              winfoMinutes : DBdata[1].winfoMinutes,
+            }
+          })
+        }
+        //既に評価済みの評価を編集する場合
+        if(firstPostFlag == FIRST_POSTED_FLAG_I_POSTED){
+          console.log("FIRST_POSTED_FLAG_I_POSTED start")
+          if(RdUserId != "uid initial"){
+            console.log(RdUserId+"+RdUserId +++")
+            console.log(preWorkId+"preWorkId +++")
+
+            DBdata[0].assessmentWorkTag.map((tag) => {
+              console.log(tag+"+tags")
+              Object.keys(tagMap).map((map) => {
+                if([tagMap[map].key] == tag){
+                  setTagCheckBox(tagCheckBox => ({...tagCheckBox , [map]:true}))
+                }
+              })
+            })            
+            setWorkScore(DBdata[0].workScore != -1 ? DBdata[0].workScore : "")
+            setWorkComment(DBdata[0].workComment)
+            setIsPublic(DBdata[0].isPublic)
+            setIsSpoiler(DBdata[0].isSpoiler)
+            setIsLiked(DBdata[0].isLiked)
+
           } else {
             console.log(RdUserId+"+RdUserId")
           }
-          await db.collection('wInfo').doc(preWorkId)
-          .get()
-          .then((snapshot) => {
-            console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-            snapshot.data().winfoCategory.map((cate) => {
-              console.log(cate+"+cates")
-              Object.keys(categoryMap).map((map) => {
-                if(categoryMap[map] == cate){
-                  setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
-                }
-              })
-            })
-          })
-          .catch((error) => {
-            alert('failed fistPostFlag 0 get wInfo')
-            throw new Error(error)
-          })
         }
         //未評価の既に登録されている作品
-        if(firstPostFlag == ANOTHER_ONLY_POSTED_FLAG){
-          console.log("firstPostFlag = 0 effect start")
-          await db.collection('wInfo').doc(preWorkId)
-          .get()
-          .then((snapshot) => {
-            console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-            snapshot.data().winfoCategory.map((cate) => {
-              console.log(cate+"+cates")
-              Object.keys(categoryMap).map((map) => {
-                if(categoryMap[map] == cate){
-                  setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
-                }
-              })
+        else if(firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED){
+          console.log("FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED start")
+          DBdata[1].winfoCategory.map((cate) => {
+            console.log(cate+"+cates")
+            Object.keys(categoryMap).map((map) => {
+              if(categoryMap[map] == cate){
+                setCheckBoxState(checkBoxState => ({...checkBoxState , [map]:true}))
+              }
             })
           })
-          .catch((error) => {
-            alert('failed fistPostFlag 0 get wInfo')
-            throw new Error(error)
-          })
+        } else {
+          console.log("firstPostFlag= "+firstPostFlag)
         }
       })()
-    } else if(!RdIsSignin && oriQuery) {
+    } else if(!RdIsSignin && oriQuery) { //サインインしていない人が作品登録しようとした
       router.replace({
         pathname: '/menu/PleaseSignUpIn',
         query: {
@@ -610,7 +748,7 @@ const Posting = () => {
           firstPostFlag : firstPostFlag,
         }
       })
-    } else { 
+    } else { //!oriQueryの場合。URL直接指定やリロード時
       router.replace({
         pathname: '/menu/search',
         query: {
@@ -675,12 +813,12 @@ const Posting = () => {
     )
 
     // ユーザに紐づく作品データをDBに登録(redux/works(db))
-    // const workId = await dispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,RdUserId))
+    // const workId = await RDDispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,RdUserId))
 
     console.log(RdUserName+"+RdUserName a")
     // 作品の固有データをDBに登録
     // 新規登録なのでScoreは入力値のまま　*-*- (wInfo)
-    await dispatch(postWInfoCreate( //セキュアなでーたがあるならapi下でやった方がいい。
+    await RDDispatch(postWInfoCreate( //セキュアなでーたがあるならapi下でやった方がいい。
       workName,
       workMedia,
       workScore,
@@ -694,12 +832,14 @@ const Posting = () => {
       isSpoiler,
       isLiked,
       tokenMap,
+      state,
       firstPostFlag,
+      //ここに編集権文字者しか編集できないデータを入れたい。
       preWorkId,
     )).then( async(workId) => {
       console.log(workId+"+workId posting m")
       // 登録したユーザのDB情報に登録した作品のWorkIdを追加(postedWorksId(db))
-      await dispatch(addPostedWork( //これ上のとPromise.all()で良さそ。
+      await RDDispatch(addPostedWork( //workIdを使ってるからPromise.allにはできない。
         RdUserId,
         workId,
         workName,
@@ -735,7 +875,7 @@ const Posting = () => {
 
         <H2CenterLine> {"作品情報"} </H2CenterLine>
 
-        {(firstPostFlag == ANOTHER_ONLY_POSTED_FLAG || firstPostFlag == I_POSTED_FLAG ) && (
+        {(firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED || firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ) && (
           <>
             <Grid container item xs={12} justify={"center"}>
               <Typography className={classes.h5WorksTitle}>
@@ -791,7 +931,7 @@ const Posting = () => {
         )}
           
         {/* // 新規登録 */}
-        {firstPostFlag == NOT_POSTED_FLAG && (
+        {firstPostFlag == FIRST_POSTED_FLAG_NOT_POSTED && (
           <>
             {/* <h2>新規登録/評価</h2> */}
             <ApplicationBar title="新規登録/評価"/>
@@ -909,7 +1049,7 @@ const Posting = () => {
             />
           </Grid>
         </Grid>
-        <Grid container item xs={12} spacing={0} className={classes.scorePosition} style={{marginTop:"10px"}}>
+        <Grid container item xs={12} spacing={0} className={classes.scorePosition}>
           <Typography className={classes.h5WorksLikeTitle}>タグ</Typography> 
         </Grid>
         {(() => {
@@ -1302,11 +1442,140 @@ const Posting = () => {
           </Grid>
         </FormGroup>
 
-        <h2>作品情報を入力(オプション)</h2>
+        {/* <h2>作品情報を入力(オプション)</h2> */}
+        <H2CenterLine> {"作品詳細情報"} </H2CenterLine>
+        <p>編集者ID:{state.winfoEditor ? state.winfoEditor : "未定義"}</p>
+        {/* <p>編集者ID:{state.winfoEditor ? state.winfoEditor : "未定義"}</p> */}
+        <>
+          {state.winfoEditor == RdUserId 
+            ? <>
+                <Grid container xs={12} justify={"center"} className={classes.postingWinfoDatas}>
+                  <Grid container item xs justify={"center"} className={classes.postingWinfoOneData}>
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"作品情報"} multiline
+                      // required={true}
+                      maxRows={4} value={state.winfoInfomation} type={"text"} onChange={inputWinfoInfomation}
+                      className={classes.commentField} 
+                      placeholder={"作品のストーリーや概要"}
+                    />
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"作者"} multiline
+                      // required={true}
+                      maxRows={4} value={state.winfoCreator} type={"text"} onChange={inputWinfoCreator}
+                      className={classes.commentField} 
+                      placeholder={"作者やイラストレイター・制作会社など"}
+                    />
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"出版社"} multiline
+                      // required={true}
+                      maxRows={4} value={state.winfoPublisher} type={"text"} onChange={inputWinfoPublisher}
+                      className={classes.commentField} 
+                      placeholder={"出版社"}
+                    />
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"国"} multiline
+                      // required={true}
+                      maxRows={4} value={state.winfoCountry} type={"text"} onChange={inputWinfoCountry}
+                      className={classes.commentField} 
+                      placeholder={"制作国"}
+                    />
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"リリース"} multiline
+                      // required={true}
+                      maxRows={4} value={state.winfoStart} type={"text"} onChange={inputWinfoStart}
+                      className={classes.commentField} 
+                      placeholder={"リリース時期"}
+                    />
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"完結"} multiline
+                      // required={true}
+                      maxRows={4} value={state.winfoFinish} type={"text"} onChange={inputWinfoFinish}
+                      className={classes.commentField} 
+                      placeholder={"完結した時期"}
+                    />
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <p>画像登録フォーム</p>
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <p>親選択フォーム</p>
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <p>子選択フォーム</p>
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <p>シリーズフォーム(選択と自由入力フォーム)</p>
+                  </Grid>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"主題歌"} multiline
+                      // required={true}
+                      maxRows={4} value={state.winfoMusic} type={"text"} onChange={inputWinfoMusic}
+                      className={classes.commentField} 
+                      placeholder={"主題歌(登録と同時にworkIdが発行される?)"}
+                    />
+                    </Grid>
+                    <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                      <TextField
+                        id="standard-multiline-flexible"
+                        fullWidth={true} label={"ページ数"} multiline
+                        // required={true}
+                        maxRows={4} value={state.winfoPages} type={"text"} onChange={inputWinfoPages}
+                        className={classes.commentField} 
+                        placeholder={"数字入力"}
+                      />
+                    </Grid>
+                    <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                      <TextField
+                        id="standard-multiline-flexible"
+                        fullWidth={true} label={"時間(分)"} multiline
+                        // required={true}
+                        maxRows={4} value={state.winfoMinutes} type={"text"} onChange={inputWinfoMinutes}
+                        className={classes.commentField} 
+                        placeholder={"数字入力"}
+                      />
+                    </Grid>
+                </Grid>
+            </>
+            : <>
+              <p>作品情報:{state.winfoInfomation}</p>
+              <p>作者:{state.winfoCreator}</p>
+              <p>出版社:{state.winfoPublisher}</p>
+              <p>制作国:{state.winfoCountry}</p>
+              <p>リリース:{state.winfoStart}</p>
+              <p>完結:{state.winfoFinish}</p>
+              <p>画像:{state.winfoImage}</p>
+              <p>統計情報:{state.statisticsData}</p>
+              <p>親:{state.winfoParent == {} ? state.winfoParent : "no parent data"}</p>
+              <p>子:{state.winfoChild}</p>
+              <p>シリーズ:{state.winfoSeries}</p>
+              <p>主題歌:{state.winfoMusic}</p>
+              <p>ページ数:{state.winfoPages}</p>
+              <p>時間:{state.winfoMinutes}</p>
+            </>
+          }
+        </>
         <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
 
-        {(firstPostFlag != NOT_POSTED_FLAG && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
-        {(firstPostFlag != NOT_POSTED_FLAG && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
+        {(firstPostFlag != FIRST_POSTED_FLAG_NOT_POSTED && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
+        {(firstPostFlag != FIRST_POSTED_FLAG_NOT_POSTED && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
           {/* </> */}
         <Footer />
       </>

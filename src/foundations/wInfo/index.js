@@ -16,6 +16,7 @@ const postWInfoCreate = (
     isSpoiler,
     isLiked,
     tokenMap,
+    winfoData,
     firstPostFlag,
     preWorkId) => {
     return async (dispatch) => {
@@ -30,6 +31,8 @@ const postWInfoCreate = (
         let assessmentRef = ""
 
         console.log(firstPostFlag+"+firstPostFlag")
+        console.dir(winfoData)
+        console.log("winfoData")
 
         //新規作品を登録する場合
         if(firstPostFlag == 1) {
@@ -50,6 +53,7 @@ const postWInfoCreate = (
             console.log(tmpWorkTag+"tmpWorkTag")
 
             var wInfoData = { 
+                winfoEditor : uid,
                 workId : workId,
                 workName : workName,
                 winfoScore : workScore ? workScore : -1, //workScore 
@@ -57,13 +61,14 @@ const postWInfoCreate = (
                 winfoCount : 1, //作成時の初期値なので1
                 winfoLikedCount : isLiked ? 1 : 0,
                 winfoTag : tmpWorkTag, ///////////新規　5/17 {xxxx : 3},{yyyy : 2} 
-                winfoInfomation : "no data at infomation",
                 winfoCategory : checkBoxState,
+                winfoMedia : workMedia,
+                tokenMap : tokenMap,
+                // winfoIllustrator : [],
+                winfoInfomation : "no data at infomation",
                 winfoCreator : [],
                 winfoSeries : [],
-                winfoMedia : workMedia,
-                winfoIllustrator : [],
-                winfoParents : {},
+                winfoParent : {},
                 winfoChild : [],
                 winfoMusic : [],
                 winfoPublisher : [],
@@ -72,7 +77,8 @@ const postWInfoCreate = (
                 winfoFinish : [],
                 winfoImage : "",
                 statisticsData : "",
-                tokenMap : tokenMap,
+                winfoPages : "", //Number
+                winfoMinutes : "", //Number
                 // assessment : {}
                 // histories : {}, // subCollection。 
             }
@@ -169,6 +175,20 @@ const postWInfoCreate = (
                     winfoScore : ediWinfoScore,
                     winfoLikedCount : tmpLikedCount,
                     winfoTag : tmpWorkTag,
+                    winfoInfomation : winfoData.winfoInfomation,
+                    winfoCreator : winfoData.winfoCreator,
+                    winfoSeries : winfoData.winfoSeries,
+                    winfoParent : winfoData.winfoParent,
+                    winfoChild : winfoData.winfoChild,
+                    winfoMusic : winfoData.winfoMusic,
+                    winfoPublisher : winfoData.winfoPublisher,
+                    winfoCountry : winfoData.winfoCountry,
+                    winfoStart : winfoData.winfoStart,
+                    winfoFinish : winfoData.winfoFinish,
+                    winfoImage : winfoData.winfoImage,
+                    statisticsData : winfoData.statisticsData,
+                    winfoPages : winfoData.winfoPages, //Number
+                    winfoMinutes : winfoData.winfoMinutes, //Number
                 }).then(() => {
                     console.log("successed to update Count & Score")
                     return workId
@@ -184,7 +204,6 @@ const postWInfoCreate = (
         //　既に評価している作品の評価を編集する場合
         } else if(firstPostFlag == 2){
             workId = preWorkId
-
             // if(isPublic){
             // ここにもawaitを入れないと呼び出しもとの処理が進んでしまう。
             assessmentRef = await db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
@@ -360,6 +379,20 @@ const postWInfoCreate = (
                         winfoLikedCount : tmpLikedCount,
                         winfoScore : ediWinfoScore,
                         winfoTag : tmpWorkTag,
+                        winfoInfomation : winfoData.winfoInfomation,
+                        winfoCreator : winfoData.winfoCreator,
+                        winfoSeries : winfoData.winfoSeries,
+                        winfoParent : winfoData.winfoParent,
+                        winfoChild : winfoData.winfoChild,
+                        winfoMusic : winfoData.winfoMusic,
+                        winfoPublisher : winfoData.winfoPublisher,
+                        winfoCountry : winfoData.winfoCountry,
+                        winfoStart : winfoData.winfoStart,
+                        winfoFinish : winfoData.winfoFinish,
+                        winfoImage : winfoData.winfoImage,
+                        statisticsData : winfoData.statisticsData,
+                        winfoPages : winfoData.winfoPages, //Number
+                        winfoMinutes : winfoData.winfoMinutes, //Number
                     }).then(() => {
                         console.log("successed to update Count & Score")
                         // return workId
@@ -402,7 +435,7 @@ const postWInfoCreate = (
             return assessmentRef
             // await assessmentRef
             .set(assessment,
-                 {merge : true } // 有効　→　指定しないフィールドを消さない
+                {merge : true } // 有効　→　指定しないフィールドを消さない
             ).then(() => {
                 console.log("assessmentRef updating or chreating")
                 return workId

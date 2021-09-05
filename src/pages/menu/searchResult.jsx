@@ -48,7 +48,7 @@ const fetcher = async (url,searchTokenMap) => {
 
 const searchResult = () => {
   console.log("start searchResult() ")
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   const selector = useSelector((state) => state)
 
   const uid = getUserId(selector);
