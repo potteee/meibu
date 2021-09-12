@@ -16,12 +16,12 @@ export const H2CenterLine = styled(Typography)`
     content: "";
     position: relative;
     width: 3.5em /* 線の長さ */;
-    border-width: 0.2px 0 0 0 ;
+    border-width: 0.2px 0 1px 0 ; /*第三引数は太さ */
     /* border-top-width: 1; */
-    border-color: brack;
+    border-color: darkblue;
     border-style: solid;
     margin-right: 0.3em; /* 文字の右隣 */;
-    margin-left: 0.3em; /* 文字の右隣 */;
+    margin-left: 0.3em; /* 文字の左隣 */;
   }
 }
 `

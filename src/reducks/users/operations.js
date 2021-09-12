@@ -395,13 +395,6 @@ export const addPostedWork = (
     workComment,
     firstPostFlag) => {
     return async (dispatch) => {
-        //updateは連想配列に代入して変数をupdate()内に指定しないとエラーになる・・・。
-        // 配列のアップデート記法はこれ。
-        // var workIdObject = {}
-        // workIdObject['postedWorksId.'+ workId] = new Date()
-        // usersRef
-        // .doc(uid)
-        // .update(workIdObject)
         const timestamp = FirebaseTimestamp.now()
 
         let postedWorksId = {}

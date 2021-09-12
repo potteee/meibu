@@ -449,7 +449,7 @@ const Post = (props) => {
           </SCTypografyh5> 
           
           <h3 className={classes.h3WorksName}>
-            {state.workCreator ? state.workCreator : "no data at Creator" }
+            {state.workCreator.length ? state.workCreator[0].kind+":"+state.workCreator[0].name : "no data at Creator" }
           </h3>
 
         　 <SCTypografyh5>

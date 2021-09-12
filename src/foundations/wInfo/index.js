@@ -21,8 +21,6 @@ const postWInfoCreate = (
     preWorkId) => {
     return async (dispatch) => {
         const timestamp = FirebaseTimestamp.now()
-        // var workIdObject = {}
-        // workIdObject['editor.' + workId] = new Date()
 
         const wInfoRef = db.collection('wInfo').doc()
         //自動生成されたIDを取得
@@ -52,7 +50,7 @@ const postWInfoCreate = (
             console.log(JSON.stringify(tmpWorkTag)+"tmpWorkTag@J")
             console.log(tmpWorkTag+"tmpWorkTag")
 
-            var wInfoData = { 
+            var wInfoAllData = { 
                 winfoEditor : uid,
                 workId : workId,
                 workName : workName,
@@ -65,30 +63,44 @@ const postWInfoCreate = (
                 winfoMedia : workMedia,
                 tokenMap : tokenMap,
                 // winfoIllustrator : [],
-                winfoInfomation : "no data at infomation",
-                winfoCreator : [],
-                winfoSeries : [],
-                winfoParent : {},
-                winfoChild : [],
-                winfoMusic : [],
-                winfoPublisher : [],
-                winfoCountry : [],
-                winfoStart : [],
-                winfoFinish : [],
-                winfoImage : "",
-                statisticsData : "",
-                winfoPages : "", //Number
-                winfoMinutes : "", //Number
+                // winfoInfomation : "no data at infomation",
+                // winfoCreator : [],
+                // winfoSeries : [],
+                // winfoParent : {},
+                // winfoChild : [],
+                // winfoMusic : [],
+                // winfoPublisher : [],
+                // winfoCountry : [],
+                // winfoStart : [],
+                // winfoFinish : [],
+                // winfoImage : "",
+                // statisticsData : "",
+                // winfoPages : "", //Number
+                // winfoMinutes : "", //Number
+                winfoInfomation : winfoData.winfoInfomation,
+                winfoCreator : winfoData.winfoCreator,
+                winfoSeries : winfoData.winfoSeries,
+                winfoParent : winfoData.winfoParent,
+                winfoChild : winfoData.winfoChild,
+                winfoMusic : winfoData.winfoMusic,
+                winfoPublisher : winfoData.winfoPublisher,
+                winfoCountry : winfoData.winfoCountry,
+                winfoStart : winfoData.winfoStart,
+                winfoFinish : winfoData.winfoFinish,
+                winfoImage : winfoData.winfoImage,
+                statisticsData : winfoData.statisticsData,
+                winfoPages : winfoData.winfoPages, //Number
+                winfoMinutes : winfoData.winfoMinutes, //Number
                 // assessment : {}
                 // histories : {}, // subCollection。 
             }
-            console.log(JSON.stringify(wInfoData)+"+wInfoData")
+            console.log(JSON.stringify(wInfoAllData)+"+wInfoAllData")
             console.log(workId+"+workId")
 
             // wInfo作成
             await wInfoRef
-            // .update(wInfoData)
-            .set(wInfoData,
+            // .update(wInfoAllData)
+            .set(wInfoAllData,
                 { merge : true })
             .then(() => {
                 console.log("successed updating or creating ")

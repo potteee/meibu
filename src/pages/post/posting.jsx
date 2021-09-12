@@ -30,6 +30,13 @@ import Collapse from '@material-ui/core/Collapse';
 import Chip from '@material-ui/core/Chip';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+import NativeSelect from '@material-ui/core/NativeSelect';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+
 
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -39,6 +46,7 @@ import PublicIcon from '@material-ui/icons/Public';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -59,13 +67,18 @@ import { tokenize } from '../api/allStringSearch/text-processor';
 
 import { db, FirebaseTimestamp } from "../../firebase/index";
 
-import {textToNumber} from 'src/foundations/share/textToNumber'
+import {textToNumber} from 'src/foundations/share/textToNumber';
+import DateToString from 'src/foundations/share/DateToString';
+import ArraySort from '../../foundations/share/ArraySort'
 
 import {tagMap,tagExtraData} from "../../models/tagMap"
 import {categoryMap} from "../../models/categoryMap"
 import {bunruiMap} from "../../models/bunruiMap"
+import {winfoCreatorList} from "../../models/winfoCreatorList"
 import PleaseSignUpIn from '../menu/PleaseSignUpIn'
 import GLoading from '../../components/GLoading';
+
+import { DragDropContext,Droppable,Draggable} from 'react-beautiful-dnd';
 
 const useStyles = makeStyles((theme) => ({
   autoCompleteStyle : {
@@ -126,6 +139,18 @@ const useStyles = makeStyles((theme) => ({
   postingWinfoOneData: {
     marginTop:"10px",
   },
+  postingWinfoCreator: {
+    marginTop:"10px",
+    justifyContent:"space-around",
+  },
+  postingWinfoCreatorList: {
+    // width: '100%',
+    maxWidth: "70%",
+    backgroundColor: theme.palette.background.paper,
+    position: 'relative',
+    overflow: 'auto',
+    maxHeight: 300,
+  },
   flexCenter: {
     justifyContent:"center",
     alignItems:"center"
@@ -144,10 +169,15 @@ const useStyles = makeStyles((theme) => ({
   commentField: {
     maxWidth : 630,
   },
-  bunruiFormControl: {
+  mediaFormControl: {
     // margin: theme.spacing(1),
     margin : "0px 0px 4px 0px",
     minWidth: 120,
+  },
+  winfoCreatorFormControl: {
+    // margin: theme.spacing(1),
+    margin : "0px 0px 0px 0px",
+    // minWidth: 120,
   },
   tagMasterGrid: {
     // position : "relative",
@@ -344,6 +374,9 @@ const useStyles = makeStyles((theme) => ({
     top : "2.4em",
     right : "0.6em",
   },
+  winfoCreatorList : {
+    listStyle : "none",
+  }
 }))
 
 //任意入力の作品情報
@@ -354,7 +387,7 @@ const initialState = {
   winfoInfomation : "",
   winfoCreator : [],
   winfoPublisher : [],
-  winfoCoutry : [],
+  winfoCountry : [],
   winfoStart : "",
   winfoFinish : "",
   winfoImage : "",
@@ -455,7 +488,19 @@ const Posting = () => {
   const [isPublic,setIsPublic] = useState(true)
   const [isSpoiler,setIsSpoiler] = useState(false)
   const [isLiked,setIsLiked] = useState(false)
+
+  const initailWinfoOneCreator = {
+    index : "",
+    id : "",
+    kind:"",
+    name:"",
+  }
   
+  const [winfoOneCreatorKind,setWinfoOneCreatorKind] = useState("")
+  const [winfoOneCreatorName,setWinfoOneCreatorName] = useState("")
+
+  // const [winfoCreatorDragState, updateWinfoCreatorDragState] = useState([initailWinfoOneCreator]);
+
   ////showmore
   const firstCheckBoxDisp = 22
   const totalCountGenre = tagExtraData.Genre.count
@@ -571,13 +616,51 @@ const Posting = () => {
     })
   }
 
-  const inputWinfoCreator = (event) => {
-    dispatch({type:"changeWinfo",
-      payload : {
-        winfoCreator : event.target.value
-      }
-    })
+  const inputWinfoOneCreatorKind = (event) => {
+    // setWinfoOneCreator({
+    //   winfoCreator : {
+    //     kind : event.target.value,
+    //     name : winfoOneCreator.winfoCreator.name
+    //   }
+    // })
+    setWinfoOneCreatorKind(event.target.value)
   }
+  const inputWinfoOneCreatorName = (event) => {
+    // setWinfoOneCreator({
+      //   winfoCreator : {
+        //     kind : winfoOneCreator.winfoCreator.kind,
+        //     creatorName :  event.target.value,
+        //   }
+        // })
+    setWinfoOneCreatorName(event.target.value)
+  }
+
+  console.log(winfoOneCreatorKind+"+winfoOneCreatorKind")
+  console.log(winfoOneCreatorName+"+winfoOneCreatorName")
+
+  //データ構成考えなくては…。
+  //reducerに持たせるのはDBと直接関連づけたいから
+  //個々の配列要素はuseStateで持たせるか//winfoOneCreator
+  //+が押されたらリセットされる。あくまで入力フィールドに乗っている時のstate
+  const inputWinfoCreator = () => {
+    const items = {
+      index: state.winfoCreator.length,//要素の長さが一番indexとなり、逆順に表示しているので、一番上に来る
+      id : DateToString(new Date,1),
+      kind : winfoOneCreatorKind,
+      name : winfoOneCreatorName,
+    }
+
+    dispatch({type:"changeWinfo",payload : {
+      winfoCreator : [items,...state.winfoCreator]
+      // winfoCreator : [...state.winfoCreator, items]
+    }})
+
+    // updateWinfoCreatorDragState([...state.winfoCreator, items])
+    setWinfoOneCreatorKind("")
+    setWinfoOneCreatorName("")
+  }
+
+
   const inputWinfoPublisher = (event) => {
     dispatch({type:"changeWinfo",
       payload : {
@@ -626,6 +709,35 @@ const Posting = () => {
         winfoMinutes : event.target.value
       }
     })
+  }
+
+  // winfoCreatorDrag Function
+  function winfoCreatorHandleOnDragEnd(result) {
+    const items = Array.from(state.winfoCreator);
+
+    //移動した要素を削除
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    // const [reorderedItem] = items.splice(state.winfoCreator.length - 1 - result.source.index, 1);
+    
+    //移動した要素を追加
+    items.splice(result.destination.index, 0, reorderedItem);
+    // items.splice(state.winfoCreator.length - 1 - result.destination.index , 0, reorderedItem);
+    // console.log(result.source.index+"+result.source.index")
+    // console.log(result.destination.index+"+result.destination.index")
+
+    for(let i = 0;i < items.length;i++){
+      items[i].index = items.length - 1 - i
+      console.log(JSON.stringify(items[i])+"items["+i+"]")
+    }
+
+    console.dir(reorderedItem)
+    console.log("reorderedItem")
+    console.log(items+"+items")
+
+    // updateWinfoCreatorDragState(items);
+    dispatch({type:"changeWinfo",payload : {
+      winfoCreator : items
+    }})
   }
 
   useEffect(() => {
@@ -680,7 +792,8 @@ const Posting = () => {
               /////要変更(DBから持ってきた値を入力する。)
               winfoEditor : DBdata[1].winfoEditor,
               winfoInfomation : DBdata[1].winfoInfomation,
-              winfoCreator : DBdata[1].winfoCreator,
+              // winfoCreator : DBdata[1].winfoCreator,
+              winfoCreator : DBdata[1].winfoCreator.sort(ArraySort("index","desc")),
               winfoPublisher : DBdata[1].winfoPublisher,
               winfoCountry : DBdata[1].winfoCountry,
               winfoStart : DBdata[1].winfoStart,
@@ -695,7 +808,12 @@ const Posting = () => {
               winfoMinutes : DBdata[1].winfoMinutes,
             }
           })
+
+          // updateWinfoCreatorDragState(
+          //   DBdata[1].winfoCreator.sort(ArraySort("index","desc")) //順番をindexの順に揃える処理をのちに入れる
+          // )
         }
+
         //既に評価済みの評価を編集する場合
         if(firstPostFlag == FIRST_POSTED_FLAG_I_POSTED){
           console.log("FIRST_POSTED_FLAG_I_POSTED start")
@@ -716,6 +834,11 @@ const Posting = () => {
             setIsPublic(DBdata[0].isPublic)
             setIsSpoiler(DBdata[0].isSpoiler)
             setIsLiked(DBdata[0].isLiked)
+
+            if(state.winfoEditor == RdUserId ){//編集権保持者の場合
+              console.log("I'm Editor")
+              
+            }
 
           } else {
             console.log(RdUserId+"+RdUserId")
@@ -897,7 +1020,8 @@ const Posting = () => {
               <Grid container item xs={6} justifyContent={"center"}>
                 <Grid container item xs={12} justify={"center"}>
                   <Typography className={classes.h5WorksTitle}>
-                    {"分類"}
+                    {/* {"分類"} */}
+                    {"メディア"}
                   </Typography>
                 </Grid>
                 <Grid container item xs={12} justify={"center"}>
@@ -942,7 +1066,7 @@ const Posting = () => {
                 // className={classes.FCHissu}
               />
             <h2 className={classes.postingH2}>メディア</h2>
-            <FormControl className={classes.bunruiFormControl}>
+            <FormControl className={classes.mediaFormControl}>
               <InputLabel id="demo-controlled-open-select-label"><a className={classes.inputHissu}>(必須)</a></InputLabel>
               <Select
                 labelId="demo-controlled-open-select-label"
@@ -1444,119 +1568,204 @@ const Posting = () => {
 
         {/* <h2>作品情報を入力(オプション)</h2> */}
         <H2CenterLine> {"作品詳細情報"} </H2CenterLine>
-        <p>編集者ID:{state.winfoEditor ? state.winfoEditor : "未定義"}</p>
+        {/* <p>編集者ID:{state.winfoEditor ? state.winfoEditor : "未定義"}</p> */}
         {/* <p>編集者ID:{state.winfoEditor ? state.winfoEditor : "未定義"}</p> */}
         <>
-          {state.winfoEditor == RdUserId 
+          {(state.winfoEditor == RdUserId || firstPostFlag == FIRST_POSTED_FLAG_NOT_POSTED)
             ? <>
-                <Grid container xs={12} justify={"center"} className={classes.postingWinfoDatas}>
-                  <Grid container item xs justify={"center"} className={classes.postingWinfoOneData}>
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"作品情報"} multiline
-                      // required={true}
-                      maxRows={4} value={state.winfoInfomation} type={"text"} onChange={inputWinfoInfomation}
-                      className={classes.commentField} 
-                      placeholder={"作品のストーリーや概要"}
-                    />
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"作者"} multiline
-                      // required={true}
-                      maxRows={4} value={state.winfoCreator} type={"text"} onChange={inputWinfoCreator}
-                      className={classes.commentField} 
-                      placeholder={"作者やイラストレイター・制作会社など"}
-                    />
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"出版社"} multiline
-                      // required={true}
-                      maxRows={4} value={state.winfoPublisher} type={"text"} onChange={inputWinfoPublisher}
-                      className={classes.commentField} 
-                      placeholder={"出版社"}
-                    />
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"国"} multiline
-                      // required={true}
-                      maxRows={4} value={state.winfoCountry} type={"text"} onChange={inputWinfoCountry}
-                      className={classes.commentField} 
-                      placeholder={"制作国"}
-                    />
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"リリース"} multiline
-                      // required={true}
-                      maxRows={4} value={state.winfoStart} type={"text"} onChange={inputWinfoStart}
-                      className={classes.commentField} 
-                      placeholder={"リリース時期"}
-                    />
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"完結"} multiline
-                      // required={true}
-                      maxRows={4} value={state.winfoFinish} type={"text"} onChange={inputWinfoFinish}
-                      className={classes.commentField} 
-                      placeholder={"完結した時期"}
-                    />
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <p>画像登録フォーム</p>
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <p>親選択フォーム</p>
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <p>子選択フォーム</p>
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <p>シリーズフォーム(選択と自由入力フォーム)</p>
-                  </Grid>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"主題歌"} multiline
-                      // required={true}
-                      maxRows={4} value={state.winfoMusic} type={"text"} onChange={inputWinfoMusic}
-                      className={classes.commentField} 
-                      placeholder={"主題歌(登録と同時にworkIdが発行される?)"}
-                    />
-                    </Grid>
-                    <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                      <TextField
-                        id="standard-multiline-flexible"
-                        fullWidth={true} label={"ページ数"} multiline
-                        // required={true}
-                        maxRows={4} value={state.winfoPages} type={"text"} onChange={inputWinfoPages}
-                        className={classes.commentField} 
-                        placeholder={"数字入力"}
-                      />
-                    </Grid>
-                    <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                      <TextField
-                        id="standard-multiline-flexible"
-                        fullWidth={true} label={"時間(分)"} multiline
-                        // required={true}
-                        maxRows={4} value={state.winfoMinutes} type={"text"} onChange={inputWinfoMinutes}
-                        className={classes.commentField} 
-                        placeholder={"数字入力"}
-                      />
-                    </Grid>
+              <Grid container xs={12} justify={"center"} className={classes.postingWinfoDatas}>
+                <Grid container item xs justify={"center"} className={classes.postingWinfoOneData}>
+                  <TextField
+                    fullWidth={true} label={"作品情報"} multiline
+                    maxRows={4} value={state.winfoInfomation} type={"text"} onChange={inputWinfoInfomation}
+                    className={classes.commentField} 
+                    placeholder={"作品のストーリーや概要など"}
+                  />
                 </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoCreator}>
+                  <Grid item container xs={4} >
+                    <FormControl className={classes.winfoCreatorFormControl}>
+                      <InputLabel id="demo-controlled-open-select-label">(分類)</InputLabel>
+                      {/* <InputLabel id="demo-controlled-open-select-label"><a className={classes.inputHissu}>(必須)</a></InputLabel> */}
+                      <NativeSelect
+                        // labelId=""
+                        id="NativeSelect-winfoCreator"
+                        value={winfoOneCreatorKind}
+                        onChange={inputWinfoOneCreatorKind}
+                      >
+
+                        <option aria-label="未選択" value="" />
+                        {/* <MenuItem value="">
+                          <em>未選択</em>
+                        </MenuItem> */}
+
+                        {Object.keys(winfoCreatorList).map((map) => (
+                          <option value={winfoCreatorList[map]}>
+                            {winfoCreatorList[map]}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </FormControl>
+
+                  </Grid>
+                  <Grid item container xs={5} >
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"作成関係者"} multiline
+                      maxRows={4} 
+                      value={winfoOneCreatorName} 
+                      // value={winfoOneCreator.winfoCreator.creatorName} 
+                      type={"text"} 
+                      onChange={inputWinfoOneCreatorName}
+                      className={classes.commentField} 
+                      placeholder={"名称"}
+                    />
+                    {/* //作成関係者フィールド //表示順はwinfoCreatorListに記載した順
+                      分類選択　入力フィールド　+(addButton)
+                      　　分類　入力された文字(編集不可) 削除(ゴミ箱ボタン) 　
+                    
+                    */}
+                  </Grid>
+                  <Grid item container xs={1} justify="flexStart" alignItems="center">
+                    <FormControl>
+                      <AddCircleOutlineIcon
+                        onClick={inputWinfoCreator}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                
+                <Grid item container xs justify="flexStart" alignItems="center">
+
+
+                  {/* //最下部に削除境界線を設置して投稿時にその下にあったものを削除する。 */}
+                  <DragDropContext onDragEnd={winfoCreatorHandleOnDragEnd}>
+                    <Droppable droppableId="characters">
+                      {(provided) => (
+                        <ul
+                          className={classes.winfoCreatorList}
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                        >
+                          {state.winfoCreator.map(({id , kind, name }, index) => {
+                            return (
+                              <Draggable key={id} draggableId={id} index={index}>
+                                {(provided) => (
+                                  <li
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                  >
+                                    <div>
+                                    {/* <div className="characters-thumb"> */}
+                                      {/* <img src={thumb} alt={`${name} Thumb`} /> */}
+                                      <a>{kind+"  /  "}</a>
+                                      <a>{name}</a>
+                                    </div>
+                                  </li>
+                                )}
+                              </Draggable>
+                            );
+                          })}
+                          {provided.placeholder}
+                        </ul>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
+                </Grid>               
+
+
+
+
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <TextField
+                    id="standard-multiline-flexible"
+                    fullWidth={true} label={"出版社"} multiline
+                    // required={true}
+                    maxRows={4} value={state.winfoPublisher} type={"text"} onChange={inputWinfoPublisher}
+                    className={classes.commentField} 
+                    placeholder={"出版社"}
+                  />
+                </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <TextField
+                    id="standard-multiline-flexible"
+                    fullWidth={true} label={"国"} multiline
+                    // required={true}
+                    maxRows={4} value={state.winfoCountry} type={"text"} onChange={inputWinfoCountry}
+                    className={classes.commentField} 
+                    placeholder={"制作国"}
+                  />
+                </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <TextField
+                    id="standard-multiline-flexible"
+                    fullWidth={true} label={"リリース"} multiline
+                    // required={true}
+                    maxRows={4} value={state.winfoStart} type={"text"} onChange={inputWinfoStart}
+                    className={classes.commentField} 
+                    placeholder={"リリース時期"}
+                  />
+                </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <TextField
+                    id="standard-multiline-flexible"
+                    fullWidth={true} label={"完結"} multiline
+                    // required={true}
+                    maxRows={4} value={state.winfoFinish} type={"text"} onChange={inputWinfoFinish}
+                    className={classes.commentField} 
+                    placeholder={"完結した時期"}
+                  />
+                </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <p>画像登録フォーム</p>
+                </Grid>
+
+                {/* Step2 */}
+                {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <p>親選択フォーム</p>
+                </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <p>子選択フォーム</p>
+                </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <p>シリーズフォーム(選択と自由入力フォーム)</p>
+                </Grid> */}
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <TextField
+                    id="standard-multiline-flexible"
+                    fullWidth={true} label={"主題歌"} multiline
+                    // required={true}
+                    maxRows={4} value={state.winfoMusic} type={"text"} onChange={inputWinfoMusic}
+                    className={classes.commentField} 
+                    placeholder={"主題歌(登録と同時にworkIdが発行される?)"}
+                  />
+                </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <TextField
+                    id="standard-multiline-flexible"
+                    fullWidth={true} label={"ページ数"} multiline
+                    // required={true}
+                    maxRows={4} value={state.winfoPages} type={"text"} onChange={inputWinfoPages}
+                    className={classes.commentField} 
+                    placeholder={"数字入力"}
+                  />
+                </Grid>
+                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  <TextField
+                    id="standard-multiline-flexible"
+                    fullWidth={true} label={"時間(分)"} multiline
+                    // required={true}
+                    maxRows={4} value={state.winfoMinutes} type={"text"} onChange={inputWinfoMinutes}
+                    className={classes.commentField} 
+                    placeholder={"数字入力"}
+                  />
+                </Grid>
+              </Grid>
             </>
             : <>
               <p>作品情報:{state.winfoInfomation}</p>
-              <p>作者:{state.winfoCreator}</p>
+              <p>作者:{state.winfoCreator.length ? state.winfoCreator[0].kind+":"+state.winfoCreator[0].name : "no data at Creator"}</p>
               <p>出版社:{state.winfoPublisher}</p>
               <p>制作国:{state.winfoCountry}</p>
               <p>リリース:{state.winfoStart}</p>
@@ -1572,7 +1781,7 @@ const Posting = () => {
             </>
           }
         </>
-        <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p>
+        {/* <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p> */}
 
         {(firstPostFlag != FIRST_POSTED_FLAG_NOT_POSTED && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
         {(firstPostFlag != FIRST_POSTED_FLAG_NOT_POSTED && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
