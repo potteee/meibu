@@ -142,10 +142,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection:"column",
   },
   postingWinfoOneData: {
-    marginTop:"10px",
+    marginTop:"0.7em",
   },
   postingWinfoCreator: {
-    marginTop:"10px",
+    marginTop:"0.7em",
     justifyContent:"space-around",
   },
   postingWinfoCreatorList: {
@@ -1016,7 +1016,8 @@ const Posting = () => {
 
         <H2CenterLine> {"作品情報"} </H2CenterLine>
 
-        {(firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED || firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ) && (
+        {(firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED ||
+          firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ) && (
           <>
             <Grid container item xs={12} justify={"center"}>
               <Typography className={classes.h5WorksTitle}>
