@@ -1592,7 +1592,7 @@ const Posting = () => {
         <>
           {(state.winfoEditor == RdUserId || firstPostFlag == FIRST_POSTED_FLAG_NOT_POSTED)
             ? <>
-              <Grid container xs={12} justify={"center"} className={classes.postingWinfoDatas}>
+              {/* <Grid container xs={12} justify={"center"} className={classes.postingWinfoDatas}> */}
                 <Grid container item xs justify={"center"} className={classes.postingWinfoOneData}>
                   <TextField
                     fullWidth={true} label={"作品情報"} multiline
@@ -1822,7 +1822,7 @@ const Posting = () => {
                     placeholder={"数字入力"}
                   />
                 </Grid>
-              </Grid>
+              {/* </Grid> */}
             </>
             : <>
               <p>作品情報:{state.winfoInfomation}</p>
