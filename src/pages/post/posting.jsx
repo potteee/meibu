@@ -31,6 +31,9 @@ import Chip from '@material-ui/core/Chip';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import { ListItemIcon,ListItemSecondaryAction,IconButton } from '@material-ui/core';
+import RootRef from "@material-ui/core/RootRef";
+
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -47,6 +50,7 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import EditIcon from '@material-ui/icons/Edit';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -79,6 +83,7 @@ import PleaseSignUpIn from '../menu/PleaseSignUpIn'
 import GLoading from '../../components/GLoading';
 
 import { DragDropContext,Droppable,Draggable} from 'react-beautiful-dnd';
+import { width } from '@material-ui/system'
 
 const useStyles = makeStyles((theme) => ({
   autoCompleteStyle : {
@@ -376,11 +381,16 @@ const useStyles = makeStyles((theme) => ({
   },
   winfoCreatorList : {
     listStyle : "none",
+    maxWidth : "95%",
+    width : "90%",
+  },
+  winfoCreatorListItems : {
+    height:"3em",
+    alignItems:"center",
   }
 }))
 
 //任意入力の作品情報
-  
 const initialState = {
   isLoading : true,
   winfoEditor : "",
@@ -489,12 +499,12 @@ const Posting = () => {
   const [isSpoiler,setIsSpoiler] = useState(false)
   const [isLiked,setIsLiked] = useState(false)
 
-  const initailWinfoOneCreator = {
-    index : "",
-    id : "",
-    kind:"",
-    name:"",
-  }
+  // const initailWinfoOneCreator = {
+  //   index : "",
+  //   id : "",
+  //   kind:"",
+  //   name:"",
+  // }
   
   const [winfoOneCreatorKind,setWinfoOneCreatorKind] = useState("")
   const [winfoOneCreatorName,setWinfoOneCreatorName] = useState("")
@@ -713,6 +723,12 @@ const Posting = () => {
 
   // winfoCreatorDrag Function
   function winfoCreatorHandleOnDragEnd(result) {
+
+    if(!result.destination.index){
+      console.log("result.destination.index is null")
+      return false
+    }
+
     const items = Array.from(state.winfoCreator);
 
     //移動した要素を削除
@@ -738,6 +754,8 @@ const Posting = () => {
     dispatch({type:"changeWinfo",payload : {
       winfoCreator : items
     }})
+
+    return(true)
   }
 
   useEffect(() => {
@@ -1635,47 +1653,89 @@ const Posting = () => {
                   </Grid>
                 </Grid>
                 
-                <Grid item container xs justify="flexStart" alignItems="center">
-
-
-                  {/* //最下部に削除境界線を設置して投稿時にその下にあったものを削除する。 */}
+                <Grid item container xs={12} justify="center" alignItems="center">
                   <DragDropContext onDragEnd={winfoCreatorHandleOnDragEnd}>
-                    <Droppable droppableId="characters">
-                      {(provided) => (
-                        <ul
+                    <Droppable droppableId="droppable">
+                      {(provided,snapshot) => (
+                        <RootRef rootRef={provided.innerRef}>
+                        <List 
+                          className={classes.winfoCreatorList}// ここにsnapshot入れてもいい
+                        >
+                        {/* <ul
                           className={classes.winfoCreatorList}
                           {...provided.droppableProps}
                           ref={provided.innerRef}
-                        >
+                        > */}
                           {state.winfoCreator.map(({id , kind, name }, index) => {
                             return (
+                              // <div key={id}>
                               <Draggable key={id} draggableId={id} index={index}>
-                                {(provided) => (
-                                  <li
+                                {(provided,snapshot) => (
+                                  <RootRef rootRef={provided.innerRef}>
+                                    <ListItem
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className={classes.winfoCreatorListItems}
+                                      // style={getItemStyle(
+                                      //   snapshot.isDragging,
+                                      //   provided.draggableProps.style
+                                      // )}
+                                    >
+                                  {/* <li
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                  >
-                                    <div>
-                                    {/* <div className="characters-thumb"> */}
-                                      {/* <img src={thumb} alt={`${name} Thumb`} /> */}
-                                      <a>{kind+"  /  "}</a>
-                                      <a>{name}</a>
-                                    </div>
-                                  </li>
+                                  > */}
+                                    {/* <div> */}
+                                      <Grid container xs justyfy="flexStart">
+                                        <Grid container item xs={2}>
+                                          <ListItemIcon
+                                            onClick={() => {
+                                              console.log("Clicked winfoEdit")
+                                            }
+                                            }
+                                          >
+                                            <IconButton>
+                                              <EditIcon/>
+                                            </IconButton>
+                                          </ListItemIcon>
+                                        </Grid>
+                                        <Grid container item xs={10} alignItems="center">
+                                          <ListItemText 
+                                            // style={{alignItems:"center" }}
+                                            primary={kind+"  /  "+name}
+                                          />
+                                        </Grid>
+                                      </Grid>
+                                      {/* <a>{kind+"  /  "}</a>
+                                      <a>{name}</a> */}
+                                    {/* </div> */}
+                                  {/* </li> */}
+                                  </ListItem>
+                                  </RootRef>
                                 )}
                               </Draggable>
+                              // {/* </div> */}
                             );
                           })}
                           {provided.placeholder}
-                        </ul>
+                        {/* </ul> */}
+                        </List>
+                        </RootRef>
                       )}
                     </Droppable>
+                    {/* <Droppable droppableId="delete">
+                      {(provided, snapshot) => (
+                        <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}>
+                          Drop to delete
+                          ...
+                        </div>
+                      )}
+                    </Droppable> */}
                   </DragDropContext>
                 </Grid>               
-
-
-
 
                 <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
                   <TextField
