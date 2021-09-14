@@ -34,6 +34,11 @@ import NativeSelect from '@material-ui/core/NativeSelect';
 import { ListItemIcon,ListItemSecondaryAction,IconButton } from '@material-ui/core';
 import RootRef from "@material-ui/core/RootRef";
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -498,18 +503,15 @@ const Posting = () => {
   const [isPublic,setIsPublic] = useState(true)
   const [isSpoiler,setIsSpoiler] = useState(false)
   const [isLiked,setIsLiked] = useState(false)
-
-  // const initailWinfoOneCreator = {
-  //   index : "",
-  //   id : "",
-  //   kind:"",
-  //   name:"",
-  // }
   
   const [winfoOneCreatorKind,setWinfoOneCreatorKind] = useState("")
   const [winfoOneCreatorName,setWinfoOneCreatorName] = useState("")
+  
+  const [winfoOneCreatorDialogKind,setWinfoOneCreatorDialogKind] = useState("")
+  const [winfoOneCreatorDialogName,setWinfoOneCreatorDialogName] = useState("")
 
-  // const [winfoCreatorDragState, updateWinfoCreatorDragState] = useState([initailWinfoOneCreator]);
+  const [winfoOneCreatorDialogIndex, setWinfoOneCreatorDialogIndex] = useState("")
+  const [winfoOneCreatorDialogId, setWinfoOneCreatorDialogId] = useState("")
 
   ////showmore
   const firstCheckBoxDisp = 22
@@ -544,6 +546,19 @@ const Posting = () => {
   )
 
   const [checkBoxState, setCheckBoxState] = useState(cateResult)
+
+  ////openDialog
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleClickOpenDialog = () => {
+    console.log("openDialog")
+    setOpenDialog(true);
+  };
+  
+  const handleCloseDialog = () => {
+    console.log("closeDialog")
+    setOpenDialog(false);
+  };
 
   //input function
   const changeIsPublic = useCallback((state) => {
@@ -627,26 +642,24 @@ const Posting = () => {
   }
 
   const inputWinfoOneCreatorKind = (event) => {
-    // setWinfoOneCreator({
-    //   winfoCreator : {
-    //     kind : event.target.value,
-    //     name : winfoOneCreator.winfoCreator.name
-    //   }
-    // })
     setWinfoOneCreatorKind(event.target.value)
   }
+  
   const inputWinfoOneCreatorName = (event) => {
-    // setWinfoOneCreator({
-      //   winfoCreator : {
-        //     kind : winfoOneCreator.winfoCreator.kind,
-        //     creatorName :  event.target.value,
-        //   }
-        // })
     setWinfoOneCreatorName(event.target.value)
+  }
+  const inputWinfoOneCreatorDialogKind = (event) => {
+    setWinfoOneCreatorDialogKind(event.target.value)
+  }
+
+  const inputWinfoOneCreatorDialogName = (event) => {
+    setWinfoOneCreatorDialogName(event.target.value)
   }
 
   console.log(winfoOneCreatorKind+"+winfoOneCreatorKind")
   console.log(winfoOneCreatorName+"+winfoOneCreatorName")
+  console.log("+winfoOneCreatorName")
+  console.dir(state.winfoCreator)
 
   //データ構成考えなくては…。
   //reducerに持たせるのはDBと直接関連づけたいから
@@ -662,14 +675,57 @@ const Posting = () => {
 
     dispatch({type:"changeWinfo",payload : {
       winfoCreator : [items,...state.winfoCreator]
-      // winfoCreator : [...state.winfoCreator, items]
     }})
 
-    // updateWinfoCreatorDragState([...state.winfoCreator, items])
     setWinfoOneCreatorKind("")
     setWinfoOneCreatorName("")
   }
 
+  
+  const inputWinfoCreatorDialog = () => {
+    const item = {
+      index: winfoOneCreatorDialogIndex,
+      id : winfoOneCreatorDialogId,///持ってくる　上も同じ
+      kind : winfoOneCreatorDialogKind,
+      name : winfoOneCreatorDialogName,
+    }
+
+    const beforeItem = {
+      index: state.winfoCreator.length - 1 - winfoOneCreatorDialogIndex,
+      id : winfoOneCreatorDialogId,
+      kind : state.winfoCreator[winfoOneCreatorDialogIndex].kind,
+      name : state.winfoCreator[winfoOneCreatorDialogIndex].name,
+    }
+
+    console.log(JSON.stringify(item)+"+item")
+    console.log(JSON.stringify(beforeItem)+"+beforeItem")
+    console.log(JSON.stringify(state.winfoCreator[3])+"+state.winfoCreator[3]")
+    
+    //変更対象の要素の位置を特定
+    const editArrayLocation = state.winfoCreator.findIndex(({index}) => 
+      index === state.winfoCreator.length - 1 - winfoOneCreatorDialogIndex
+    )
+
+    var tmpArray = state.winfoCreator
+    
+    //要素の位置をずらさずに配列の内容を更新
+    tmpArray[editArrayLocation] = {...item} 
+    
+    console.log(editArrayLocation+"+editArrayLocation")
+    console.log(JSON.stringify(tmpArray[editArrayLocation])+"+tmpArray[editArrayLocation]")
+
+    //要修正　既に保存されている変更対象の要素を変更（もしくは削除して追加）する
+    dispatch({type:"changeWinfo",payload : {
+      winfoCreator : tmpArray
+    }})
+
+    console.log("complete dispatch type changeWinfo tmpArray")
+
+    setWinfoOneCreatorDialogKind("")
+    setWinfoOneCreatorDialogName("")
+    setWinfoOneCreatorDialogIndex("")
+    setWinfoOneCreatorDialogId("")
+  }
 
   const inputWinfoPublisher = (event) => {
     dispatch({type:"changeWinfo",
@@ -724,7 +780,10 @@ const Posting = () => {
   // winfoCreatorDrag Function
   function winfoCreatorHandleOnDragEnd(result) {
 
-    if(!result.destination.index){
+    console.log("result")
+    console.dir(result)
+
+    if(result.destination === null){ //droppable外にドロップすると、nullになる
       console.log("result.destination.index is null")
       return false
     }
@@ -755,7 +814,7 @@ const Posting = () => {
       winfoCreator : items
     }})
 
-    return(true)
+    return true
   }
 
   useEffect(() => {
@@ -1605,19 +1664,12 @@ const Posting = () => {
                   <Grid item container xs={4} >
                     <FormControl className={classes.winfoCreatorFormControl}>
                       <InputLabel id="demo-controlled-open-select-label">(分類)</InputLabel>
-                      {/* <InputLabel id="demo-controlled-open-select-label"><a className={classes.inputHissu}>(必須)</a></InputLabel> */}
                       <NativeSelect
-                        // labelId=""
                         id="NativeSelect-winfoCreator"
                         value={winfoOneCreatorKind}
                         onChange={inputWinfoOneCreatorKind}
                       >
-
                         <option aria-label="未選択" value="" />
-                        {/* <MenuItem value="">
-                          <em>未選択</em>
-                        </MenuItem> */}
-
                         {Object.keys(winfoCreatorList).map((map) => (
                           <option value={winfoCreatorList[map]}>
                             {winfoCreatorList[map]}
@@ -1633,17 +1685,11 @@ const Posting = () => {
                       fullWidth={true} label={"作成関係者"} multiline
                       maxRows={4} 
                       value={winfoOneCreatorName} 
-                      // value={winfoOneCreator.winfoCreator.creatorName} 
                       type={"text"} 
                       onChange={inputWinfoOneCreatorName}
                       className={classes.commentField} 
                       placeholder={"名称"}
                     />
-                    {/* //作成関係者フィールド //表示順はwinfoCreatorListに記載した順
-                      分類選択　入力フィールド　+(addButton)
-                      　　分類　入力された文字(編集不可) 削除(ゴミ箱ボタン) 　
-                    
-                    */}
                   </Grid>
                   <Grid item container xs={1} justify="flexStart" alignItems="center">
                     <FormControl>
@@ -1677,24 +1723,18 @@ const Posting = () => {
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
                                       className={classes.winfoCreatorListItems}
-                                      // style={getItemStyle(
-                                      //   snapshot.isDragging,
-                                      //   provided.draggableProps.style
-                                      // )}
                                     >
-                                  {/* <li
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                  > */}
-                                    {/* <div> */}
                                       <Grid container xs justyfy="flexStart">
                                         <Grid container item xs={2}>
                                           <ListItemIcon
                                             onClick={() => {
                                               console.log("Clicked winfoEdit")
-                                            }
-                                            }
+                                              setWinfoOneCreatorDialogKind(kind)
+                                              setWinfoOneCreatorDialogName(name)
+                                              setWinfoOneCreatorDialogIndex(index)
+                                              setWinfoOneCreatorDialogId(id)
+                                              handleClickOpenDialog()
+                                            }}
                                           >
                                             <IconButton>
                                               <EditIcon/>
@@ -1707,6 +1747,7 @@ const Posting = () => {
                                             primary={kind+"  /  "+name}
                                           />
                                         </Grid>
+                                        
                                       </Grid>
                                       {/* <a>{kind+"  /  "}</a>
                                       <a>{name}</a> */}
@@ -1736,7 +1777,58 @@ const Posting = () => {
                       )}
                     </Droppable> */}
                   </DragDropContext>
-                </Grid>               
+                </Grid>          
+
+                <Dialog open={openDialog} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
+                  <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
+                  <DialogContent>
+                    <Grid item container xs={12} justify={"center"} className={classes.postingWinfoCreator}>
+                      <Grid item container xs={4} >
+                        <FormControl className={classes.winfoCreatorFormControl}>
+                          <InputLabel id="demo-controlled-open-select-label">(分類)</InputLabel>
+                          <NativeSelect
+                            id="NativeSelect-winfoCreator"
+                            value={winfoOneCreatorDialogKind}
+                            onChange={inputWinfoOneCreatorDialogKind}
+                          >
+                            <option aria-label="未選択" value="" />
+                            {Object.keys(winfoCreatorList).map((map) => (
+                              <option value={winfoCreatorList[map]}>
+                                {winfoCreatorList[map]}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        </FormControl>
+                      </Grid>
+                      <Grid item container xs={5} >
+                        <TextField
+                          id="standard-multiline-flexible"
+                          fullWidth={true} label={"作成関係者"} multiline
+                          maxRows={4} 
+                          value={winfoOneCreatorDialogName} 
+                          type={"text"} 
+                          onChange={inputWinfoOneCreatorDialogName}
+                          className={classes.commentField} 
+                          placeholder={"名称"}
+                        />
+                      </Grid>
+                    </Grid>
+
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                      キャンセル
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        inputWinfoCreatorDialog()
+                        handleCloseDialog()
+                      }}
+                      color="primary">
+                        更新
+                    </Button>
+                  </DialogActions>
+                </Dialog>
 
                 <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
                   <TextField
