@@ -669,6 +669,7 @@ const Posting = () => {
 
 
   const inputWinfoCreatorAdd = () => {
+    console.log("inputWinfoCreatorAdd start")
     const item = {
       index: state.winfoCreator.length,//要素の長さが一番indexとなり、逆順に表示しているので、一番上に来る
       id : DateToString(new Date,1),
@@ -678,7 +679,7 @@ const Posting = () => {
 
     var tmpArray = [item,...state.winfoCreator]
 
-    for(let i = 0;i < state.winfoCreator.length ;i++){
+    for(let i = 0;i < state.winfoCreator.length + 1 ;i++){
       console.log(JSON.stringify(tmpArray[i])+"tmpArray[i]@J");
       tmpArray[i].index = i
       console.log(tmpArray[i].index+"+tmpArray[i].index")
@@ -758,7 +759,7 @@ const Posting = () => {
     //要素の位置をずらさずに配列の内容を更新
     tmpArray.splice(editArrayLocation, 1) //ここで要素削除
 
-    for(let i = editArrayLocation;i < state.winfoCreator.length ;i++){
+    for(let i = editArrayLocation;i < state.winfoCreator.length - 1;i++){
       console.log(JSON.stringify(tmpArray[i])+"tmpArray[i]@J");
       tmpArray[i].index = i
       // tmpArray[i].index = wi_nfoOneCreatorDialogIndex
