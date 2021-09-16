@@ -56,6 +56,8 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -88,7 +90,8 @@ import PleaseSignUpIn from '../menu/PleaseSignUpIn'
 import GLoading from '../../components/GLoading';
 
 import { DragDropContext,Droppable,Draggable} from 'react-beautiful-dnd';
-import { width } from '@material-ui/system'
+import { fontSize, width } from '@material-ui/system'
+import { isConditionalExpression } from 'typescript'
 
 const useStyles = makeStyles((theme) => ({
   autoCompleteStyle : {
@@ -151,6 +154,9 @@ const useStyles = makeStyles((theme) => ({
   },
   postingWinfoCreator: {
     marginTop:"0.7em",
+    justifyContent:"space-around",
+  },
+  postingWinfoCreatorDialog: {
     justifyContent:"space-around",
   },
   postingWinfoCreatorList: {
@@ -661,20 +667,26 @@ const Posting = () => {
   console.log("+winfoOneCreatorName")
   console.dir(state.winfoCreator)
 
-  //データ構成考えなくては…。
-  //reducerに持たせるのはDBと直接関連づけたいから
-  //個々の配列要素はuseStateで持たせるか//winfoOneCreator
-  //+が押されたらリセットされる。あくまで入力フィールドに乗っている時のstate
-  const inputWinfoCreator = () => {
-    const items = {
+
+  const inputWinfoCreatorAdd = () => {
+    const item = {
       index: state.winfoCreator.length,//要素の長さが一番indexとなり、逆順に表示しているので、一番上に来る
       id : DateToString(new Date,1),
       kind : winfoOneCreatorKind,
       name : winfoOneCreatorName,
     }
 
+    var tmpArray = [item,...state.winfoCreator]
+
+    for(let i = 0;i < state.winfoCreator.length ;i++){
+      console.log(JSON.stringify(tmpArray[i])+"tmpArray[i]@J");
+      tmpArray[i].index = i
+      console.log(tmpArray[i].index+"+tmpArray[i].index")
+    }
+
     dispatch({type:"changeWinfo",payload : {
-      winfoCreator : [items,...state.winfoCreator]
+      // winfoCreator : [item,...state.winfoCreator]
+      winfoCreator : [...tmpArray]
     }})
 
     setWinfoOneCreatorKind("")
@@ -682,8 +694,9 @@ const Posting = () => {
   }
 
   
-  const inputWinfoCreatorDialog = () => {
+  const inputWinfoCreatorUpdate = () => {
     const item = {
+      // index: winfoOneCreatorDialogIndex,
       index: winfoOneCreatorDialogIndex,
       id : winfoOneCreatorDialogId,///持ってくる　上も同じ
       kind : winfoOneCreatorDialogKind,
@@ -691,7 +704,7 @@ const Posting = () => {
     }
 
     const beforeItem = {
-      index: state.winfoCreator.length - 1 - winfoOneCreatorDialogIndex,
+      index: winfoOneCreatorDialogIndex,
       id : winfoOneCreatorDialogId,
       kind : state.winfoCreator[winfoOneCreatorDialogIndex].kind,
       name : state.winfoCreator[winfoOneCreatorDialogIndex].name,
@@ -699,12 +712,19 @@ const Posting = () => {
 
     console.log(JSON.stringify(item)+"+item")
     console.log(JSON.stringify(beforeItem)+"+beforeItem")
-    console.log(JSON.stringify(state.winfoCreator[3])+"+state.winfoCreator[3]")
+    console.log(JSON.stringify(state.winfoCreator[winfoOneCreatorDialogIndex])+"+state.winfoCreator[winfoOneCreatorDialogIndex]")
+
+    console.log(state.winfoCreator.length+"+state.winfoCreator.length")
+    console.log(winfoOneCreatorDialogIndex+"+winfoOneCreatorDialogIndex")
     
     //変更対象の要素の位置を特定
     const editArrayLocation = state.winfoCreator.findIndex(({index}) => 
-      index === state.winfoCreator.length - 1 - winfoOneCreatorDialogIndex
+      index === winfoOneCreatorDialogIndex
     )
+
+    if(editArrayLocation == -1){
+      alert("editArrayLocation is -1")
+    }
 
     var tmpArray = state.winfoCreator
     
@@ -719,7 +739,38 @@ const Posting = () => {
       winfoCreator : tmpArray
     }})
 
-    console.log("complete dispatch type changeWinfo tmpArray")
+    console.log("complete dispatch type UpdateWinfoCreator tmpArray")
+
+    setWinfoOneCreatorDialogKind("")
+    setWinfoOneCreatorDialogName("")
+    setWinfoOneCreatorDialogIndex("")
+    setWinfoOneCreatorDialogId("")
+  }
+
+  const inputWinfoCreatorDelete = () => {
+    //変更対象の要素の位置を特定
+    const editArrayLocation = state.winfoCreator.findIndex(({index}) => 
+      index === winfoOneCreatorDialogIndex
+    )
+
+    var tmpArray = state.winfoCreator
+    
+    //要素の位置をずらさずに配列の内容を更新
+    tmpArray.splice(editArrayLocation, 1) //ここで要素削除
+
+    for(let i = editArrayLocation;i < state.winfoCreator.length ;i++){
+      console.log(JSON.stringify(tmpArray[i])+"tmpArray[i]@J");
+      tmpArray[i].index = i
+      // tmpArray[i].index = wi_nfoOneCreatorDialogIndex
+      console.log(tmpArray[i].index+"+tmpArray[i].index")
+    }
+
+    //対象要素削除後の状態に更新
+    dispatch({type:"changeWinfo",payload : {
+      winfoCreator : tmpArray
+    }})
+
+    console.log("complete dispatch type DeleteWinfoCreator tmpArray")
 
     setWinfoOneCreatorDialogKind("")
     setWinfoOneCreatorDialogName("")
@@ -790,18 +841,19 @@ const Posting = () => {
 
     const items = Array.from(state.winfoCreator);
 
-    //移動した要素を削除
+    //移動した要素を削除し、reorderedItemに削除したアイテムを格納。
     const [reorderedItem] = items.splice(result.source.index, 1);
-    // const [reorderedItem] = items.splice(state.winfoCreator.length - 1 - result.source.index, 1);
+    // const [reorderedItem] = items.splice(result.source.index, 1);
     
     //移動した要素を追加
     items.splice(result.destination.index, 0, reorderedItem);
-    // items.splice(state.winfoCreator.length - 1 - result.destination.index , 0, reorderedItem);
+    // items.splice(result.destination.index , 0, reorderedItem);
     // console.log(result.source.index+"+result.source.index")
     // console.log(result.destination.index+"+result.destination.index")
 
     for(let i = 0;i < items.length;i++){
-      items[i].index = items.length - 1 - i
+      items[i].index = i
+      // items[i].index = items.length - 1 - i
       console.log(JSON.stringify(items[i])+"items["+i+"]")
     }
 
@@ -870,7 +922,8 @@ const Posting = () => {
               winfoEditor : DBdata[1].winfoEditor,
               winfoInfomation : DBdata[1].winfoInfomation,
               // winfoCreator : DBdata[1].winfoCreator,
-              winfoCreator : DBdata[1].winfoCreator.sort(ArraySort("index","desc")),
+              winfoCreator : DBdata[1].winfoCreator.sort(ArraySort("index","asc")),
+              // winfoCreator : DBdata[1].winfoCreator.sort(ArraySort("index","desc")),
               winfoPublisher : DBdata[1].winfoPublisher,
               winfoCountry : DBdata[1].winfoCountry,
               winfoStart : DBdata[1].winfoStart,
@@ -1584,8 +1637,6 @@ const Posting = () => {
                 variant="contained"
                 color="default"
                 size="large"
-                // className={classes.button}
-                // startIcon={<SaveAltIcon />}
                 startIcon={<SaveAltIcon 
                   // classes={{root: classes.postingIcon}}
                 />}
@@ -1694,7 +1745,7 @@ const Posting = () => {
                   <Grid item container xs={1} justify="flexStart" alignItems="center">
                     <FormControl>
                       <AddCircleOutlineIcon
-                        onClick={inputWinfoCreator}
+                        onClick={inputWinfoCreatorAdd}
                       />
                     </FormControl>
                   </Grid>
@@ -1782,7 +1833,7 @@ const Posting = () => {
                 <Dialog open={openDialog} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
                   <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
                   <DialogContent>
-                    <Grid item container xs={12} justify={"center"} className={classes.postingWinfoCreator}>
+                    <Grid item container xs={12} justify={"center"} className={classes.postingWinfoCreatorDialog}>
                       <Grid item container xs={4} >
                         <FormControl className={classes.winfoCreatorFormControl}>
                           <InputLabel id="demo-controlled-open-select-label">(分類)</InputLabel>
@@ -1816,12 +1867,23 @@ const Posting = () => {
 
                   </DialogContent>
                   <DialogActions>
+                    <IconButton
+                      onClick={() => {
+                        console.log("delete clicked")
+                        inputWinfoCreatorDelete()
+                        handleCloseDialog()
+                      }}
+                    >
+                      {/* <DeleteIcon /> */}
+                      <DeleteIcon fontSize="small"/>
+                    </IconButton>
+
                     <Button onClick={handleCloseDialog} color="primary">
                       キャンセル
                     </Button>
                     <Button 
                       onClick={() => {
-                        inputWinfoCreatorDialog()
+                        inputWinfoCreatorUpdate()
                         handleCloseDialog()
                       }}
                       color="primary">
