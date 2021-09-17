@@ -29,7 +29,8 @@ import PublishIcon from '@material-ui/icons/Publish';
 import Collapse from '@material-ui/core/Collapse';
 import Chip from '@material-ui/core/Chip';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+// import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import { ListItemIcon,ListItemSecondaryAction,IconButton } from '@material-ui/core';
 import RootRef from "@material-ui/core/RootRef";
@@ -45,6 +46,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 
+// import DesktopDatePicker from '@material-ui/lab/DesktopDatePicker';
 
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -86,6 +88,7 @@ import {tagMap,tagExtraData} from "../../models/tagMap"
 import {categoryMap} from "../../models/categoryMap"
 import {bunruiMap} from "../../models/bunruiMap"
 import {winfoCreatorList} from "../../models/winfoCreatorList"
+import {countryList} from "../../models/countryList"
 import PleaseSignUpIn from '../menu/PleaseSignUpIn'
 import GLoading from '../../components/GLoading';
 
@@ -1922,7 +1925,8 @@ const Posting = () => {
                   </DialogActions>
                 </Dialog>
 
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                {/* 分類に統合 */}
+                {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
                   <TextField
                     id="standard-multiline-flexible"
                     fullWidth={true} label={"出版社"} multiline
@@ -1931,23 +1935,46 @@ const Posting = () => {
                     className={classes.commentField} 
                     placeholder={"出版社"}
                   />
-                </Grid>
+                </Grid> */}
+
                 <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                  <TextField
+                  <FormControl className={classes.winfoCreatorFormControl}>
+                    <InputLabel id="demo-controlled-open-country-select-label">制作国</InputLabel>
+                    <NativeSelect
+                      id="NativeSelect-winfoCreator-country"
+                      value={state.winfoCountry}
+                      onChange={inputWinfoCountry}
+                    >
+                      <option aria-label="未選択" value="" />
+                      {Object.keys(countryList).map((map) => (
+                        <option value={countryList[map]}>
+                          {countryList[map]}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+                  {/* <TextField
                     id="standard-multiline-flexible"
                     fullWidth={true} label={"国"} multiline
                     // required={true}
                     maxRows={4} value={state.winfoCountry} type={"text"} onChange={inputWinfoCountry}
                     className={classes.commentField} 
                     placeholder={"制作国"}
-                  />
+                  /> */}
                 </Grid>
                 <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                  {/* <DesktopDatePicker
+                    label="リリース"
+                    inputFormat="MM/dd/yyyy"
+                    value={state.winfoStart}
+                    onChange={inputWinfoStart}
+                    renderInput={(params) => <TextField {...params} />}
+                  /> */}
                   <TextField
                     id="standard-multiline-flexible"
-                    fullWidth={true} label={"リリース"} multiline
+                    fullWidth={false} label={"リリース"}
                     // required={true}
-                    maxRows={4} value={state.winfoStart} type={"text"} onChange={inputWinfoStart}
+                    value={state.winfoStart} type={"date"} onChange={inputWinfoStart}
                     className={classes.commentField} 
                     placeholder={"リリース時期"}
                   />

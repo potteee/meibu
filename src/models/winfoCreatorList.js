@@ -15,4 +15,5 @@ export const winfoCreatorList = {
   producer : "企画者",
   screenPlayer : "脚本家",
   productionCompany : "制作会社",
+  Publisher : "出版社",
 }
