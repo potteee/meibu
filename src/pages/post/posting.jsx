@@ -156,6 +156,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop:"0.7em",
     justifyContent:"space-around",
   },
+  winfoCreatorNodalDeleteIcon: {
+    position : "absolute",
+    left : "0.1em",
+    bottom : "0.1em",
+  },
+  winfoCreatorNodalCancelUpdateButton: {
+    // position : "absolute",
+    right : "1.1em",
+    // bottom : "3em",
+  },
   postingWinfoCreatorDialog: {
     justifyContent:"space-around",
   },
@@ -392,13 +402,22 @@ const useStyles = makeStyles((theme) => ({
   },
   winfoCreatorList : {
     listStyle : "none",
-    maxWidth : "95%",
-    width : "90%",
+    maxWidth : "100%",
+    width : "100%",
   },
   winfoCreatorListItems : {
-    height:"3em",
+    // height:"3em",
+    height : "auto",
     alignItems:"center",
-  }
+    paddingTop : 0,
+    paddingBottom : 0,
+  },
+  displayText : {
+    overflowWrap: "break-word",
+  },
+  iconButton : {
+    padding : "5px",
+  },
 }))
 
 //任意入力の作品情報
@@ -1788,13 +1807,16 @@ const Posting = () => {
                                               handleClickOpenDialog()
                                             }}
                                           >
-                                            <IconButton>
+                                            <IconButton
+                                              className={classes.iconButton}  
+                                            >
                                               <EditIcon/>
                                             </IconButton>
                                           </ListItemIcon>
                                         </Grid>
                                         <Grid container item xs={10} alignItems="center">
                                           <ListItemText 
+                                            className={classes.displayText}
                                             // style={{alignItems:"center" }}
                                             primary={kind+"  /  "+name}
                                           />
@@ -1869,6 +1891,7 @@ const Posting = () => {
                   </DialogContent>
                   <DialogActions>
                     <IconButton
+                      className={classes.winfoCreatorNodalDeleteIcon}
                       onClick={() => {
                         console.log("delete clicked")
                         inputWinfoCreatorDelete()
@@ -1879,7 +1902,11 @@ const Posting = () => {
                       <DeleteIcon fontSize="small"/>
                     </IconButton>
 
-                    <Button onClick={handleCloseDialog} color="primary">
+                    <Button 
+                      onClick={handleCloseDialog}
+                      color="primary"
+                      className={classes.winfoCreatorNodalCancelUpdateButton}
+                    >
                       キャンセル
                     </Button>
                     <Button 
@@ -1887,7 +1914,9 @@ const Posting = () => {
                         inputWinfoCreatorUpdate()
                         handleCloseDialog()
                       }}
-                      color="primary">
+                      color="primary"
+                      className={classes.winfoCreatorNodalCancelUpdateButton}
+                    >
                         更新
                     </Button>
                   </DialogActions>
