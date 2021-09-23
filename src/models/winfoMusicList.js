@@ -1,8 +1,8 @@
   //posting時に指定するwinfoCreator
   
 export const winfoMusicList = {
+  OP : "オープニングテ",
   ED : "エンディングテーマ",
-  OP : "オープニングテーマ",
-  IS : "挿入歌",
+  insert : "挿入歌",
   other : "その他",
 }

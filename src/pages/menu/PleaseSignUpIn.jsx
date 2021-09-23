@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect, useState}  from 'react'
 import Link from 'next/link'
 import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
@@ -8,10 +8,15 @@ import GLoading from '../../components/GLoading'
 export default function PleaseSignUpIn () {
     const router = useRouter()
     const { isReady } = useRouter()
+    const [isLoading,setIsLoading] = useState(true)
 
     const { hist,searchWord,infoMedia,workId,firstPostFlag } = router.query
 
-    if(!isReady){
+    useEffect(() => {
+        setIsLoading(isReady ? false : true)
+    },[isReady])
+
+    if(isLoading){
         return(
             <GLoading />
         )

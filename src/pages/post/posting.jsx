@@ -69,6 +69,7 @@ import ApplicationBar from '../../components/applicationBar'
 import { parseCookies } from 'nookies'
 import { is, set } from 'immutable'
 import {useDispatch,useSelector} from 'react-redux'
+import PostingButton from '../../components/PostingButton'
 
 import {getUserId,getUserName,getIsSignedIn ,getUserAssessmentWorks} from "../../reducks/users/selectors";
 // import { postWorkCreate } from '../../reducks/works/operations'
@@ -281,6 +282,9 @@ const useStyles = makeStyles((theme) => ({
     color : "#393e4f", //青褐あおかち
     fontSize : "0.8em",
   },
+  detailWorksInfomation: {
+    fontSize : "1.3em",
+  },
   h3WorksTitle: {
     margin : "9px 0px 0px 0px",
     color : "#393e4f", //青褐あおかち
@@ -358,9 +362,8 @@ const useStyles = makeStyles((theme) => ({
     '$root.Mui-focusVisible &': {
       outline: '2px auto rgba(19,124,189,.6)',
       outlineOffset: 2,
-    },
-    'input:hover ~ &': {
-      backgroundColor: '#ebf1f5',
+    
+
     },
     'input:disabled ~ &': {
       boxShadow: 'none',
@@ -384,21 +387,8 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: '#106ba3',
     },
   },
-  postingGrid : {
-    margin : "40px 0px 20px 0px",    
-  },
-  postingButton : {
-    padding : "8px 29px",
-    margin : "0px 0.5rem",
-  },
-  postingBox : {
-    margin : "0px 5px 0px 15px",
-  },
   postingTypology : {
     fontSize : 20,
-  },
-  postingSubTypology : {
-    fontSize : 11,
   },
   isPublicSignal : {
     position: 'fixed',
@@ -431,7 +421,7 @@ const initialState = {
   winfoEditor : "",
   winfoInfomation : "",
   winfoCreator : [],
-  winfoPublisher : [],
+  // winfoPublisher : [],
   winfoCountry : [],
   winfoStart : "",
   winfoFinish : "",
@@ -443,6 +433,7 @@ const initialState = {
   winfoMusic : [],
   winfoPages : "",
   winfoMinutes : "",
+  winfoPlatform : [],
 }
 
 const reducer = (state, action) => {
@@ -491,6 +482,7 @@ const Posting = () => {
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
   const props = router.query
   const { isReady } = useRouter()
+  const [isLoading,setIsLoading] = useState(true)
   
   //props
   let hist = props.hist
@@ -979,14 +971,14 @@ const Posting = () => {
   const inputWinfoPages = (event) => {
     dispatch({type:"changeWinfo",
       payload : {
-        winfoPages : event.target.value
+        winfoPages : textToNumber(event.target.value)
       }
     })
   }
   const inputWinfoMinutes = (event) => {
     dispatch({type:"changeWinfo",
       payload : {
-        winfoMinutes : event.target.value
+        winfoMinutes : textToNumber(event.target.value)
       }
     })
   }
@@ -1061,6 +1053,10 @@ const Posting = () => {
   }
 
   useEffect(() => {
+    setIsLoading(isReady ? false : true)
+　},[isReady])
+
+  useEffect(() => {
     if(oriQuery && RdIsSignin){
       (async() => {
 
@@ -1115,7 +1111,7 @@ const Posting = () => {
               // winfoCreator : DBdata[1].winfoCreator,
               winfoCreator : DBdata[1].winfoCreator.sort(ArraySort("index","asc")),
               // winfoCreator : DBdata[1].winfoCreator.sort(ArraySort("index","desc")),
-              winfoPublisher : DBdata[1].winfoPublisher,
+              // winfoPublisher : DBdata[1].winfoPublisher,
               winfoCountry : DBdata[1].winfoCountry,
               winfoStart : DBdata[1].winfoStart,
               winfoFinish : DBdata[1].winfoFinish,
@@ -1127,6 +1123,7 @@ const Posting = () => {
               winfoMusic : DBdata[1].winfoMusic.sort(ArraySort("index","asc")),
               winfoPages : DBdata[1].winfoPages,
               winfoMinutes : DBdata[1].winfoMinutes,
+              winfoPlatform : DBdata[1].winfoPlatform,
             }
           })
 
@@ -1308,7 +1305,7 @@ const Posting = () => {
   }
 
   // if(!isReady || !standbyState){
-  if(!isReady || !oriQuery || !RdIsSignin){
+  if(isLoading || !oriQuery || !RdIsSignin){
     return(
       <GLoading />
     )
@@ -1338,8 +1335,8 @@ const Posting = () => {
               </div>
             </Grid>
 
-            <Grid container xs={12} justifyContent={"center"}>
-              <Grid container item xs={6} justifyContent={"center"}>
+            <Grid container xs={12}>
+              <Grid container item xs={6}>
                 <Grid container item xs={12} justify={"center"}>
                   <Typography className={classes.h5WorksTitle}>
                     {/* {"分類"} */}
@@ -1820,535 +1817,512 @@ const Posting = () => {
         </Grid>
 
         {/* 投稿ボタン */}
-        <FormGroup row>
-          <Grid container item xs={12} classes={{root : classes.postingGrid}}
-          >
-            <Grid container item xs={6} justify="center">
-              <Button
-                variant="contained"
-                color="default"
-                size="large"
-                startIcon={<SaveAltIcon 
-                  // classes={{root: classes.postingIcon}}
-                />}
-                // fullWidth="true"
-                classes={{root : classes.postingButton}}
-                onClick={() => {
-                  // isPublic = false;
-                  // changeIsPublic(false)
-                  changeIsPublic((preIsPublic) => false)
-                  postButtonClicked(false)
-                }}
-              >
-                <Grid container item xs={12}>
-                  <Grid item xs={12} className={classes.postingBox}>
-                    <Typography classes={{root : classes.postingTypology}}>
-                      投稿
-                  </Typography>
-                  </Grid>
-                  <Grid item xs={12} className={classes.postingBox}>
-                    <Typography classes={{root : classes.postingSubTypology}}>
-                      個人記録
-                  </Typography>
-                  </Grid>
-                </Grid>
-              </Button>
-            </Grid>
-
-            <Grid container item xs={6} justify="center">
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                // className={classes.button}
-                startIcon={<PublishIcon />}
-                classes={{root : classes.postingButton}}
-                onClick={() => {
-                  // isPublic = true;
-                  changeIsPublic(true)
-                  postButtonClicked(true)
-                }}
-              >
-                <Grid container item xs={12}>
-                  <Grid item xs={12} className={classes.postingBox}>
-                    <Typography classes={{root : classes.postingTypology}}>
-                      投稿
-                  </Typography>
-                  </Grid>
-                  <Grid item xs={12} className={classes.postingBox}>
-                    <Typography classes={{root : classes.postingSubTypology}}>
-                      一般公開
-                  </Typography>
-                  </Grid>
-                </Grid>
-              </Button>
-            </Grid>
-          </Grid>
-        </FormGroup>
+        <PostingButton 
+          changeIsPublic={changeIsPublic} 
+          postButtonClicked={postButtonClicked}
+        />
 
         {/* <h2>作品情報を入力(オプション)</h2> */}
         <H2CenterLine> {"作品詳細情報"} </H2CenterLine>
         <>
           {(state.winfoEditor == RdUserId || firstPostFlag == FIRST_POSTED_FLAG_NOT_POSTED)
             ? <>
-                <Grid container item xs justify={"center"} className={classes.postingWinfoOneData}>
+              <Grid container item xs={12} 
+                // className={classes.postingWinfoCreator}
+                justify="space-around"
+              >
+                <Grid container item xs={11} justify="center" 
+                  className={classes.postingWinfoOneData}
+                >
                   <TextField
                     fullWidth={true} label={"作品情報"} multiline variant="standard"
                     maxRows={4} value={state.winfoInfomation} type={"text"} onChange={inputWinfoInfomation}
-                    className={classes.commentField} 
                     placeholder={"作品のストーリーや概要など"}
                   />
                 </Grid>
-                <Grid item container xs={12} className={classes.postingWinfoCreator}>
-                  <Grid item container xs={4} justify={"center"}>
-                    <FormControl className={classes.winfoCreatorFormControl}>
-                      <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
-                      <NativeSelect
-                        id="NativeSelect-winfoCreator"
-                        value={winfoOneCreatorKind}
-                        onChange={inputWinfoOneCreatorKind}
-                      >
-                        <option aria-label="未選択" value="" />
-                        {Object.keys(winfoCreatorList).map((map) => (
-                          <option value={winfoCreatorList[map]}>
-                            {winfoCreatorList[map]}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </FormControl>
-
-                  </Grid>
-                  <Grid item container xs={5} >
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"作成関係者"} multiline variant="standard"
-                      maxRows={4} 
-                      value={winfoOneCreatorName} 
-                      type={"text"} 
-                      onChange={inputWinfoOneCreatorName}
-                      className={classes.commentField} 
-                      placeholder={"名称"}
-                    />
-                  </Grid>
-                  <Grid item container xs={1} justify="flexStart" alignItems="center">
-                    <FormControl>
-                      <AddCircleOutlineIcon
-                        onClick={inputWinfoCreatorAdd}
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
-                
-                <Grid item container xs={12} justify="center" alignItems="center">
-                  <DragDropContext onDragEnd={winfoCreatorHandleOnDragEnd}>
-                    <Droppable droppableId="droppable">
-                      {(provided,snapshot) => (
-                        <RootRef rootRef={provided.innerRef}>
-                        <List 
-                          className={classes.winfoCreatorList}
-                        >
-                          {state.winfoCreator.map(({id , kind, name }, index) => {
-                            return (
-                              <Draggable key={id} draggableId={id} index={index}>
-                                {(provided,snapshot) => (
-                                  <RootRef rootRef={provided.innerRef}>
-                                    <ListItem
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      className={classes.winfoCreatorListItems}
-                                    >
-                                      <Grid container xs justifyContent="space-around">
-                                      {/* <Grid container xs justyfy="flexStart"> */}
-                                        <Grid container item xs={2} justify="flex-end">
-                                          <ListItemIcon
-                                            onClick={() => {
-                                              console.log("Clicked winfoEdit")
-                                              setWinfoOneCreatorDialogKind(kind)
-                                              setWinfoOneCreatorDialogName(name)
-                                              setWinfoOneCreatorDialogIndex(index)
-                                              setWinfoOneCreatorDialogId(id)
-                                              handleClickOpenCreatorDialog()
-                                            }}
-                                          >
-                                            <IconButton
-                                              className={classes.iconButton}  
-                                            >
-                                              <EditIcon/>
-                                            </IconButton>
-                                          </ListItemIcon>
-                                        </Grid>
-                                        <Grid container item xs={10} alignItems="center">
-                                          <ListItemText 
-                                            className={classes.displayText}
-                                            primary={kind+"  /  "+name}
-                                          />
-                                        </Grid>
-                                      </Grid>
-                                  </ListItem>
-                                  </RootRef>
-                                )}
-                              </Draggable>
-                            );
-                          })}
-                          {provided.placeholder}
-                        </List>
-                        </RootRef>
-                      )}
-                    </Droppable>
-                  </DragDropContext>
-                </Grid>          
-
-                <Dialog open={openCreatorDialog} onClose={handleCloseCreatorDialog} aria-labelledby="form-dialog-title">
-                  <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
-                  <DialogContent>
-                    <Grid item container xs={12} justify={"center"} className={classes.postingWinfoCreatorDialog}>
-                      <Grid item container xs={4} >
-                        <FormControl className={classes.winfoCreatorFormControl}>
-                          <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
-                          <NativeSelect
-                            id="NativeSelect-winfoCreator"
-                            value={winfoOneCreatorDialogKind}
-                            onChange={inputWinfoOneCreatorDialogKind}
-                          >
-                            <option aria-label="未選択" value="" />
-                            {Object.keys(winfoCreatorList).map((map) => (
-                              <option value={winfoCreatorList[map]}>
-                                {winfoCreatorList[map]}
-                              </option>
-                            ))}
-                          </NativeSelect>
-                        </FormControl>
-                      </Grid>
-                      <Grid item container xs={5} >
-                        <TextField
-                          id="standard-multiline-flexible"
-                          fullWidth={true} label={"作成関係者"} multiline variant="standard"
-                          maxRows={4} 
-                          value={winfoOneCreatorDialogName} 
-                          type={"text"} 
-                          onChange={inputWinfoOneCreatorDialogName}
-                          className={classes.commentField} 
-                          placeholder={"名称"}
-                        />
-                      </Grid>
-                    </Grid>
-
-                  </DialogContent>
-                  <DialogActions>
-                    <IconButton
-                      className={classes.winfoCreatorNodalDeleteIcon}
-                      onClick={() => {
-                        console.log("delete clicked")
-                        inputWinfoCreatorDelete()
-                        handleCloseCreatorDialog()
-                      }}
-                    >
-                    <DeleteIcon fontSize="small"/>
-                    </IconButton>
-
-                    <Button 
-                      onClick={handleCloseCreatorDialog}
-                      color="primary"
-                      className={classes.winfoCreatorNodalCancelUpdateButton}
-                    >
-                      キャンセル
-                    </Button>
-                    <Button 
-                      onClick={() => {
-                        inputWinfoCreatorUpdate()
-                        handleCloseCreatorDialog()
-                      }}
-                      color="primary"
-                      className={classes.winfoCreatorNodalCancelUpdateButton}
-                    >
-                        更新
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              </Grid>
+              <Grid item container xs={12} className={classes.postingWinfoCreator}>
+                <Grid item container xs={4} justify={"center"}>
                   <FormControl className={classes.winfoCreatorFormControl}>
-                    <InputLabel id="demo-controlled-open-country-select-label">制作国</InputLabel>
+                    <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
                     <NativeSelect
-                      id="NativeSelect-winfoCreator-country"
-                      value={state.winfoCountry}
-                      onChange={inputWinfoCountry}
+                      id="NativeSelect-winfoCreator"
+                      value={winfoOneCreatorKind}
+                      onChange={inputWinfoOneCreatorKind}
                     >
                       <option aria-label="未選択" value="" />
-                      {Object.keys(countryList).map((map) => (
-                        <option value={countryList[map]}>
-                          {countryList[map]}
+                      {Object.keys(winfoCreatorList).map((map) => (
+                        <option value={winfoCreatorList[map]}>
+                          {winfoCreatorList[map]}
                         </option>
                       ))}
                     </NativeSelect>
                   </FormControl>
-                  {/* <TextField
-                    id="standard-multiline-flexible"
-                    fullWidth={true} label={"国"} multiline variant="standard"
-                    // required={true}
-                    maxRows={4} value={state.winfoCountry} type={"text"} onChange={inputWinfoCountry}
-                    className={classes.commentField} 
-                    placeholder={"制作国"}
-                  /> */}
-                </Grid>
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                  {/* <DesktopDatePicker
-                    label="リリース"
-                    inputFormat="MM/dd/yyyy"
-                    value={state.winfoStart}
-                    onChange={inputWinfoStart}
-                    renderInput={(params) => <TextField {...params} />}
-                  /> */}
-                  <TextField
-                    id="standard-multiline-flexible"
-                    fullWidth={false} label={"リリース"} variant="standard"
-                    // required={true}
-                    value={state.winfoStart} type={"date"} onChange={inputWinfoStart}
-                    className={classes.commentField} 
-                    placeholder={"リリース時期"}
-                  />
-                </Grid>
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                  <TextField
-                    id="standard-multiline-flexible"
-                    fullWidth={false} label={"完結"} variant="standard"
-                    // required={true}
-                    value={state.winfoFinish} type={"date"} onChange={inputWinfoFinish}
-                    className={classes.commentField} 
-                    placeholder={"完結した時期"}
-                  />
-                </Grid>
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                  <p>画像登録フォーム</p>
-                </Grid>
 
-                {/* Step2 */}
-                {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                  <p>親選択フォーム</p>
                 </Grid>
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                  <p>子選択フォーム</p>
-                </Grid>
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                  <p>シリーズフォーム(選択と自由入力フォーム)</p>
-                </Grid> */}
-                {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <Grid item container xs={5} >
                   <TextField
                     id="standard-multiline-flexible"
-                    fullWidth={true} label={"主題歌"} multiline variant="standard"
-                    // required={true}
-                    maxRows={4} value={state.winfoMusic} type={"text"} onChange={inputWinfoMusic}
+                    fullWidth={true} label={"作成関係者"} multiline variant="standard"
+                    maxRows={4} 
+                    value={winfoOneCreatorName} 
+                    type={"text"} 
+                    onChange={inputWinfoOneCreatorName}
                     className={classes.commentField} 
-                    placeholder={"主題歌(登録と同時にworkIdが発行される?)"}
+                    placeholder={"名称"}
                   />
-                </Grid> */}
-{/* 
-                //////////////////主題歌 */}
-                <Grid item container xs={12} className={classes.postingWinfoCreator}>
-                  <Grid item container xs={4} justify={"center"}>
-                    <FormControl className={classes.winfoCreatorFormControl}>
-                      <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
-                      <NativeSelect
-                        id="NativeSelect-winfoMusic"
-                        value={winfoOneMusicKind}
-                        onChange={inputWinfoOneMusicKind}
-                      >
-                        <option aria-label="未選択" value="" />
-                        {Object.keys(winfoMusicList).map((map) => (
-                          <option value={winfoMusicList[map]}>
-                            {winfoMusicList[map]}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </FormControl>
-
-                  </Grid>
-                  <Grid item container xs={5} >
-                    <TextField
-                      id="standard-multiline-flexible"
-                      fullWidth={true} label={"楽曲"} multiline variant="standard"
-                      maxRows={4} 
-                      value={winfoOneMusicName} 
-                      type={"text"} 
-                      onChange={inputWinfoOneMusicName}
-                      className={classes.commentField} 
-                      placeholder={"名称"}
+                </Grid>
+                <Grid item container xs={1} justify="flexStart" alignItems="center">
+                  <FormControl>
+                    <AddCircleOutlineIcon
+                      onClick={inputWinfoCreatorAdd}
                     />
-                  </Grid>
-                  <Grid item container xs={1} justify="flexStart" alignItems="center">
-                    <FormControl>
-                      <AddCircleOutlineIcon
-                        onClick={inputWinfoMusicAdd}
-                      />
-                    </FormControl>
-                  </Grid>
+                  </FormControl>
                 </Grid>
-                
-                <Grid item container xs={12} justify="center" alignItems="center">
-                  <DragDropContext onDragEnd={winfoMusicHandleOnDragEnd}>
-                    <Droppable droppableId="droppable">
-                      {(provided,snapshot) => (
-                        <RootRef rootRef={provided.innerRef}>
-                        <List 
-                          className={classes.winfoCreatorList}
-                        >
-                          {state.winfoMusic.map(({id , kind, name }, index) => {
-                            return (
-                              <Draggable key={id} draggableId={id} index={index}>
-                                {(provided,snapshot) => (
-                                  <RootRef rootRef={provided.innerRef}>
-                                    <ListItem
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      className={classes.winfoCreatorListItems}
-                                    >
-                                      <Grid container xs justifyContent="space-around">
-                                      {/* <Grid container xs justyfy="flexStart"> */}
-                                        <Grid container item xs={2} justify="flex-end">
-                                          <ListItemIcon
-                                            onClick={() => {
-                                              console.log("Clicked winfoEdit")
-                                              setWinfoOneMusicDialogKind(kind)
-                                              setWinfoOneMusicDialogName(name)
-                                              setWinfoOneMusicDialogIndex(index)
-                                              setWinfoOneMusicDialogId(id)
-                                              handleClickOpenMusicDialog()
-                                            }}
+              </Grid>
+              
+              <Grid item container xs={12} justify="center" alignItems="center">
+                <DragDropContext onDragEnd={winfoCreatorHandleOnDragEnd}>
+                  <Droppable droppableId="droppable">
+                    {(provided,snapshot) => (
+                      <RootRef rootRef={provided.innerRef}>
+                      <List 
+                        className={classes.winfoCreatorList}
+                      >
+                        {state.winfoCreator.map(({id , kind, name }, index) => {
+                          return (
+                            <Draggable key={id} draggableId={id} index={index}>
+                              {(provided,snapshot) => (
+                                <RootRef rootRef={provided.innerRef}>
+                                  <ListItem
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={classes.winfoCreatorListItems}
+                                  >
+                                    <Grid container xs>
+                                    {/* <Grid container xs justyfy="flexStart"> */}
+                                      <Grid container item xs={2} justify="flex-end">
+                                        <ListItemIcon
+                                          onClick={() => {
+                                            console.log("Clicked winfoEdit")
+                                            setWinfoOneCreatorDialogKind(kind)
+                                            setWinfoOneCreatorDialogName(name)
+                                            setWinfoOneCreatorDialogIndex(index)
+                                            setWinfoOneCreatorDialogId(id)
+                                            handleClickOpenCreatorDialog()
+                                          }}
+                                        >
+                                          <IconButton
+                                            className={classes.iconButton}  
                                           >
-                                            <IconButton
-                                              className={classes.iconButton}  
-                                            >
-                                              <EditIcon/>
-                                            </IconButton>
-                                          </ListItemIcon>
-                                        </Grid>
-                                        <Grid container item xs={10} alignItems="center">
-                                          <ListItemText 
-                                            className={classes.displayText}
-                                            primary={kind+"  /  "+name}
-                                          />
-                                        </Grid>
+                                            <EditIcon/>
+                                          </IconButton>
+                                        </ListItemIcon>
                                       </Grid>
-                                  </ListItem>
-                                  </RootRef>
-                                )}
-                              </Draggable>
-                            );
-                          })}
-                          {provided.placeholder}
-                        </List>
-                        </RootRef>
-                      )}
-                    </Droppable>
-                  </DragDropContext>
-                </Grid>          
+                                      <Grid container item xs={10} alignItems="center">
+                                        <ListItemText 
+                                          className={classes.displayText}
+                                          primary={kind+"  /  "+name}
+                                        />
+                                      </Grid>
+                                    </Grid>
+                                </ListItem>
+                                </RootRef>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </List>
+                      </RootRef>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </Grid>          
 
-                <Dialog open={openMusicDialog} onClose={handleCloseMusicDialog} aria-labelledby="form-dialog-title">
-                  <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
-                  <DialogContent>
-                    <Grid item container xs={12} justify={"center"} className={classes.postingwinfoCreatorDialog}>
-                      <Grid item container xs={4} >
-                        <FormControl className={classes.winfoCreatorFormControl}>
-                          <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
-                          <NativeSelect
-                            id="NativeSelect-winfoMusic"
-                            value={winfoOneMusicDialogKind}
-                            onChange={inputWinfoOneMusicDialogKind}
-                          >
-                            <option aria-label="未選択" value="" />
-                            {Object.keys(winfoMusicList).map((map) => (
-                              <option value={winfoMusicList[map]}>
-                                {winfoMusicList[map]}
-                              </option>
-                            ))}
-                          </NativeSelect>
-                        </FormControl>
-                      </Grid>
-                      <Grid item container xs={5} >
-                        <TextField
-                          id="standard-multiline-flexible"
-                          fullWidth={true} label={"作成関係者"} multiline variant="standard"
-                          maxRows={4} 
-                          value={winfoOneMusicDialogName} 
-                          type={"text"} 
-                          onChange={inputWinfoOneMusicDialogName}
-                          className={classes.commentField} 
-                          placeholder={"名称"}
-                        />
-                      </Grid>
+              <Dialog open={openCreatorDialog} onClose={handleCloseCreatorDialog} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
+                <DialogContent>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoCreatorDialog}>
+                    <Grid item container xs={4} >
+                      <FormControl className={classes.winfoCreatorFormControl}>
+                        <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
+                        <NativeSelect
+                          id="NativeSelect-winfoCreator"
+                          value={winfoOneCreatorDialogKind}
+                          onChange={inputWinfoOneCreatorDialogKind}
+                        >
+                          <option aria-label="未選択" value="" />
+                          {Object.keys(winfoCreatorList).map((map) => (
+                            <option value={winfoCreatorList[map]}>
+                              {winfoCreatorList[map]}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      </FormControl>
                     </Grid>
+                    <Grid item container xs={5} >
+                      <TextField
+                        id="standard-multiline-flexible"
+                        fullWidth={true} label={"作成関係者"} multiline variant="standard"
+                        maxRows={4} 
+                        value={winfoOneCreatorDialogName} 
+                        type={"text"} 
+                        onChange={inputWinfoOneCreatorDialogName}
+                        className={classes.commentField} 
+                        placeholder={"名称"}
+                      />
+                    </Grid>
+                  </Grid>
 
-                  </DialogContent>
-                  <DialogActions>
-                    <IconButton
-                      className={classes.winfoCreatorNodalDeleteIcon}
-                      onClick={() => {
-                        console.log("delete clicked")
-                        inputWinfoMusicDelete()
-                        handleCloseMusicDialog()
-                      }}
+                </DialogContent>
+                <DialogActions>
+                  <IconButton
+                    className={classes.winfoCreatorNodalDeleteIcon}
+                    onClick={() => {
+                      console.log("delete clicked")
+                      inputWinfoCreatorDelete()
+                      handleCloseCreatorDialog()
+                    }}
+                  >
+                  <DeleteIcon fontSize="small"/>
+                  </IconButton>
+
+                  <Button 
+                    onClick={handleCloseCreatorDialog}
+                    color="primary"
+                    className={classes.winfoCreatorNodalCancelUpdateButton}
+                  >
+                    キャンセル
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      inputWinfoCreatorUpdate()
+                      handleCloseCreatorDialog()
+                    }}
+                    color="primary"
+                    className={classes.winfoCreatorNodalCancelUpdateButton}
+                  >
+                      更新
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
+              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <FormControl className={classes.winfoCreatorFormControl}>
+                  <InputLabel id="demo-controlled-open-country-select-label">制作国</InputLabel>
+                  <NativeSelect
+                    id="NativeSelect-winfoCreator-country"
+                    value={state.winfoCountry}
+                    onChange={inputWinfoCountry}
+                  >
+                    <option aria-label="未選択" value="" />
+                    {Object.keys(countryList).map((map) => (
+                      <option value={countryList[map]}>
+                        {countryList[map]}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                </FormControl>
+                {/* <TextField
+                  id="standard-multiline-flexible"
+                  fullWidth={true} label={"国"} multiline variant="standard"
+                  // required={true}
+                  maxRows={4} value={state.winfoCountry} type={"text"} onChange={inputWinfoCountry}
+                  className={classes.commentField} 
+                  placeholder={"制作国"}
+                /> */}
+              </Grid>
+              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                {/* <DesktopDatePicker
+                  label="リリース"
+                  inputFormat="MM/dd/yyyy"
+                  value={state.winfoStart}
+                  onChange={inputWinfoStart}
+                  renderInput={(params) => <TextField {...params} />}
+                /> */}
+                <TextField
+                  InputLabelProps={{ shrink: true }} 
+                  id="standard-multiline-flexible"
+                  fullWidth={false} label={"リリース"} variant="standard"
+                  // required={true}
+                  value={state.winfoStart} type={"date"} onChange={inputWinfoStart}
+                  className={classes.commentField} 
+                  placeholder={"リリース時期"}
+                />
+              </Grid>
+              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <TextField
+                  InputLabelProps={{ shrink: true }} 
+                  id="standard-multiline-flexible"
+                  fullWidth={false} label={"完結"} variant="standard"
+                  // required={true}
+                  value={state.winfoFinish} type={"date"} onChange={inputWinfoFinish}
+                  className={classes.commentField} 
+                  placeholder={"完結した時期"}
+                />
+              </Grid>
+              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <p>画像登録フォーム</p>
+              </Grid>
+
+              {/* Step2 */}
+              {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <p>親選択フォーム</p>
+              </Grid>
+              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <p>子選択フォーム</p>
+              </Grid>
+              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <p>シリーズフォーム(選択と自由入力フォーム)</p>
+              </Grid> */}
+              {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <TextField
+                  id="standard-multiline-flexible"
+                  fullWidth={true} label={"主題歌"} multiline variant="standard"
+                  // required={true}
+                  maxRows={4} value={state.winfoMusic} type={"text"} onChange={inputWinfoMusic}
+                  className={classes.commentField} 
+                  placeholder={"主題歌(登録と同時にworkIdが発行される?)"}
+                />
+              </Grid> */}
+{/* 
+              //////////////////主題歌 */}
+              <Grid item container xs={12} className={classes.postingWinfoCreator}>
+                <Grid item container xs={4} justify={"center"}>
+                  <FormControl className={classes.winfoCreatorFormControl}>
+                    <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
+                    <NativeSelect
+                      id="NativeSelect-winfoMusic"
+                      value={winfoOneMusicKind}
+                      onChange={inputWinfoOneMusicKind}
                     >
-                    <DeleteIcon fontSize="small"/>
-                    </IconButton>
+                      <option aria-label="未選択" value="" />
+                      {Object.keys(winfoMusicList).map((map) => (
+                        <option value={winfoMusicList[map]}>
+                          {winfoMusicList[map]}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
 
-                    <Button 
-                      onClick={handleCloseMusicDialog}
-                      color="primary"
-                      className={classes.winfoCreatorNodalCancelUpdateButton}
-                    >
-                      キャンセル
-                    </Button>
-                    <Button 
-                      onClick={() => {
-                        inputWinfoMusicUpdate()
-                        handleCloseMusicDialog()
-                      }}
-                      color="primary"
-                      className={classes.winfoCreatorNodalCancelUpdateButton}
-                    >
-                        更新
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-
-
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                </Grid>
+                <Grid item container xs={5} >
                   <TextField
                     id="standard-multiline-flexible"
-                    fullWidth={true} label={"ページ数"} multiline variant="standard"
-                    // required={true}
-                    maxRows={4} value={state.winfoPages} type={"text"} onChange={inputWinfoPages}
+                    fullWidth={true} label={"楽曲"} multiline variant="standard"
+                    maxRows={4} 
+                    value={winfoOneMusicName} 
+                    type={"text"} 
+                    onChange={inputWinfoOneMusicName}
                     className={classes.commentField} 
-                    placeholder={"数字入力"}
+                    placeholder={"名称"}
                   />
                 </Grid>
-                <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                  <TextField
-                    id="standard-multiline-flexible"
-                    fullWidth={true} label={"時間(分)"} multiline variant="standard"
-                    // required={true}
-                    maxRows={4} value={state.winfoMinutes} type={"text"} onChange={inputWinfoMinutes}
-                    className={classes.commentField} 
-                    placeholder={"数字入力"}
-                  />
+                <Grid item container xs={1} justify="flexStart" alignItems="center">
+                  <FormControl>
+                    <AddCircleOutlineIcon
+                      onClick={inputWinfoMusicAdd}
+                    />
+                  </FormControl>
                 </Grid>
-              {/* </Grid> */}
+              </Grid>
+              
+              <Grid item container xs={12} justify="center" alignItems="center">
+                <DragDropContext onDragEnd={winfoMusicHandleOnDragEnd}>
+                  <Droppable droppableId="droppable">
+                    {(provided,snapshot) => (
+                      <RootRef rootRef={provided.innerRef}>
+                      <List 
+                        className={classes.winfoCreatorList}
+                      >
+                        {state.winfoMusic.map(({id , kind, name }, index) => {
+                          return (
+                            <Draggable key={id} draggableId={id} index={index}>
+                              {(provided,snapshot) => (
+                                <RootRef rootRef={provided.innerRef}>
+                                  <ListItem
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={classes.winfoCreatorListItems}
+                                  >
+                                    <Grid container xs={12}
+                                    >
+                                    {/* <Grid container xs justyfy="flexStart"> */}
+                                      <Grid container item xs={2} justify="flex-end">
+                                        <ListItemIcon
+                                          onClick={() => {
+                                            console.log("Clicked winfoEdit")
+                                            setWinfoOneMusicDialogKind(kind)
+                                            setWinfoOneMusicDialogName(name)
+                                            setWinfoOneMusicDialogIndex(index)
+                                            setWinfoOneMusicDialogId(id)
+                                            handleClickOpenMusicDialog()
+                                          }}
+                                        >
+                                          <IconButton
+                                            className={classes.iconButton}  
+                                          >
+                                            <EditIcon/>
+                                          </IconButton>
+                                        </ListItemIcon>
+                                      </Grid>
+                                      <Grid container item xs={10} alignItems="center">
+                                        <ListItemText 
+                                          className={classes.displayText}
+                                          primary={kind+"  /  "+name}
+                                        />
+                                      </Grid>
+                                    </Grid>
+                                </ListItem>
+                                </RootRef>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </List>
+                      </RootRef>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </Grid>          
+
+              <Dialog open={openMusicDialog} onClose={handleCloseMusicDialog} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
+                <DialogContent>
+                  <Grid item container xs={12} justify={"center"} className={classes.postingwinfoCreatorDialog}>
+                    <Grid item container xs={4} >
+                      <FormControl className={classes.winfoCreatorFormControl}>
+                        <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
+                        <NativeSelect
+                          id="NativeSelect-winfoMusic"
+                          value={winfoOneMusicDialogKind}
+                          onChange={inputWinfoOneMusicDialogKind}
+                        >
+                          <option aria-label="未選択" value="" />
+                          {Object.keys(winfoMusicList).map((map) => (
+                            <option value={winfoMusicList[map]}>
+                              {winfoMusicList[map]}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      </FormControl>
+                    </Grid>
+                    <Grid item container xs={5} >
+                      <TextField
+                        id="standard-multiline-flexible"
+                        fullWidth={true} label={"作成関係者"} multiline variant="standard"
+                        maxRows={4} 
+                        value={winfoOneMusicDialogName} 
+                        type={"text"} 
+                        onChange={inputWinfoOneMusicDialogName}
+                        className={classes.commentField} 
+                        placeholder={"名称"}
+                      />
+                    </Grid>
+                  </Grid>
+
+                </DialogContent>
+                <DialogActions>
+                  <IconButton
+                    className={classes.winfoCreatorNodalDeleteIcon}
+                    onClick={() => {
+                      console.log("delete clicked")
+                      inputWinfoMusicDelete()
+                      handleCloseMusicDialog()
+                    }}
+                  >
+                  <DeleteIcon fontSize="small"/>
+                  </IconButton>
+
+                  <Button 
+                    onClick={handleCloseMusicDialog}
+                    color="primary"
+                    className={classes.winfoCreatorNodalCancelUpdateButton}
+                  >
+                    キャンセル
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      inputWinfoMusicUpdate()
+                      handleCloseMusicDialog()
+                    }}
+                    color="primary"
+                    className={classes.winfoCreatorNodalCancelUpdateButton}
+                  >
+                      更新
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
+              {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <TextField
+                  id="standard-multiline-flexible"
+                  fullWidth={false} label={"ページ数"} variant="standard"
+                  // required={true}
+                  inputProps={{min: 0, style: { textAlign: 'center' }}}
+                  value={state.winfoPages} type={"text"} onChange={inputWinfoPages}
+                  className={classes.commentField} 
+                  placeholder={"数字入力"}
+                />
+              </Grid>
+              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+                <TextField
+                  id="standard-multiline-flexible"
+                  fullWidth={false} label={"時間(分)"} variant="standard"
+                  inputProps={{min: 0, style: { textAlign: 'center' }}}
+                  // required={true}
+                  value={state.winfoMinutes} type={"text"} onChange={inputWinfoMinutes}
+                  className={classes.commentField} 
+                  placeholder={"数字入力"}
+                />
+              </Grid> */}
+
+              {/* 投稿ボタン */}
+              <PostingButton 
+                changeIsPublic={changeIsPublic} 
+                postButtonClicked={postButtonClicked}
+              />
             </>
             : <>
-              <p>作品情報:{state.winfoInfomation}</p>
-              <p>作者:{state.winfoCreator.length ? state.winfoCreator[0].kind+":"+state.winfoCreator[0].name : "no data at Creator"}</p>
-              <p>出版社:{state.winfoPublisher}</p>
-              <p>制作国:{state.winfoCountry}</p>
-              <p>リリース:{state.winfoStart}</p>
-              <p>完結:{state.winfoFinish}</p>
-              <p>画像:{state.winfoImage}</p>
-              <p>統計情報:{state.statisticsData}</p>
-              <p>親:{state.winfoParent == {} ? state.winfoParent : "no parent data"}</p>
-              <p>子:{state.winfoChild}</p>
-              <p>シリーズ:{state.winfoSeries}</p>
-              <p>主題歌:{state.winfoMusic}</p>
-              <p>ページ数:{state.winfoPages}</p>
+              <Typography className={classes.h5WorksTitle}>作品情報</Typography>
+              <Typography className={classes.detailWorksInfomation}>{state.winfoInfomation ? state.winfoInfomation : "未投稿"}</Typography>
+              <Typography className={classes.h5WorksTitle}>作者</Typography>
+              {state.winfoCreator.length 
+                ? state.winfoCreator.map((map) => (
+                  <><Typography>
+                    {map.kind+` `+map.name}
+                  </Typography></>
+                ))
+                : "投稿なし"
+              }
+
+              <Typography className={classes.h5WorksTitle}>制作国</Typography>
+              <Typography className={classes.detailWorksInfomation}>{state.winfoCountry ? state.winfoCountry : "未投稿"}</Typography>
+              <Typography className={classes.h5WorksTitle}>リリース</Typography>
+              <Typography className={classes.detailWorksInfomation}>{state.winfoStart ? state.winfoStart : "未投稿"}</Typography>
+              <Typography className={classes.h5WorksTitle}>完結</Typography>
+              <Typography className={classes.detailWorksInfomation}>{state.winfoFinish ? state.winfoFinish : "未投稿"}</Typography>
+              <Typography className={classes.h5WorksTitle}>主題歌</Typography>
+              {state.winfoCreator.length 
+                ? state.winfoMusic.map((map) => (
+                  <><Typography>
+                    {map.kind+` `+map.name}
+                  </Typography></>
+                ))
+                : ""
+              }
+
+              {/* 以下４項目は運用に関して再考 */}
+              {/* <p>ページ数:{state.winfoPages}</p>
               <p>時間:{state.winfoMinutes}</p>
+              <p>統計情報:{state.statisticsData}</p>
+              <p>プラットフォーム:{state.winfoPlatform}</p> */}
+
+            {/* 以下２つはS2
+            <p>親:{state.winfoParent == {} ? state.winfoParent : "no parent data"}</p>
+            <p>子:{state.winfoChild}</p> */}
             </>
           }
         </>

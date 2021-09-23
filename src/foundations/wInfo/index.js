@@ -83,7 +83,7 @@ const postWInfoCreate = (
                 winfoParent : winfoData.winfoParent,
                 winfoChild : winfoData.winfoChild,
                 winfoMusic : winfoData.winfoMusic,
-                winfoPublisher : winfoData.winfoPublisher,
+                // winfoPublisher : winfoData.winfoPublisher,
                 winfoCountry : winfoData.winfoCountry,
                 winfoStart : winfoData.winfoStart,
                 winfoFinish : winfoData.winfoFinish,
@@ -91,6 +91,7 @@ const postWInfoCreate = (
                 statisticsData : winfoData.statisticsData,
                 winfoPages : winfoData.winfoPages, //Number
                 winfoMinutes : winfoData.winfoMinutes, //Number
+                winfoPlatform : winfoData.winfoPlatform,
                 // assessment : {}
                 // histories : {}, // subCollection。 
             }
@@ -193,7 +194,7 @@ const postWInfoCreate = (
                     winfoParent : winfoData.winfoParent,
                     winfoChild : winfoData.winfoChild,
                     winfoMusic : winfoData.winfoMusic,
-                    winfoPublisher : winfoData.winfoPublisher,
+                    // winfoPublisher : winfoData.winfoPublisher,
                     winfoCountry : winfoData.winfoCountry,
                     winfoStart : winfoData.winfoStart,
                     winfoFinish : winfoData.winfoFinish,
@@ -201,6 +202,7 @@ const postWInfoCreate = (
                     statisticsData : winfoData.statisticsData,
                     winfoPages : winfoData.winfoPages, //Number
                     winfoMinutes : winfoData.winfoMinutes, //Number
+                    winfoPlatform : winfoData.winfoPlatform,
                 }).then(() => {
                     console.log("successed to update Count & Score")
                     return workId
@@ -397,7 +399,7 @@ const postWInfoCreate = (
                         winfoParent : winfoData.winfoParent,
                         winfoChild : winfoData.winfoChild,
                         winfoMusic : winfoData.winfoMusic,
-                        winfoPublisher : winfoData.winfoPublisher,
+                        // winfoPublisher : winfoData.winfoPublisher,
                         winfoCountry : winfoData.winfoCountry,
                         winfoStart : winfoData.winfoStart,
                         winfoFinish : winfoData.winfoFinish,
@@ -405,6 +407,7 @@ const postWInfoCreate = (
                         statisticsData : winfoData.statisticsData,
                         winfoPages : winfoData.winfoPages, //Number
                         winfoMinutes : winfoData.winfoMinutes, //Number
+                        winfoPlatform : winfoData.winfoPlatform,
                     }).then(() => {
                         console.log("successed to update Count & Score")
                         // return workId

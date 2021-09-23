@@ -56,6 +56,7 @@ const searchResult = () => {
 
   const router = useRouter()
   const {isReady} = useRouter()
+  const [isLoading,setIsLoading] = useState(true)
 
   let hist = ""
   let searchWord = ""
@@ -106,6 +107,10 @@ const searchResult = () => {
   console.log(JSON.stringify(data)+"++data@J")
 
   useEffect(() => {
+    setIsLoading(isReady ? false : true)
+  },[isReady])
+
+  useEffect(() => {
     (async() => {
       console.log("useEffect Out")
       if(searchWord != undefined) {
@@ -139,7 +144,7 @@ const searchResult = () => {
         }
       }
     })()
-  },[data,isReady]) 
+  },[data,isLoading]) 
   //uid->最初のレンダリングではselectorが読み込まれないので。
   //data->最初のレンダリング後にdataが書き換わった後に再度レンダリングされるがその際にassessmentWroksIdが
   //書き換わらないとloading...のままになってしまう。
@@ -159,7 +164,7 @@ const searchResult = () => {
 
   //前半の条件：データ取得後且つ、ユーザが評価した作品を取得後（何も評価したことがないユーザでもデフォルト値99が入っている
   //後半の条件：ログインしていなユーザが検索した場合assessmentWorksIdの条件は要らなくなるので、uid未定義をフラグとした。
-  if(!isReady) {
+  if(isLoading) {
     return (<>
     {/* loading... */}
     <GLoading/>
@@ -167,7 +172,7 @@ const searchResult = () => {
   } else if(!data) {
     return (<>
       <ApplicationBar title="読み込み中"/>
-         get_data...
+        get_data...
       <CircularProgress/>
       <Footer/>
     </>)

@@ -31,7 +31,6 @@ import GetUserRedux　from 'src/foundations/share/getUserRedux'
 
 const WrappedApp = ({Component, pageProps}) => {
   
-  const {isReady} = useRouter()
   const router = useRouter()
   //cookie情報からuidの確認
   const selector = useSelector(state => state)
@@ -127,7 +126,6 @@ const WrappedApp = ({Component, pageProps}) => {
       console.log("return loading...")
       console.log(isSignedIn+"+isSignedIn")
       console.log(pageLoading+"+pageLoading")
-      // console.log(isReady+"+isReady")
       console.log(userID+"+userID")
       return (
         <StylesProvider injectFirst>
