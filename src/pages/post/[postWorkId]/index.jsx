@@ -13,7 +13,9 @@ import SpeedDialPosting from '../../../components/speedDialPosting'
 // import SpeedDialPosting , {bookmark ,post, like , likeHikoukai} from '../../../components/speedDialPosting'
 import ObjectSort from '../../../foundations/share/objectSort'
 
-import { SCTypografyh5 } from 'src/styles/SC/shared/typografy/h5'
+//style
+import { SCTypografyh5,SCTypografyh5Top } from 'src/styles/SC/shared/typografy/h5'
+import { ExplanationTextDefault } from 'src/styles/SC/shared/typografy/ExplanationTextDefault'
 
 import {db , FirebaseTimestamp} from '../../../firebase/index'
 import {useSelector} from 'react-redux'
@@ -235,9 +237,9 @@ const Post = (props) => {
   const timestamp = FirebaseTimestamp.now()
 
   const useStyles = makeStyles((thema) => ({
-    h3WorksName: {
-      margin : "0px 4px 9px 4px",
-    },
+    // ExplanationTextDefaultWorksName: {
+    //   margin : "0px 4px 9px 4px",
+    // },
     boxTotalStyle : {
       position : "relative",
       top : "-1.3rem",
@@ -364,179 +366,182 @@ const Post = (props) => {
   if(state.isLoading){
     return(
       <GLoading />
-    )
+      )
   } else {
     let isLoginUserAssessment = false
     return (
       <>     
-　　     <ApplicationBar title="作品情報"/>
-        <Box className={classes.boxTotalStyle}> 
-          <SCTypografyh5>
-            {"作品名"}
-          </SCTypografyh5>        
+        <ApplicationBar title="作品情報"/>
+        {/* <Box className={classes.boxTotalStyle}>  */}
+          {/* <h3>作品名</h3> */}
+        <SCTypografyh5Top>
+          {"作品名"}
+        </SCTypografyh5Top>        
 
-          <h3 className={classes.h3WorksName}>
-            {state.workName +" ("+state.workMedia+")"}
-          </h3>
+        <ExplanationTextDefault>
+          {state.workName}
+        </ExplanationTextDefault>
 
-          <SCTypografyh5>
-            {"スコア"}
-          </SCTypografyh5> 
+        <SCTypografyh5>
+          {"メディア"}
+        </SCTypografyh5>        
 
-          <h3 className={classes.h3WorksName}>
-            {state.workScore != -1 ? Math.floor(state.workScore * 10) / 10  : "評価なし"}
-          </h3>
+        <ExplanationTextDefault>
+          {state.workMedia}
+        </ExplanationTextDefault>
 
-          <SCTypografyh5>
-            {"評価投稿数"}
-          </SCTypografyh5> 
+        <SCTypografyh5>
+          {"スコア"}
+        </SCTypografyh5> 
 
-          <h3 className={classes.h3WorksName}>
-            {state.infoCount}
-          </h3>
+        <ExplanationTextDefault>
+          {state.workScore != -1 ? Math.floor(state.workScore * 10) / 10  : "評価なし"}
+        </ExplanationTextDefault>
 
-          <SCTypografyh5>
-            {"いいね数"}
-          </SCTypografyh5> 
+        <SCTypografyh5>
+          {"評価投稿数"}
+        </SCTypografyh5> 
 
-          <h3 className={classes.h3WorksName}>
-            {state.likedCount ? state.likedCount : 0}
-          </h3>
+        <ExplanationTextDefault>
+          {state.infoCount}
+        </ExplanationTextDefault>
 
-          {/* いらなそうだけど・・・
-          {workScore == [""] && (
-            <h2>score: 未評価 </h2>
-          )} */}
+        <SCTypografyh5>
+          {"いいね数"}
+        </SCTypografyh5> 
 
-          <SCTypografyh5>
-            {"情報"}
-          </SCTypografyh5> 
+        <ExplanationTextDefault>
+          {state.likedCount ? state.likedCount : 0}
+        </ExplanationTextDefault>
 
-          <h3 className={classes.h3WorksName}>
-            {state.workInfo}
-          </h3>
+        {/* いらなそうだけど・・・
+        {workScore == [""] && (
+          <h2>score: 未評価 </h2>
+        )} */}
 
-          <SCTypografyh5>
-            {"カテゴリ"}
-          </SCTypografyh5> 
-          
-          <h3 className={classes.h3WorksName}>{state.winfoCategory.map(cate => (
-            <span>{cate} </span>
-          ))}</h3>
+        <SCTypografyh5>
+          {"情報"}
+        </SCTypografyh5> 
 
-          <SCTypografyh5>
-            {"タグ/属性"}
-          </SCTypografyh5>
+        <ExplanationTextDefault>
+          {state.workInfo}
+        </ExplanationTextDefault>
 
-          <h3 className={classes.h3WorksName}>{Object.keys(state.winfoTag).map(tokens => (
-            <>
-            {/* {(1) && ( */}
-            {state.winfoTag[tokens] 
-            ? (
-              <div >
-              {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
-              {tokens+":"+state.winfoTag[tokens]+" "}
-              </div >
-            )
-            : (
-              ''
-            )}
-            </>
-          ))}</h3>
+        <SCTypografyh5>
+          {"カテゴリ"}
+        </SCTypografyh5> 
+        
+        <ExplanationTextDefault>{state.winfoCategory.map(cate => (
+          <span>{cate} </span>
+        ))}</ExplanationTextDefault>
 
-          <SCTypografyh5>
-            {"クリエーター"}
-          </SCTypografyh5> 
-          
-          <h3 className={classes.h3WorksName}>
-            {state.workCreator.length ? state.workCreator[0].kind+":"+state.workCreator[0].name : "no data at Creator" }
-          </h3>
+        <SCTypografyh5>
+          {"タグ/属性"}
+        </SCTypografyh5>
 
-        　 <SCTypografyh5>
-            {"シリーズ"}
-          </SCTypografyh5> 
-          
-          <h3 className={classes.h3WorksName}>
-            {state.workSeries ? state.workSeries : "no data at workSeries"}
-          </h3>
-
-          {/* <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2> */}
-          {/* <p>シリーズ：{workSeries ? workSeries : "no data at workSeries"}</p> */}
-
-          {/* <p>出版社：{workPublisher}</p>
-          <p>発表：{workStart}</p>
-          <p>完結：{workFinish}</p>
-          <p>画：{workImage}</p> */}
-
-          <h3>みんなの評価</h3>
-          {(state.assessmentData.length != 0 && state.isAssessmenter == true) && (
-            <>
-              <ul>
-                {state.assessmentData.map(mapAssessmentData => ( 
-                  <>
-                    {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (
-                      <>
-                        <li>
-                          <Link href="/post/[id]/[postUserId]" 
-                            as={`/post/${workId}/${mapAssessmentData.uid}`}>
-                            <a>{mapAssessmentData.userName}</a>
-                          </Link>
-                        </li>
-                      </>
-                    )}
-                    {mapAssessmentData.uid == userId && (
-                      isLoginUserAssessment = true
-                    )}
-                  </>
-                ))}
-              </ul>
-            </>
-          )}
-          {state.isAssessmenter == false && (<p> 公開可能情報なし </p>) }
-
-          {/* <h3>あなたの評価</h3> */}
-          {/* <a>userId:::: {userId}</a> */}
-          {isLoginUserAssessment == true && (
-            <>
-              <Link href="/post/[id]/[postUserId]" 
-                as={`/post/${workId}/${userId}`}>
-                <p>{RdUserName}自身の評価をみる</p>
-              </Link>
-            </>
-          )}
-
+        <ExplanationTextDefault>{Object.keys(state.winfoTag).map(tokens => (
           <>
-            <Link href={{
-              pathname: "/post/posting",
-              query: {
-                searchWord: state.workName,
-                infoMedia : state.workMedia,
-                workId : workId,
-                firstPostFlag : state.isAssessed ? 2 : 0 ,
-              }
-            }}>
-              <a>[{state.workName}] {state.isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
-            </Link>
-            {isSignIn && (<SpeedDialPosting
-                workName={state.workName} 
-                workMedia={state.workMedia} 
-                workId={workId} 
-                isLiked={state.isLiked}
-                isBookmark={state.isBookmark}
-                likedCount={state.likedCount}
-                isAssessed={state.isAssessed}
-                infoCount={state.infoCount}
-                // uid={userId}
-                isPublic={true}//常にtrueで渡して、非公開の時にlikeHikoukaiでfalseに変える
-                pfirstPostFlag={state.isAssessed ? 2 : 0} 
-                hist={"work"}
-                sdpActions={state.sdpActions}
-                dispatch={dispatch}
-              />) 
-            }
+          {/* {(1) && ( */}
+          {state.winfoTag[tokens] 
+          ? (
+            <div >
+            {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
+            {tokens+":"+state.winfoTag[tokens]+" "}
+            </div >
+          )
+          : (
+            ''
+          )}
           </>
-        </Box>
+        ))}</ExplanationTextDefault>
+        <SCTypografyh5>
+          {"クリエーター"}
+        </SCTypografyh5> 
+        
+        <ExplanationTextDefault>
+          {state.workCreator.length ? state.workCreator[0].kind+":"+state.workCreator[0].name : "no data at Creator" }
+        </ExplanationTextDefault>
+        <SCTypografyh5>
+          {"シリーズ"}
+        </SCTypografyh5> 
+        
+        <ExplanationTextDefault>
+          {state.workSeries ? state.workSeries : "no data at workSeries"}
+        </ExplanationTextDefault>
 
+        {/* <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2> */}
+        {/* <p>シリーズ：{workSeries ? workSeries : "no data at workSeries"}</p> */}
+
+        {/* <p>出版社：{workPublisher}</p>
+        <p>発表：{workStart}</p>
+        <p>完結：{workFinish}</p>
+        <p>画：{workImage}</p> */}
+
+        <h3>この作品を評価した人</h3>
+        {(state.assessmentData.length != 0 && state.isAssessmenter == true) && (
+          <>
+            <ul>
+              {state.assessmentData.map(mapAssessmentData => ( 
+                <>
+                  {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (
+                    <>
+                      <li>
+                        <Link href="/post/[id]/[postUserId]" 
+                          as={`/post/${workId}/${mapAssessmentData.uid}`}>
+                          <a>{mapAssessmentData.userName}</a>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                  {mapAssessmentData.uid == userId && (
+                    isLoginUserAssessment = true
+                  )}
+                </>
+              ))}
+            </ul>
+          </>
+        )}
+        {state.isAssessmenter == false && (<p> 公開可能情報なし </p>) }
+
+        {/* <ExplanationTextDefault>あなたの評価</ExplanationTextDefault> */}
+        {/* <a>userId:::: {userId}</a> */}
+        {isLoginUserAssessment == true && (
+          <>
+            <Link href="/post/[id]/[postUserId]" 
+              as={`/post/${workId}/${userId}`}>
+              <p>{RdUserName}自身の評価をみる</p>
+            </Link>
+          </>
+        )}
+
+          <Link href={{
+            pathname: "/post/posting",
+            query: {
+              searchWord: state.workName,
+              infoMedia : state.workMedia,
+              workId : workId,
+              firstPostFlag : state.isAssessed ? 2 : 0 ,
+            }
+          }}>
+            <a>[{state.workName}] {state.isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
+          </Link>
+          {isSignIn && (<SpeedDialPosting
+              workName={state.workName} 
+              workMedia={state.workMedia} 
+              workId={workId} 
+              isLiked={state.isLiked}
+              isBookmark={state.isBookmark}
+              likedCount={state.likedCount}
+              isAssessed={state.isAssessed}
+              infoCount={state.infoCount}
+              // uid={userId}
+              isPublic={true}//常にtrueで渡して、非公開の時にlikeHikoukaiでfalseに変える
+              pfirstPostFlag={state.isAssessed ? 2 : 0} 
+              hist={"work"}
+              sdpActions={state.sdpActions}
+              dispatch={dispatch}
+            />) 
+          }
         {(state.isLiked && state.isMyAssessmentPublic) ? <FavoriteIcon className={classes.isLikedSignal}/> : null}
         {(state.isLiked && !state.isMyAssessmentPublic) ? <FavoriteTwoToneIcon className={classes.isLikedSignal}/> : null}
         {(state.isBookmark && !state.isLiked) ? <CollectionsBookmarkIcon className={classes.isLikedSignal}/> : null}

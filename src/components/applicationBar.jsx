@@ -112,7 +112,7 @@ const ApplicationBar = (props) => {
     <>
       {/* <Box sx={{ flexGrow: 1 }}> */}
       {/* <Box className={classes.masterBox}> */}
-      <CssBaseline />
+      {/* <CssBaseline /> */}
         {/* <ElevationScroll> */}
         {/* <ElevationScroll {...props}> */}
           {/* <AppBar position="static"> */}
@@ -154,7 +154,7 @@ const ApplicationBar = (props) => {
             <Grid container item xs={1} className={classes.authdiv}>
             {(uid != "uid initial") 
               ? (
-                <div>
+                <>
                   <IconButton
                     aria-label="account of current user"
                     aria-controls="menu-appbar"
@@ -182,10 +182,10 @@ const ApplicationBar = (props) => {
                     <MenuItem onClick={handleMypage}>マイページ</MenuItem>
                     <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
                   </Menu>
-                </div>
+                </>
                 )
               : (
-                <div>
+                <>
                   <IconButton
                     aria-label="account of current user"
                     aria-controls="menu-appbar"
@@ -214,7 +214,7 @@ const ApplicationBar = (props) => {
                     <MenuItem onClick={handleSignIn}>ログイン</MenuItem>
                     <MenuItem onClick={handleSignUp}>新規登録</MenuItem>
                   </Menu>
-                </div>
+                </>
               )
             }
             </Grid>

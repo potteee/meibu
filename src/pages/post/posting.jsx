@@ -1,6 +1,10 @@
 import React, {useState, useEffect, useCallback,useReducer} from 'react'
 import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
+
+//style
 import { H2CenterLine } from "src/styles/SC/shared/typografy/centerLine"
+import { SCTypografyh5,SCTypografyh5Top } from 'src/styles/SC/shared/typografy/h5'
+import { ExplanationTextDefault } from 'src/styles/SC/shared/typografy/ExplanationTextDefault'
 
 import {
   ONE_CLICK_APPEARANCE_IN_POSTING,
@@ -101,8 +105,8 @@ import { isConditionalExpression } from 'typescript'
 const useStyles = makeStyles((theme) => ({
   autoCompleteStyle : {
     // '$root.MuiAutocomplete-option &' : {
-      padding : "0px",
-      minHeight : "0.7em",
+    padding : "0px",
+    minHeight : "0.7em",
       // minHeight : "30px",
     // }
   },
@@ -276,14 +280,6 @@ const useStyles = makeStyles((theme) => ({
   },
   h3TagKey: {
     margin : "12px 0px 0px 0px",
-  },
-  h5WorksTitle: {
-    margin : "9px 0px 0px 0px",
-    color : "#393e4f", //青褐あおかち
-    fontSize : "0.8em",
-  },
-  detailWorksInfomation: {
-    fontSize : "1.3em",
   },
   h3WorksTitle: {
     margin : "9px 0px 0px 0px",
@@ -1320,9 +1316,11 @@ const Posting = () => {
           firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ) && (
           <>
             <Grid container item xs={12} justify={"center"}>
-              <Typography className={classes.h5WorksTitle}>
+              {/* <SCTypografyh5> */}
+              <SCTypografyh5>
                 {"作品名"}
-              </Typography>                
+              {/* </Typography>                 */}
+              </SCTypografyh5>
             </Grid>
             <Grid container item xs={12} justify={"center"}>
               <div className={classes.h4LinkTag}>            
@@ -1338,10 +1336,10 @@ const Posting = () => {
             <Grid container xs={12}>
               <Grid container item xs={6}>
                 <Grid container item xs={12} justify={"center"}>
-                  <Typography className={classes.h5WorksTitle}>
+                  <SCTypografyh5>
                     {/* {"分類"} */}
                     {"メディア"}
-                  </Typography>
+                  </SCTypografyh5>
                 </Grid>
                 <Grid container item xs={12} justify={"center"}>
                   <div className={classes.h4LinkTag}>
@@ -1352,9 +1350,9 @@ const Posting = () => {
 
               <Grid container item xs={6} justifyContent={"center"}>
                 <Grid container item xs={12} justify={"center"}>
-                  <Typography className={classes.h5WorksTitle}>
+                  <SCTypografyh5>
                     {"カテゴリ"}
-                  </Typography>
+                  </SCTypografyh5>
                 </Grid>
                 <Grid container item xs={12} justify={"center"}>
                     {Object.keys(checkBoxState).map((map) => (
@@ -2286,32 +2284,32 @@ const Posting = () => {
               />
             </>
             : <>
-              <Typography className={classes.h5WorksTitle}>作品情報</Typography>
-              <Typography className={classes.detailWorksInfomation}>{state.winfoInfomation ? state.winfoInfomation : "未投稿"}</Typography>
-              <Typography className={classes.h5WorksTitle}>作者</Typography>
+              <SCTypografyh5>作品情報</SCTypografyh5>
+              <ExplanationTextDefault>{state.winfoInfomation ? state.winfoInfomation : "未投稿"}</ExplanationTextDefault>
+              <SCTypografyh5>作者</SCTypografyh5>
               {state.winfoCreator.length 
                 ? state.winfoCreator.map((map) => (
-                  <><Typography>
+                  <><ExplanationTextDefault>
                     {map.kind+` `+map.name}
-                  </Typography></>
+                  </ExplanationTextDefault></>
                 ))
-                : "投稿なし"
+                : <ExplanationTextDefault>"投稿なし"</ExplanationTextDefault>
               }
 
-              <Typography className={classes.h5WorksTitle}>制作国</Typography>
-              <Typography className={classes.detailWorksInfomation}>{state.winfoCountry ? state.winfoCountry : "未投稿"}</Typography>
-              <Typography className={classes.h5WorksTitle}>リリース</Typography>
-              <Typography className={classes.detailWorksInfomation}>{state.winfoStart ? state.winfoStart : "未投稿"}</Typography>
-              <Typography className={classes.h5WorksTitle}>完結</Typography>
-              <Typography className={classes.detailWorksInfomation}>{state.winfoFinish ? state.winfoFinish : "未投稿"}</Typography>
-              <Typography className={classes.h5WorksTitle}>主題歌</Typography>
+              <SCTypografyh5>制作国</SCTypografyh5>
+              <ExplanationTextDefault>{state.winfoCountry ? state.winfoCountry : "未投稿"}</ExplanationTextDefault>
+              <SCTypografyh5>リリース</SCTypografyh5>
+              <ExplanationTextDefault>{state.winfoStart ? state.winfoStart : "未投稿"}</ExplanationTextDefault>
+              <SCTypografyh5>完結</SCTypografyh5>
+              <ExplanationTextDefault>{state.winfoFinish ? state.winfoFinish : "未投稿"}</ExplanationTextDefault>
+              <SCTypografyh5>主題歌</SCTypografyh5>
               {state.winfoCreator.length 
-                ? state.winfoMusic.map((map) => (
-                  <><Typography>
+                ? state.winfoMusic.map((map) => { return (
+                  <ExplanationTextDefault>
                     {map.kind+` `+map.name}
-                  </Typography></>
-                ))
-                : ""
+                  </ExplanationTextDefault>
+                )})
+                : <ExplanationTextDefault>{"未登録"}</ExplanationTextDefault>
               }
 
               {/* 以下４項目は運用に関して再考 */}

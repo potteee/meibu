@@ -7,7 +7,8 @@ import { Toolbar } from '@material-ui/core';
 export const SCAppBar = styled(AppBar)`
 && {
   top: auto;
-  bottom: -1px;
+  /* bottom: -1px; */
+  bottom: 0px;
   box-shadow : none;
 }
 `;

@@ -78,18 +78,18 @@ const Footer = () => {
     })
   }
 
-  const appBarTheme = createMuiTheme({
   // const appBarTheme = createMuiTheme({
-    overrides: {
-      MuiAppBar: {
-        positionFixed: {
-          top: "auto",
-          bottom: "-1px", //最下部がちらつくので-1しておく
-          boxShadow : "none", //デフォルトで影がついてるので消す。
-        }
-      }
-    }
-  })
+  // // const appBarTheme = createMuiTheme({
+  //   overrides: {
+  //     MuiAppBar: {
+  //       positionFixed: {
+  //         top: "auto",
+  //         bottom: "-1px", //最下部がちらつくので-1しておく
+  //         boxShadow : "none", //デフォルトで影がついてるので消す。
+  //       }
+  //     }
+  //   }
+  // })
 
   return (
     <>
