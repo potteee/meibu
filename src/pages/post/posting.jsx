@@ -3,8 +3,11 @@ import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
 
 //style
 import { H2CenterLine } from "src/styles/SC/shared/typografy/centerLine"
+import { HighLightBar } from "src/styles/SC/shared/typografy/highLightBar"
+import { MiddleTitle } from "src/styles/SC/shared/typografy/middleTitle"
 import { SCTypografyh5,SCTypografyh5Top } from 'src/styles/SC/shared/typografy/h5'
 import { ExplanationTextDefault } from 'src/styles/SC/shared/typografy/ExplanationTextDefault'
+import { TitleSpacing } from 'src/styles/SC/shared/grid/titleSpacing'
 
 import {
   ONE_CLICK_APPEARANCE_IN_POSTING,
@@ -101,6 +104,7 @@ import GLoading from '../../components/GLoading';
 import { DragDropContext,Droppable,Draggable} from 'react-beautiful-dnd';
 import { fontSize, width } from '@material-ui/system'
 import { isConditionalExpression } from 'typescript'
+import { titleSpacing } from '../../styles/SC/shared/grid/titleSpacing'
 
 const useStyles = makeStyles((theme) => ({
   autoCompleteStyle : {
@@ -311,7 +315,7 @@ const useStyles = makeStyles((theme) => ({
   h4LinkTag: {
     fontSize : "12.5px",
     textDecoration: 'underline',
-    margin : "0px 4px",
+    margin : "0px 0px",
     color : "#000080",
   },
   inputHissu: {
@@ -1310,64 +1314,68 @@ const Posting = () => {
       <>
         <ApplicationBar title="新規登録"/>
 
-        <H2CenterLine> {"作品情報"} </H2CenterLine>
+        <HighLightBar>作品情報</HighLightBar>
 
         {(firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED ||
           firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ) && (
           <>
-            <Grid container item xs={12} justify={"center"}>
+            {/* <Grid container item xs={12} justify={"flex-start"}> */}
               {/* <SCTypografyh5> */}
-              <SCTypografyh5>
-                {"作品名"}
-              {/* </Typography>                 */}
-              </SCTypografyh5>
-            </Grid>
-            <Grid container item xs={12} justify={"center"}>
-              <div className={classes.h4LinkTag}>            
-                <Link
-                  href="/post/[postWorkId]/"
-                  as={`/post/${preWorkId}/`}
-                  >
-                  {workName}
-                </Link>
-              </div>
-            </Grid>
-
-            <Grid container xs={12}>
-              <Grid container item xs={6}>
-                <Grid container item xs={12} justify={"center"}>
-                  <SCTypografyh5>
-                    {/* {"分類"} */}
-                    {"メディア"}
-                  </SCTypografyh5>
-                </Grid>
-                <Grid container item xs={12} justify={"center"}>
-                  <div className={classes.h4LinkTag}>
-                    {workMedia}
-                  </div>
-                </Grid>
+            <TitleSpacing container item xs={12}>
+              <Grid container item xs={4} alignItems={"center"}>
+                <MiddleTitle>
+                  {"作品名"}
+                {/* </Typography> */}
+                </MiddleTitle>
               </Grid>
+              <Grid container item xs={8} alignItems={"center"}>
+                {/* <div className={classes.h4LinkTag}>             */}
+                <ExplanationTextDefault>
+                  <Link
+                    href="/post/[postWorkId]/"
+                    as={`/post/${preWorkId}/`}
+                    >
+                    {workName}
+                  </Link>
+                </ExplanationTextDefault>
+                {/* </div> */}
+              </Grid>
+            {/* </Grid> */}
+            </TitleSpacing>
 
-              <Grid container item xs={6} justifyContent={"center"}>
-                <Grid container item xs={12} justify={"center"}>
-                  <SCTypografyh5>
+            <TitleSpacing container item xs={12}>
+              <Grid container item xs={4} alignItems={"center"}>
+                <MiddleTitle>
+                    {/* {"分類"} */}
+                  {"メディア"}
+                </MiddleTitle>
+              </Grid>
+              <Grid container item xs={8} alignItems={"center"}>
+                <ExplanationTextDefault>
+                  {workMedia}
+                </ExplanationTextDefault>
+              </Grid>
+            </TitleSpacing>
+
+            <TitleSpacing container item xs={12}>
+              <Grid container item xs={4} alignItems={"center"}>
+              <MiddleTitle>
                     {"カテゴリ"}
-                  </SCTypografyh5>
-                </Grid>
-                <Grid container item xs={12} justify={"center"}>
+              </MiddleTitle>
+              </Grid>
+              <Grid container item xs={8} alignItems={"center"}>
                     {Object.keys(checkBoxState).map((map) => (
                       <>{checkBoxState[map] == true && (
                         <Grid container item xs={5} 
-                          justify={"center"}
+                          justify={"flex-start"}
                           className={classes.h4LinkTag}
                         >
                           {categoryMap[map]}
                         </Grid>
                       )}</>
                     ))}
-                </Grid>
-              </Grid> 
-            </Grid>
+              </Grid>
+            </TitleSpacing>
           </>
         )}
           
@@ -1450,7 +1458,7 @@ const Posting = () => {
           </>
         )}
 
-        <H2CenterLine style={{marginTop:"10px"}}> 　評価　 </H2CenterLine>
+        <HighLightBar style={{marginTop:"1.8em"}}>評価</HighLightBar>
 
         <Grid container xs={12} spacing={0} className={classes.likedPosition}>
           <Grid item xs={6} className={classes.likedIconPosition}>
@@ -1937,7 +1945,6 @@ const Posting = () => {
                   </Droppable>
                 </DragDropContext>
               </Grid>          
-
               <Dialog open={openCreatorDialog} onClose={handleCloseCreatorDialog} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
                 <DialogContent>
@@ -1972,7 +1979,6 @@ const Posting = () => {
                       />
                     </Grid>
                   </Grid>
-
                 </DialogContent>
                 <DialogActions>
                   <IconButton
@@ -2005,7 +2011,6 @@ const Posting = () => {
                   </Button>
                 </DialogActions>
               </Dialog>
-
               <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
                 <FormControl className={classes.winfoCreatorFormControl}>
                   <InputLabel id="demo-controlled-open-country-select-label">制作国</InputLabel>
@@ -2063,7 +2068,6 @@ const Posting = () => {
               <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
                 <p>画像登録フォーム</p>
               </Grid>
-
               {/* Step2 */}
               {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
                 <p>親選択フォーム</p>

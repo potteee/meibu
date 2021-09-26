@@ -394,7 +394,8 @@ const Post = (props) => {
           {"スコア"}
         </SCTypografyh5> 
 
-        <ExplanationTextDefault>
+        {/* //小数点切り捨て */}
+        <ExplanationTextDefault> 
           {state.workScore != -1 ? Math.floor(state.workScore * 10) / 10  : "評価なし"}
         </ExplanationTextDefault>
 
@@ -424,7 +425,7 @@ const Post = (props) => {
         </SCTypografyh5> 
 
         <ExplanationTextDefault>
-          {state.workInfo}
+          {state.workInfo ? state.workInfo : "未登録"}
         </ExplanationTextDefault>
 
         <SCTypografyh5>
@@ -439,6 +440,7 @@ const Post = (props) => {
           {"タグ/属性"}
         </SCTypografyh5>
 
+        {/* //ソーーーーーとする。 */}
         <ExplanationTextDefault>{Object.keys(state.winfoTag).map(tokens => (
           <>
           {/* {(1) && ( */}
@@ -446,7 +448,7 @@ const Post = (props) => {
           ? (
             <div >
             {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
-            {tokens+":"+state.winfoTag[tokens]+" "}
+            {state.winfoTag[tokens]+" "+tokens}
             </div >
           )
           : (
