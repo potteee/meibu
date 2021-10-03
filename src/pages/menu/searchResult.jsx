@@ -1,6 +1,9 @@
 //oneWork.js
 
 import React, {useState, useEffect, useCallback} from 'react';
+
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
+
 import { PrimaryButton, TextInput } from "../../styles/UIkit"
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -13,13 +16,14 @@ import {useDispatch,useSelector} from 'react-redux'
 import {getIsSignedIn, getUserId} from "../../reducks/users/selectors";
 
 // import { getWorkData } from '../../reducks/works/operations'
-import { DiscFull } from '@material-ui/icons'
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { DiscFull } from '@mui/icons-material'
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { tokenize } from '../api/allStringSearch/text-processor'
 
 //API
-import useSWR,{ mutate } from 'swr'
+import useSWR from 'swr'
+// import useSWR,{ mutate } from 'swr'
 
 import GLoading from '../../components/GLoading';
 
@@ -120,9 +124,9 @@ const searchResult = () => {
           //ログインユーザが評価した作品を取得し、検索結果と比較。
           if(uid != "uid initial"){
             console.log(uid+"+uid")
-            const snapshot = await db.collection('privateUsers').doc(uid)
-            .collection('postedWorksId')
-            .get()
+            // const snapshot = await db.collection('privateUsers').doc(uid)
+            // const snapshot = await doc(db, 'privateUsers', uid).collection('postedWorksId').get()
+            const snapshot = await getDocs(collection(db, 'privateUsers', uid, 'postedWorksId'))
 
             console.log("getUserAsessmentWorks snapshot")
             console.log(snapshot)

@@ -1,27 +1,34 @@
 import React from 'react'
 
 import { db } from "../../firebase/index"
+import { collection, doc , query, where, getDocs ,getDoc} from "firebase/firestore";
 
 //DBからReduxで使用するデータを取得する。
 //ランディング時、リロード時のみ通る。
 const GetUserRedux = async(userID) => {
     const snapshots = await Promise.all([
-        db.collection('users').doc(userID).get()
+        getDoc(doc(db ,'users',userID))
+        // db.collection('users').doc(userID).get()
         .then((snapshot) => {
             return snapshot
         }).catch((error) => {
             alert('usersの取得に失敗しました')
             throw new Error(error)
         }),
-        db.collection('privateUsers').doc(userID).get()
+        // db.collection('privateUsers').doc(userID).get()
+        getDoc(doc(db , 'privateUsers', userID))
         .then((snapshot) => {
             return snapshot
         }).catch((error) => {
             alert('privateUsersの取得に失敗しました')
             throw new Error(error)
         }),
-        db.collection('privateUsers').doc(userID)
-        .collection('postedWorksId').where("workId","!=","99").get()
+        // db.collection('privateUsers').doc(userID)
+        // .collection('postedWorksId').where("workId","!=","99").get()
+        getDocs(query(collection(
+            db,'privateUsers' ,userID ,'postedWorksId') ,
+            where("workId","!=","99"
+        )))
         .then((snapshot) => {
             return snapshot
         }).catch((error) => {

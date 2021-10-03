@@ -8,6 +8,7 @@ import Footer from '../components/footer'
 import SpeedDialPosting from '../components/speedDialPosting'
 import { useRouter } from 'next/router';
 import GLoading from '../components/GLoading';
+import { getFirestore, collection, doc,query, where, getDocs ,getDoc ,setDoc } from "firebase/firestore";
 
 const News = ({worksData}) => {
   // console.log(JSON.stringif(worksData,null ,2)+"+worksData@J");
@@ -68,7 +69,7 @@ export async function getStaticProps(context) {
 
   let worksData = false;
 
-  await db.collection('wInfo').get()
+  await getDocs(collection(db, 'wInfo'))
   .then((snapshot) => {
     snapshot.forEach((doc) => {
       if(worksData == false) {

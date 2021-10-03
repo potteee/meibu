@@ -6,27 +6,28 @@ import {useDispatch,useSelector} from 'react-redux'
 import {getUserId,getUserName} from "../reducks/users/selectors";
 
 //material UI
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import Grid from '@material-ui/core/Grid';
+import AppBar from '@mui/material/AppBar';
+// import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import Grid from '@mui/material/Grid';
 
 ///位置固定
 import PropTypes from 'prop-types';
-import CssBaseline from '@material-ui/core/CssBaseline';
-// import Container from '@material-ui/core/container';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import CssBaseline from '@mui/material/CssBaseline';
+// import Container from '@mui/material/container';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
 
 const ApplicationBar = (props) => {
   const router = useRouter();
@@ -151,7 +152,7 @@ const ApplicationBar = (props) => {
                 {props.title}
               </Typography>
             </Grid>
-            <Grid container item xs={1} className={classes.authdiv}>
+            <Grid container item xs={1} sx={classes.authdiv}>
             {(uid != "uid initial") 
               ? (
                 <>
@@ -162,7 +163,7 @@ const ApplicationBar = (props) => {
                     onClick={handleMenu}
                     color="inherit"
                   >
-                    <AccountCircle />
+                    <AccountCircleIcon />
                   </IconButton>
                   <Menu
                     id="menu-appbar"
@@ -193,7 +194,7 @@ const ApplicationBar = (props) => {
                     onClick={handleMenu}
                     color="default"
                   >
-                    <AccountCircle />
+                    <AccountCircleIcon />
                   </IconButton>
                   <Menu
                     id="menu-appbar"

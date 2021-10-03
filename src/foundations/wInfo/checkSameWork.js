@@ -1,5 +1,7 @@
 import React, {useState, useCallback} from 'react';
-import { db, FirebaseTimestamp } from "../../firebase/index";
+import { db } from "../../firebase/index";
+
+import { getFirestore, collection, doc, query, where, getDocs ,getDoc ,setDoc } from "firebase/firestore";
 
 /// Redux no だからここに書いている　→　apiに書くべき。というか同じ名前を許容するからこの機能いらないかも。
 
@@ -9,10 +11,12 @@ workMedia) => {
     console.log("checkSameWork start!")
 
     /////////////ここのreturn 超重要。。。
-    return db.collection('wInfo')
-    .where('workName' ,'==', workName)
-    .where('winfoMedia' ,'==' ,workMedia)
-    .get()
+    // return db.collection('wInfo').where('workName' ,'==', workName).where('winfoMedia' ,'==' ,workMedia).get()
+    return getDocs(query(
+        collection(db ,'wInfo') ,
+        where('workName' ,'==', workName) ,
+        where('winfoMedia' ,'==' ,workMedia)
+    ))
     .then((snapshot) => {
         console.log(snapshot+"snapshot")
         // console.log(JSON.stringify(snapshot)+"snapshot@J")

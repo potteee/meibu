@@ -2,8 +2,8 @@ import React, {useState, useEffect, useCallback,useReducer} from 'react'
 import { PrimaryButton, TextInput ,CheckIconBox} from "../../../styles/UIkit"
 
 //MaterialUi
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
+// import { makeStyles } from '@mui/styles';
+import Box from '@mui/material/Box';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -17,17 +17,18 @@ import ObjectSort from '../../../foundations/share/objectSort'
 import { SCTypografyh5,SCTypografyh5Top } from 'src/styles/SC/shared/typografy/h5'
 import { ExplanationTextDefault } from 'src/styles/SC/shared/typografy/ExplanationTextDefault'
 
-import {db , FirebaseTimestamp} from '../../../firebase/index'
+import {db} from '../../../firebase/index'
 import {useSelector} from 'react-redux'
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc , Timestamp} from "firebase/firestore";
 
 import {getUserId,getUserName,getUserBookmark,getUserAssessmentWorks,getInstantChangedWorksId, getIsSignedIn} from "../../../reducks/users/selectors";
 // import { postWorkCreate } from '../../../reducks/works/operations'
 
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import FavoriteTwoToneIcon from '@material-ui/icons/FavoriteTwoTone';
-import CreateIcon from '@material-ui/icons/Create';
-import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import CollectionsBookmarkOutlinedIcon from '@material-ui/icons/CollectionsBookmarkOutlined';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
+import CreateIcon from '@mui/icons-material/Create';
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 
 import GLoading from 'src/components/GLoading'
 import like ,{likeHikoukai} from 'src/components/speedDial/like'
@@ -197,7 +198,8 @@ const getOriginalDBData = async(params,history) => {
     }),
     
     //dBData[1]
-    db.collection('wInfo').doc(params.postWorkId).get()
+    // db.collection('wInfo').doc(params.postWorkId).get()
+    getDoc(doc(db,'wInfo',params.postWorkId))
     .then((res) => {
       console.log("successed to get wInfo")
       const data = res.data()
@@ -234,16 +236,13 @@ const Post = (props) => {
   const RdAssessmentWorks = getUserAssessmentWorks(selector)
   const RdInstantChangedWorksId = getInstantChangedWorksId(selector)
 
-  const timestamp = FirebaseTimestamp.now()
+  const timestamp = Timestamp.now()
 
-  const useStyles = makeStyles((thema) => ({
-    // ExplanationTextDefaultWorksName: {
-    //   margin : "0px 4px 9px 4px",
-    // },
-    boxTotalStyle : {
-      position : "relative",
-      top : "-1.3rem",
-    },
+  console.log(Timestamp.now()+"+Timestamp")
+  // console.log(Timestamp+"+Timestamp")
+  console.log(JSON.stringify(Timestamp)+"+Timestamp@J")
+
+  const useStyles = () => ({
     isLikedSignal : {
       position: 'fixed',
       top : "2.4em",
@@ -254,7 +253,7 @@ const Post = (props) => {
       top : "3.9em",
       right : "0.6em",
     },
-  }))
+  })
 
   const classes = useStyles();
 
@@ -372,8 +371,6 @@ const Post = (props) => {
     return (
       <>     
         <ApplicationBar title="作品情報"/>
-        {/* <Box className={classes.boxTotalStyle}>  */}
-          {/* <h3>作品名</h3> */}
         <SCTypografyh5Top>
           {"作品名"}
         </SCTypografyh5Top>        
@@ -544,10 +541,10 @@ const Post = (props) => {
               dispatch={dispatch}
             />) 
           }
-        {(state.isLiked && state.isMyAssessmentPublic) ? <FavoriteIcon className={classes.isLikedSignal}/> : null}
-        {(state.isLiked && !state.isMyAssessmentPublic) ? <FavoriteTwoToneIcon className={classes.isLikedSignal}/> : null}
-        {(state.isBookmark && !state.isLiked) ? <CollectionsBookmarkIcon className={classes.isLikedSignal}/> : null}
-        {(state.isBookmark && state.isLiked) ? <CollectionsBookmarkIcon className={classes.isBookmarkSignal}/> : null}
+        {(state.isLiked && state.isMyAssessmentPublic) ? <FavoriteIcon sx={classes.isLikedSignal}/> : null}
+        {(state.isLiked && !state.isMyAssessmentPublic) ? <FavoriteTwoToneIcon sx={classes.isLikedSignal}/> : null}
+        {(state.isBookmark && !state.isLiked) ? <CollectionsBookmarkIcon sx={classes.isLikedSignal}/> : null}
+        {(state.isBookmark && state.isLiked) ? <CollectionsBookmarkIcon sx={classes.isBookmarkSignal}/> : null}
         <Footer />
       </>
     )
@@ -557,7 +554,8 @@ const Post = (props) => {
 export async function getStaticPaths() {
 
   let postWorkId = false
-  const snapshot = await db.collection('wInfo').get()
+  // const snapshot = await db.collection('wInfo').get()
+  const snapshot = await getDocs(collection(db,'wInfo'))
 
   snapshot.forEach((doc) => {
     if(postWorkId == false) {

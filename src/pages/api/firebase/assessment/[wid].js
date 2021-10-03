@@ -45,14 +45,6 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
   .collection('wInfo')
   .doc(wid)
   .collection('assessment')
-  // .getCollections()
-  // .listCollections('assessment')
-  // .getCollections()
-  // .getCollections('assessment')
-  // .doc("Oqp2HRSHeaePltOb7bPcxIpeyWh1")
-
-  // .where('isPublic','==',true)
-
   .get()
   .then(snapshot => {
     console.log(JSON.stringify(snapshot.docs)+"snapshot.docs@J")

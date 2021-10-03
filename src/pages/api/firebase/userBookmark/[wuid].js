@@ -54,41 +54,6 @@ const userBookmarkHandler = async(req, res) => { //{}内はファイルの[]内�
   ).catch((error) => {
     res.status(599).json({ error : error });
   })
-
-
-
-
-  // .collection('users').doc(uid)
-  // //.collection('pubPostedWorksId')
-  // .get()
-  // .then(snapshot => {
-  //   console.log(JSON.stringify(snapshot)+"+snapshot@J")
-  //   console.log(JSON.stringify(snapshot.data())+"+snapshot.data()@J")
-  //   FirestoreSDK
-  //   .collection('users').doc(uid)
-  //   .collection('pubPostedWorksId')
-  //   // .where('uid','!=','99')
-  //   .get()
-  //   .then(snapshot2 => {
-  //     let pubPostedWorksId = []
-
-  //     snapshot2.docs.map(ss2 => {
-  //       console.log(JSON.stringify(ss2.data())+"++ss2.data()")
-  //       pubPostedWorksId = [...pubPostedWorksId, ss2.data()]
-  //       // pubPostedWorksId.push(ss2.data())
-  //     })
-  //     console.log(pubPostedWorksId+"++++++pubPostedWorksId")
-  //       // console.log(JSON.stringify(snapshot2.docs)+"+snapshot2.docs")
-  //     const result = {users : snapshot.data() ,pubPostedWorksId : pubPostedWorksId}
-  //     res.status(200).json(result)
-  //   }).catch((error) => {
-  //     throw new Error(error)
-  //     res.json({ error });
-  //   })
-  // }).catch((error) => {
-  // throw new Error(error)
-  // res.json({ error });
-  // })
 } 
 
 export default userBookmarkHandler 

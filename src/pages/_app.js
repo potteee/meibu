@@ -5,7 +5,7 @@ import { parseCookies } from 'nookies'
 import {useDispatch, useSelector} from "react-redux"
 import {signInAction ,signOutAction} from "../reducks/users/actions"
 import {getIsSignedIn} from "../reducks/users/selectors";
-import { auth, db, FirebaseTimestamp } from "../firebase/index"
+import { auth } from "../firebase/index"
 import SignIn from './auth/signin';
 
 import ApplicationBar from '../components/applicationBar'
@@ -14,15 +14,14 @@ import Footer from '../components/footer'
 // import NProgress from 'nprogress'
 // import 'nprogress/nprogress.css'
 
-import { makeStyles } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CssBaseline from '@mui/material/CssBaseline';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
-import { StylesProvider } from '@material-ui/styles';
+import { StylesProvider } from '@mui/styles';
 
 import {SCmargin} from 'src/styles/SC/app/margin'
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { updateUsersWithSignIn } from '../reducks/users/operations'
 import GetUserRedux　from 'src/foundations/share/getUserRedux'
 

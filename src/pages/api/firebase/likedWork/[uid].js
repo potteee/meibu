@@ -43,7 +43,6 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
 
   // console.log(ODB+"+++allayDBody")
   const timestamp = admin.firestore.FieldValue.serverTimestamp()
-  // const timestamp = firebase.firestore.FirebaseTimestamp.now()
 
   const wInfoRef = FirestoreSDK.collection('wInfo').doc(ODB.workId)
   const assessmentRef = FirestoreSDK.collection('wInfo').doc(ODB.workId).collection('assessment').doc(uid)

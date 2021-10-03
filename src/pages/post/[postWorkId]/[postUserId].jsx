@@ -8,12 +8,13 @@ import ApplicationBar from '../../../components/applicationBar'
 import SpeedDialPosting from '../../../components/speedDialPosting'
 import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
 
-import {db,FirebaseTimestamp} from '../../../firebase/index'
+import { db } from '../../../firebase/index'
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc ,Timestamp } from "firebase/firestore";
 
 import {useDispatch, useSelector} from "react-redux";
 import {getUserId ,getUserName,getUserAssessmentWorks,getInstantChangedWorksId ,getIsSignedIn} from '../../../reducks/users/selectors'
 
-import CreateIcon from '@material-ui/icons/Create';
+import CreateIcon from '@mui/icons-material/Create';
 
 import Link from 'next/link'
 
@@ -56,8 +57,8 @@ const getOriginalDBData = async(params,history) => {
 
   const dBData = await Promise.all([
   //dBData[0]
-    db.collection('wInfo').doc(params.postWorkId)
-    .collection('assessment').doc(params.postUserId).get()
+    // db.collection('wInfo').doc(params.postWorkId).collection('assessment').doc(params.postUserId).get()
+    getDoc(doc(db, 'wInfo', params.postWorkId, 'assessment', params.postUserId))
     .then((res)=> {
       const data = res.data()
       console.log("successed to get assessment")
@@ -68,7 +69,8 @@ const getOriginalDBData = async(params,history) => {
     }),
     
     //dBData[1]
-    db.collection('wInfo').doc(params.postWorkId).get()
+    // db.collection('wInfo').doc(params.postWorkId).get()
+    getDoc(doc(db, 'wInfo', params.postWorkId))
     .then((res) => {
       console.log("successed to get wInfo")
       const data = res.data()
@@ -80,9 +82,8 @@ const getOriginalDBData = async(params,history) => {
     }),
 
     //dBData[2]
-    db.collection('privateUsers').doc(params.postUserId)
-    .collection('postedWorksId').doc(params.postWorkId)
-    .get()
+    // db.collection('privateUsers').doc(params.postUserId).collection('postedWorksId').doc(params.postWorkId).get()
+    getDoc(doc(db, 'privateUsers', params.postUserId, 'postedWorksId', params.postWorkId))
     .then((res) => {
       console.log("successed to get postedWorksId")
       const data = res.data()
@@ -139,7 +140,7 @@ const handlerPostUserId = (props) => {
 
   const [state,dispatch] = useReducer(reducer, initialState)
 
-  const timestamp = FirebaseTimestamp.now()
+  const timestamp = Timestamp.now()
 
   const query = router.asPath //URL取得。pathnameだと[id](str)で取得してしまう
   console.log(query+"+query at postUserId")
@@ -332,12 +333,14 @@ export async function getStaticPaths() {
   // エラーメッセージが Unexpected token < in JSON at position 0 →　切り分けに時間がかかった
 
   const makeParams = async() => {
-    const privateUsers = await db.collection('privateUsers').get()
+    // const privateUsers = await db.collection('privateUsers').get()
+    const privateUsers = await getDocs(collection(db, 'privateUsers'))
     let postedWorksIdDatas = []
 
     postedWorksIdDatas = await Promise.all(
       privateUsers.docs.map(async(map) => {
-        return await db.collection('privateUsers').doc(map.id).collection('postedWorksId').get()
+        return await getDocs(collection(db, 'privateUsers' ,map.id ,'postedWorksId'))
+        // return await db.collection('privateUsers').doc(map.id).collection('postedWorksId').get()
       })
     )
     

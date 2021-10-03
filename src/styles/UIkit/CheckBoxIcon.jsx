@@ -1,13 +1,13 @@
 import React from 'react';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
-import { withStyles } from '@material-ui/core/styles';
-import { green } from '@material-ui/core/colors';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkboxing from '@material-ui/core/Checkbox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import Favorite from '@material-ui/icons/Favorite';
-import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
+import { withStyles } from '@mui/styles';
+import { green } from '@mui/material/colors';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkboxing from '@mui/material/Checkbox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import Favorite from '@mui/icons-material/Favorite';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 
 const CheckIconBox = (props) => {
     return(

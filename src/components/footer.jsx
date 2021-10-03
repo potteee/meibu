@@ -17,33 +17,28 @@ import {SCAppBar,SCToolBar} from "src/styles/SC/components/footer/position"
 import styled from "styled-components"
 
 //material UI
-import { makeStyles ,createMuiTheme,ThemeProvider} from '@material-ui/core/styles';
+import { makeStyles ,createMuiTheme,ThemeProvider} from '@mui/styles';
 
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import Grid from '@material-ui/core/Grid';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import Grid from '@mui/material/Grid';
 
 ///アイコン
-// import MenuIcon from '@material-ui/icons/Menu';
-import HomeIcon from '@material-ui/icons/Home';
-import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
-import AnnouncementOutlinedIcon from '@material-ui/icons/AnnouncementOutlined';
-import SearchIcon from '@material-ui/icons/Search';
+// import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
+import SearchIcon from '@mui/icons-material/Search';
 
 ///位置固定
 import PropTypes from 'prop-types';
-import CssBaseline from '@material-ui/core/CssBaseline';
-// import Container from '@material-ui/core/container';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import CssBaseline from '@mui/material/CssBaseline';
+// import Container from '@mui/material/container';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
 
 const Footer = () => {
   const router = useRouter();

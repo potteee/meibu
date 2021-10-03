@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import AppBar from '@material-ui/core/AppBar';
-import { Button, Toolbar } from '@material-ui/core';
+import AppBar from '@mui/material/AppBar';
+import { Button, Toolbar } from '@mui/material';
 
 // Create a overRide styles.
 export const SCButtonActive = styled(Button)`

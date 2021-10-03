@@ -2,12 +2,14 @@ import React, {useState, useEffect, useCallback,useReducer} from 'react'
 import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
 
 //style
-import { H2CenterLine } from "src/styles/SC/shared/typografy/centerLine"
+// import { H2CenterLine } from "src/styles/SC/shared/typografy/centerLine"
 import { HighLightBar } from "src/styles/SC/shared/typografy/highLightBar"
 import { MiddleTitle } from "src/styles/SC/shared/typografy/middleTitle"
 import { SCTypografyh5,SCTypografyh5Top } from 'src/styles/SC/shared/typografy/h5'
 import { ExplanationTextDefault } from 'src/styles/SC/shared/typografy/ExplanationTextDefault'
 import { TitleSpacing } from 'src/styles/SC/shared/grid/titleSpacing'
+import ItemExplanationSet from 'src/components/ItemExplanationSet'
+import ExplanationChildSet from 'src/components/ExplanationChildSet'
 
 import {
   ONE_CLICK_APPEARANCE_IN_POSTING,
@@ -17,55 +19,62 @@ import {
 } from 'src/foundations/share/GlobalConstant'
 
 //material UI
-import FormGroup from '@material-ui/core/FormGroup'
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Icon from '@material-ui/core/Icon';
-import SaveAltIcon from '@material-ui/icons/SaveAlt';
-import Slider from '@material-ui/core/Slider';
-import Switch from '@material-ui/core/Switch';
-import PublishIcon from '@material-ui/icons/Publish';
-import Collapse from '@material-ui/core/Collapse';
-import Chip from '@material-ui/core/Chip';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-// import TextField from '@material-ui/core/TextField';
+import FormGroup from '@mui/material/FormGroup'
+// import FormControl from '@mui/material/FormControl';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+// import { makeStyles } from '@mui/styles';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+// import Select from '@mui/material/Select';
+import Select from '@mui/material/Select';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Icon from '@mui/material/Icon';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import Slider from '@mui/material/Slider';
+import Switch from '@mui/material/Switch';
+import PublishIcon from '@mui/icons-material/Publish';
+import Collapse from '@mui/material/Collapse';
+import Chip from '@mui/material/Chip';
+import Autocomplete from '@mui/material/Autocomplete';
+import Paper from '@mui/material/Paper';
+// import TextField from '@mui/material/TextField';
 import TextField from '@mui/material/TextField';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import { ListItemIcon,ListItemSecondaryAction,IconButton } from '@material-ui/core';
-import RootRef from "@material-ui/core/RootRef";
+import NativeSelect from '@mui/material/NativeSelect';
+import { ListItemIcon,ListItemSecondaryAction,IconButton } from '@mui/material';
+// import RootRef from "@mui/material/RootRef";
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
 
-// import DesktopDatePicker from '@material-ui/lab/DesktopDatePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import DatePicker from '@mui/lab/DatePicker';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+// import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
 
 import clsx from 'clsx';
-import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@mui/material/Checkbox';
 
 ///material icon 
-import PublicIcon from '@material-ui/icons/Public';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
+import PublicIcon from '@mui/icons-material/Public';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 import { useRouter } from 'next/router'
@@ -86,7 +95,8 @@ import postWInfoCreate from '../../foundations/wInfo'
 import checkSameWork from '../../foundations/wInfo/checkSameWork'
 import { tokenize } from '../api/allStringSearch/text-processor';
 
-import { db, FirebaseTimestamp } from "../../firebase/index";
+import { db } from "../../firebase/index";
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc ,Timestamp } from "firebase/firestore";
 
 import {textToNumber} from 'src/foundations/share/textToNumber';
 import DateToString from 'src/foundations/share/DateToString';
@@ -102,25 +112,26 @@ import PleaseSignUpIn from '../menu/PleaseSignUpIn'
 import GLoading from '../../components/GLoading';
 
 import { DragDropContext,Droppable,Draggable} from 'react-beautiful-dnd';
-import { fontSize, width } from '@material-ui/system'
+import { fontSize, width } from '@mui/system'
 import { isConditionalExpression } from 'typescript'
 import { titleSpacing } from '../../styles/SC/shared/grid/titleSpacing'
+import { red } from '@mui/material/colors'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = {
+  tagChip : {
+    margin : "0 4px 4px 0",
+  },
   autoCompleteStyle : {
-    // '$root.MuiAutocomplete-option &' : {
-    padding : "0px",
-    minHeight : "0.7em",
-      // minHeight : "30px",
+    padding: "20px",
+    // '& #tagSearch-option' : {
+    '& .MuiAutocomplete-option' : {
+      padding : "0px",
+      minHeight : "0.7em",
+    }
     // }
   },
   autoCompleteStylePop : {
     maxHeight : "12em",
-  },
-  button: {
-    // display: 'block', 
-    marginTop: theme.spacing(1),
-    marginLeft: theme.spacing(1),
   },
   postingH2: {
     margin : "20px 0px 0px 0px",
@@ -131,24 +142,24 @@ const useStyles = makeStyles((theme) => ({
     position : "relative",
     top : 10,
   },
-  postingInlineNetabareBox: {
-    display : "inline",
-    // padding : "30px 0px 0px 0px", //margin,paddin意味ない
-    position : "relative",
-    top : 5,
-    left : 20,
-  },
+  // postingInlineNetabareBox: {
+  //   display : "inline",
+  //   // padding : "30px 0px 0px 0px", //margin,paddin意味ない
+  //   position : "relative",
+  //   top : 5,
+  //   left : 20,
+  // },
   postingInlineNetabareText: {
     fontSize : "10px",
   },
-  postingNetabarePosition: {
-    position : "relative",
-    justifyContent:"center",
-    alignItems:"flex-end",
-    maxWidth : 630,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
+  // postingNetabarePosition: {
+  //   position : "relative",
+  //   justifyContent:"center",
+  //   alignItems:"flex-end",
+  //   maxWidth : 630,
+  //   marginLeft: 'auto',
+  //   marginRight: 'auto',
+  // },
   postingCommentPosition: {
     position : "relative",
     top : "-2.0em",
@@ -183,14 +194,6 @@ const useStyles = makeStyles((theme) => ({
   postingWinfoCreatorDialog: {
     justifyContent:"space-around",
   },
-  postingWinfoCreatorList: {
-    // width: '100%',
-    maxWidth: "70%",
-    backgroundColor: theme.palette.background.paper,
-    position: 'relative',
-    overflow: 'auto',
-    maxHeight: 300,
-  },
   flexCenter: {
     justifyContent:"center",
     alignItems:"center"
@@ -210,42 +213,36 @@ const useStyles = makeStyles((theme) => ({
     maxWidth : 630,
   },
   mediaFormControl: {
-    // margin: theme.spacing(1),
     margin : "0px 0px 4px 0px",
     minWidth: 120,
   },
   winfoCreatorFormControl: {
-    // margin: theme.spacing(1),
     margin : "0px 0px 0px 0px",
-    // minWidth: 120,
   },
   tagMasterGrid: {
-    // position : "relative",
     justifyContent : "space-evenly",
-    // justifyContent : "space-evenly"
   },
   cateMasterGrid: {
-    // position : "relative",
     justifyContent : "space-between",
-    // justifyContent : "space-evenly"
   },
   cateItemGrid: {
     position : "relative",
   },
   firstTagItemGrid: {
     position : "relative",
-    top : 6,
+    top : "-2px",
+    left : "-2px",
     marginBottom : 14,
-    justifyContent : "center",
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
+    justifyContent : "flex-start",
+    // '& > *': {
+    //   margin: theme.spacing(0.5),
+    // },
   },
   secondTagItemGrid: {
     justifyContent : "center",
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
+    // '& > *': {
+    //   margin: theme.spacing(0.5),
+    // },
   },
   tagItemSelectGrid: {
     justifyContent : "center",
@@ -268,6 +265,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px 0px 22px 0px",
     boxSizing: "content-box", // <-- add this
     display: "none",
+  },
+  tagAppeareButton:{
+    paddingLeft : "0 !important",
+    color : "darkgreen !important",
   },
   tagFormGroup:{
     position: "relative",
@@ -301,15 +302,22 @@ const useStyles = makeStyles((theme) => ({
     alignItems : "center",
     flexDirection : "column",
   },
-  scorePosition: {
-    justifyContent : "center",
-    alignItems : "center",
-    flexDirection : "column",
+  ScorePosition: {
+    position : "relative",
+    top : "-4px",
+    maxWidth : 45,
+    textAlign : "center",
+  },
+  watchTimesPosition: {
+    // marginTop : "0!important",
+    position : "relative",
+    top : "-10px",
+    // maxWidth : "2px",
+    marginLeft : "0!important",
   },
   likedIconPosition: {
     position : "relative",
-    marginBottom : "5px",
-    top : -5,
+    left : "9.5px",
   },
 
   h4LinkTag: {
@@ -330,22 +338,28 @@ const useStyles = makeStyles((theme) => ({
   FCHissu: {
     margin : "0px 0px 4px 0px",
   },
-  FCtensuu: {
-    maxWidth : 45,
-    textAlign : "center",
-  },
   textFieldInputProps: {
     textAlign : "center",
   },
   FCfreeWordSearchTag: {
-    margin : "0px 0px 4px 0px",
-    minWidth : "14em",
+    margin : "0px 0px 0px 0px",
+    // minWidth : "14em",
+    width : "80%"
   },
-  freeWordSearchTag: {
-    position : "relative",
-    top : -10,
-    justifyContent : "center",
-    alignItems : "center",
+  // freeWordSearchTag: {
+  //   position : "relative",
+  //   top : -10,
+  //   width : "100%",
+  //   justifyContent : "center",
+  //   alignItems : "center",
+  // },
+  netabareGrid: {
+    justifyContent : "flex-end",
+    // alignItems : "flex-end",
+    display : "flex",
+  },
+  netabareLabel: {
+    margin : "0.2em 0.5em",
   },
   root: {
     '&:hover': {
@@ -413,7 +427,7 @@ const useStyles = makeStyles((theme) => ({
   iconButton : {
     padding : "5px",
   },
-}))
+}
 
 //任意入力の作品情報
 const initialState = {
@@ -477,7 +491,7 @@ const Posting = () => {
   const RdAssessmentWorks = getUserAssessmentWorks(selector)
 
   //style
-  const classes = useStyles();
+  const classes = useStyles;
 
   const asPath = router.asPath // pathNameだとURL部のみ（/post/posting)だけ取得
   const props = router.query
@@ -517,6 +531,8 @@ const Posting = () => {
   const [open, setOpen] = useState(false);
 
   const [workScore, setWorkScore] = useState("")
+  const [workWatchYear, setWorkWatchYear] = useState("")
+  const [workWatchTimes, setWorkWatchTimes] = useState("")
   const [workComment, setWorkComment] = useState("")
   
   const [showGenre, setShowGenre] = useState(false) //必須
@@ -601,24 +617,30 @@ const Posting = () => {
   };
 
   //input function
-  const changeIsPublic = useCallback((state) => {
-    setIsPublic(state)
-  }, [])
+  const changeIsPublic = (publicState) => {
+    setIsPublic(publicState)
+  }
 
   const inputWorkName = useCallback((event) => {
     setWorkName(event.target.value)
   }, [])
   
   const inputWorkScore = useCallback((event) => {
-    // const valueOfNumber = 
-    // console.log(valueOfNumber+"valueOfNumber@posting")
     setWorkScore(textToNumber(event.target.value))
-  },[workScore])
+  },[])
+  // },[workScore])
+  const inputWorkWatchTimes = (event) => {
+    setWorkWatchTimes(event.target.value)
+  }
 
-  const handleSliderChange = useCallback((event, newValue) => {
-    setWorkScore(newValue)
-    // console.log("handleSliderChange")
-  },[workScore])
+  const inputWorkWatchYear = (newValue) => {
+    setWorkWatchYear(newValue)
+  }
+
+  // const handleSliderChange = useCallback((event, newValue) => {
+  //   setWorkScore(newValue)
+  //   // console.log("handleSliderChange")
+  // },[workScore])
 
   const inputTagAutoCompleteValue = useCallback((value,reason) => {
     // console.log(JSON.stringify(value)+"+value@inputTagAutoCompleteValue")
@@ -635,8 +657,10 @@ const Posting = () => {
   },[checkBoxState])
 
   const tagCheckBoxHandleChange = useCallback(({name,isClicked}) => {
-    setTagCheckBox({...tagCheckBox, [name] : !isClicked})
-  },[tagCheckBox])
+    setTagCheckBox((preTagCheckBox) => { 
+      return {...preTagCheckBox, [name] : !isClicked}
+    })
+  },[])
   
   const inputWorkComment = useCallback((event) => {
     setWorkComment(event.target.value)
@@ -1070,9 +1094,8 @@ const Posting = () => {
         if(firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ||
           firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED){
           DBdata = await Promise.all([
-            db.collection('privateUsers').doc(RdUserId)
-            .collection('postedWorksId').doc(preWorkId)
-            .get()
+            // db.collection('privateUsers').doc(RdUserId).collection('postedWorksId').doc(preWorkId).get()
+            getDoc(doc(db, 'privateUsers', RdUserId, 'postedWorksId' ,preWorkId))
             .then((snapshot) => {
               return snapshot.data()
             }).catch((error) => {
@@ -1080,8 +1103,8 @@ const Posting = () => {
               throw new Error(error)
             })
           ,
-            db.collection('wInfo').doc(preWorkId)
-            .get()
+            getDoc(doc(db, 'wInfo',preWorkId))
+            // db.collection('wInfo').doc(preWorkId).get()
             .then((snapshot) => {
               return snapshot.data()
             }).catch((error) => {
@@ -1148,6 +1171,8 @@ const Posting = () => {
               })
             })            
             setWorkScore(DBdata[0].workScore != -1 ? DBdata[0].workScore : "")
+            setWorkWatchTimes(DBdata[0].workWatchTimes != -1 ? DBdata[0].workWatchTimes : 1)
+            setWorkWatchYear(DBdata[0].workWatchYear != -1 ? DBdata[0].workWatchYear : "")
             setWorkComment(DBdata[0].workComment)
             setIsPublic(DBdata[0].isPublic)
             setIsSpoiler(DBdata[0].isSpoiler)
@@ -1263,6 +1288,8 @@ const Posting = () => {
       workName,
       workMedia,
       workScore,
+      workWatchYear,
+      workWatchTimes,
       RdUserId,
       RdUserName,
       goCheckBoxState,
@@ -1289,6 +1316,8 @@ const Posting = () => {
         isSpoiler,
         isLiked,
         workScore,
+        workWatchYear,
+        workWatchTimes,
         goCheckBoxState,
         goTagCheckBoxState,
         workComment,
@@ -1319,63 +1348,50 @@ const Posting = () => {
         {(firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED ||
           firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ) && (
           <>
-            {/* <Grid container item xs={12} justify={"flex-start"}> */}
-              {/* <SCTypografyh5> */}
-            <TitleSpacing container item xs={12}>
-              <Grid container item xs={4} alignItems={"center"}>
-                <MiddleTitle>
-                  {"作品名"}
-                {/* </Typography> */}
-                </MiddleTitle>
-              </Grid>
-              <Grid container item xs={8} alignItems={"center"}>
-                {/* <div className={classes.h4LinkTag}>             */}
-                <ExplanationTextDefault>
-                  <Link
-                    href="/post/[postWorkId]/"
-                    as={`/post/${preWorkId}/`}
-                    >
-                    {workName}
-                  </Link>
-                </ExplanationTextDefault>
-                {/* </div> */}
-              </Grid>
-            {/* </Grid> */}
-            </TitleSpacing>
 
-            <TitleSpacing container item xs={12}>
-              <Grid container item xs={4} alignItems={"center"}>
-                <MiddleTitle>
-                    {/* {"分類"} */}
-                  {"メディア"}
-                </MiddleTitle>
-              </Grid>
-              <Grid container item xs={8} alignItems={"center"}>
-                <ExplanationTextDefault>
-                  {workMedia}
-                </ExplanationTextDefault>
-              </Grid>
-            </TitleSpacing>
+            <ItemExplanationSet middleTitle="作品名" text={
+              <Link
+                href="/post/[postWorkId]/"
+                as={`/post/${preWorkId}/`}
+                >
+                {workName}
+              </Link>
+            }/>
 
-            <TitleSpacing container item xs={12}>
+            <ItemExplanationSet middleTitle="メディア" text={workMedia}/>
+
+            {/* <TitleSpacing container item xs={12}>
               <Grid container item xs={4} alignItems={"center"}>
               <MiddleTitle>
                     {"カテゴリ"}
               </MiddleTitle>
               </Grid>
-              <Grid container item xs={8} alignItems={"center"}>
+              <Grid container item xs={8} alignItems={"center"} */}
+            <ItemExplanationSet middleTitle="カテゴリ" text={
+              Object.keys(checkBoxState).map((map) => (
+                <>{checkBoxState[map] == true && (
+                  // <Grid container item xs={5} 
+                  //   justify={"flex-start"}
+                  //   sx={classes.h4LinkTag}
+                  // >
+                  <>  {categoryMap[map]}</>
+                  // </Grid>
+                )}</>
+              ))
+            }/>
+{/* 
                     {Object.keys(checkBoxState).map((map) => (
                       <>{checkBoxState[map] == true && (
                         <Grid container item xs={5} 
                           justify={"flex-start"}
-                          className={classes.h4LinkTag}
+                          sx={classes.h4LinkTag}
                         >
                           {categoryMap[map]}
                         </Grid>
                       )}</>
                     ))}
               </Grid>
-            </TitleSpacing>
+            </TitleSpacing> */}
           </>
         )}
           
@@ -1384,15 +1400,15 @@ const Posting = () => {
           <>
             {/* <h2>新規登録/評価</h2> */}
             <ApplicationBar title="新規登録/評価"/>
-            <h2 className={classes.postingH2}>作品名</h2>
+            <h2 sx={classes.postingH2}>作品名</h2>
               <TextInput
-                fullWidth={true} label={<a className={classes.inputHissu}>(必須)</a>} multiline={false} required={true}
+                fullWidth={true} label={<a sx={classes.inputHissu}>(必須)</a>} multiline={false} required={true}
                 rows={1}  value={workName} type={"text"} onChange={inputWorkName}
-                // className={classes.FCHissu}
+                // sx={classes.FCHissu}
               />
-            <h2 className={classes.postingH2}>メディア</h2>
-            <FormControl className={classes.mediaFormControl}>
-              <InputLabel id="demo-controlled-open-select-label"><a className={classes.inputHissu}>(必須)</a></InputLabel>
+            <h2 sx={classes.postingH2}>メディア</h2>
+            <FormControl variant="standard" sx={classes.mediaFormControl}>
+              <InputLabel id="demo-controlled-open-select-label"><a sx={classes.inputHissu}>(必須)</a></InputLabel>
               <Select
                 labelId="demo-controlled-open-select-label"
                 id="demo-controlled-open-select"
@@ -1411,8 +1427,8 @@ const Posting = () => {
                 ))}
               </Select>
             </FormControl>
-            <h2 className={classes.postingH2}> カテゴリ　</h2> 
-            <a className={classes.inputSmallHissu}>(必須)</a>
+            <h2 sx={classes.postingH2}> カテゴリ　</h2> 
+            <a sx={classes.inputSmallHissu}>(必須)</a>
             {/* <FormGroup row>
               {Object.keys(categoryMap).map((map)=> (
                 <Grid container item xs={4} sm={3} md={2} spacing={0} 
@@ -1460,367 +1476,431 @@ const Posting = () => {
 
         <HighLightBar style={{marginTop:"1.8em"}}>評価</HighLightBar>
 
-        <Grid container xs={12} spacing={0} className={classes.likedPosition}>
-          <Grid item xs={6} className={classes.likedIconPosition}>
-            <Typography className={classes.h5WorksLikeTitle}>
-              {"Like"}
-            </Typography>
-          </Grid>
-          <Grid item xs={6} className={classes.likedIconPosition}>
-            <FormControl>
-              {isLiked
-                ? <FavoriteIcon
-                  onClick={isLikedHandleChange}
-                  />
-                : <FavoriteBorder
-                  onClick={isLikedHandleChange}
-                />
-              }
-            </FormControl>
-          </Grid>
+        <TitleSpacing container item xs={12}>
+        <Grid container item xs={4} alignItems={"center"}>
+          <MiddleTitle>
+            Like
+          </MiddleTitle>
         </Grid>
 
+        <Grid container item xs={8} alignItems={"center"} sx={classes.likedIconPosition}>
+          <FormControl>
+            {isLiked
+              ? <FavoriteIcon
+                onClick={isLikedHandleChange}
+                />
+              : <FavoriteBorder
+                onClick={isLikedHandleChange}
+              />
+            }
+          </FormControl>
+        </Grid>
 
-        <Grid container xs={12} spacing={0} className={classes.scorePosition}>
-          <Grid item xs={12}>
-            <Typography className={classes.h5WorksLikeTitle}>
-              {"採点"}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth={true} label={""} multiline={false} required={true} variant="standard"
-              // fullWidth={true} label={"点数(0-100)"} multiline={false} required={true}
-              rows={1} value={workScore} type={"text"} onChange={inputWorkScore}
-              inputProps={{min: 0, style: { textAlign: 'center' }}}
-              // InputProps= {classes.textFieldInputProps} //.Muiを編集したい時はこれ。Part2  
-              className = {classes.FCtensuu} //.Muiを編集したい時はこれ。Part2  
+        </TitleSpacing>
+
+        <ItemExplanationSet middleTitle="採点" text={
+          <TextField
+            fullWidth={false} label={""} multiline={false} required={true} variant="standard"
+            rows={1} value={workScore} type={"text"} onChange={inputWorkScore}
+            inputProps={{min: 0, style: { textAlign: 'center' }}}
+            sx={classes.ScorePosition}//.Muiを編集したい時はこれ。Part2  
+            // sx={classes.ScorePosition}//.Muiを編集したい時はこれ。Part2  
+          />
+        }/>
+
+        <ItemExplanationSet middleTitle="視聴年" text={
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              views={['year']}
+              label="Year only"
+              value={workWatchYear}
+              onChange={inputWorkWatchYear}
+              renderInput={(params) => <TextField {...params} helperText={null} />}
             />
-          </Grid>
-        </Grid>
-        <Grid container item xs={12} spacing={0} className={classes.scorePosition}>
-          <Typography className={classes.h5WorksLikeTitle}>タグ</Typography> 
-        </Grid>
-        {(() => {
-          let postedTag = []
-          for(let j = 0;j < Object.keys(tagMap).length;j++){
-            // console.log(tagCheckBox[Object.keys(tagMap)[j]] ? "true+tagtag" : "false+tagtag")
-            if(tagCheckBox[Object.keys(tagMap)[j]]){
-              postedTag = [...postedTag , 
-                <Chip
-                  size="small"
-                  label={[tagMap[Object.keys(tagMap)[j]].key]}
-                  // clickable
-                  color="primary"
-                  onDelete={() => { return tagCheckBoxHandleChange({
-                    name : Object.keys(tagMap)[j] ,
-                    isClicked : true
-                  })}}
-                />
-              ]
-            } 
-          }
-          return <Grid
-            container item xs spacing={0}
-            classes={{root:classes.firstTagItemGrid}}
-          > 
-            {postedTag}
-          </Grid>
-        })()}
+          </LocalizationProvider>
+        }/>
+
+        <ItemExplanationSet middleTitle="視聴回数" text={
+          <FormControl 
+            variant="standard"
+            sx={{ m: 1, minWidth: 30 }} 
+            sx={classes.watchTimesPosition}
+          >
+            <Select
+              labelId="demo-simple-select-standard-label"
+              id="demo-simple-select-standard"
+              value={workWatchTimes}
+              onChange={inputWorkWatchTimes}
+              // label="視聴回数"
+              autoWidth
+            >
+              <MenuItem value={1}>1回</MenuItem>
+              <MenuItem value={2}>2回</MenuItem>
+              <MenuItem value={3}>3回</MenuItem>
+              <MenuItem value={4}>4回</MenuItem>
+              <MenuItem value={5}>5回以上</MenuItem>
+            </Select>
+          </FormControl>
+        }/>
+
+        {/* <Grid container item xs={12} spacing={0} sx={classes.scorePosition}> */}
+        {/* <TitleSpacing container item xs={12}> */}
+          {/* <Grid container item xs={4} alignItems={"center"}> */}
+            {/* <Typography sx={classes.h5WorksLikeTitle}>タグ</Typography>  */}
+        {/* </Grid> */}
+        <ItemExplanationSet middleTitle="タグ" text=
+          {(() => {
+            let postedTag = []
+            for(let j = 0;j < Object.keys(tagMap).length;j++){
+              if(tagCheckBox[Object.keys(tagMap)[j]]){
+                postedTag = [...postedTag , 
+                  <Chip
+                    sx={classes.tagChip}
+                    size="small"
+                    label={[tagMap[Object.keys(tagMap)[j]].key]}
+                    // clickable
+                    color="primary"
+                    onDelete={() => { return tagCheckBoxHandleChange({
+                      name : Object.keys(tagMap)[j] ,
+                      isClicked : true
+                    })}}
+                  />
+                ]
+              } 
+            }
+            return <Grid
+              container item xs spacing={0}
+              classes={{root:classes.firstTagItemGrid}}
+            > 
+              {postedTag}
+            </Grid>
+          })()}
+        />
 
         {/* フリーワード検索部 */}
-        <Grid container xs spacing={0} className={classes.freeWordSearchTag}>
-          <FormControl className={classes.FCfreeWordSearchTag}>
-            <Autocomplete
-              classes={{
-                option: classes.autoCompleteStyle,
-                listbox: classes.autoCompleteStylePop
-                }}//.Muiを編集したい時はこれ。
-              id="tagSearch"
-              options={Object.values(tagMap)}
-              getOptionLabel={(option) => option.key}
-              clearOnEscape
-              inputValue = {tagAutoCompleteValue}
-              onInputChange = {(event,newInputValue,reason) => {
-                inputTagAutoCompleteValue(newInputValue,reason)
-              }}
-              onChange = {(event,selectedValue) => {
-                tagCheckBoxHandleChange({
-                  name : selectedValue?.originalKey ,
-                  isClicked : false
-                })
-                return true
-              }}
-              renderInput={(params) => <TextField {...params} label="タグを検索" margin="none" variant="standard"/>}
+        <ItemExplanationSet middleTitle="" text={
+          <>
+          {/* <Grid container xs={12} spacing={0} sx={classes.freeWordSearchTag}> */}
+            <FormControl sx={classes.FCfreeWordSearchTag}>
+              <Autocomplete
+                PaperComponent={({ children }) => (
+                  <Paper 
+                    sx={{
+                      // option : { // ❌
+                      '& .MuiAutocomplete-option' : {
+                        minHeight : '0.7em', //デフォルトで大きい数値になっているから上書き
+                        padding : "2px",
+                      },
+                    }}
+                  >
+                    {children}
+                  </Paper>
+                )}
+                sx={{
+                  '& .MuiAutocomplete-input' : { //適用
+                    // color : "red",
+                  },
+                  '& .MuiInput-root' : { //適用
+                    '& .MuiInput-input' : {
+                      // padding : "20px",
+                    },
+                  },
+                }}
+                id="tagSearch"
+                options={Object.values(tagMap)}
+                getOptionLabel={(option) => option.key}
+                clearOnEscape
+                inputValue = {tagAutoCompleteValue}
+                onInputChange = {(event,newInputValue,reason) => {
+                  inputTagAutoCompleteValue(newInputValue,reason)
+                }}
+                onChange = {(event,selectedValue) => {
+                  tagCheckBoxHandleChange({
+                    name : selectedValue?.originalKey ,
+                    isClicked : false
+                  })
+                  return true
+                }}
+                renderInput={(params) => 
+                  <TextField {...params} label="タグを検索" margin="none" variant="standard"/>
+                }
               />
-          </FormControl>
-        </Grid> 
+            </FormControl>
+          {/* </Grid> */}
 
-        <Collapse in={showGenre} timeout={300}>
-          <Grid container item spacing={0} justify={"center"} alignItems="center">  
-            <Button onClick={() => {
-              setShowGenre(!showGenre)
-            }}> 
-              {(showGenre == true) ? "タグ候補を非表示" : null}
-            </Button>
-          </Grid>
-        </Collapse>
+          <Collapse in={showGenre} timeout={300}>
+            <Grid container item spacing={0} justify={"flex-start"} alignItems="center">  
+              <Button
+                sx={classes.tagAppeareButton} 
+                onClick={() => {
+                  setShowGenre(!showGenre)
+              }}> 
+                {(showGenre == true) ? "タグ候補を非表示" : null}
+              </Button>
+            </Grid>
+          </Collapse>
+          </>
+        }/>
 
         {/* タグ候補 表示部 */}
-        <FormGroup className={classes.tagFormGroup}>
-          <FormControl margin="none">
-            <Collapse in={showGenre} timeout={1000}>
-              <Grid container classes={{ root: classes.tagMasterGrid}}>
-                {(() => {
-                  let tagList = []
-                  let displayFlag = true
-                  
-                  for(let j = 0;j < Object.keys(tagMap).length;j++){
-                    tagList = [...tagList , 
-                      <>
+        <Collapse in={showGenre} timeout={1000}>
+          <Grid container classes={{ root: classes.tagMasterGrid}}>
+            {(() => {
+              let tagList = []
+              let displayFlag = true
+              
+              for(let j = 0;j < Object.keys(tagMap).length;j++){
+                tagList = [...tagList , 
+                  <>
 
-                        {(() => {
-                          switch(j) {
-                            case 0 : //ジャンル
-                              console.log(displayFlag ? "true" +"+displayFlag@0" :　"false" + "+displayFlag@0")
-                              displayFlag = true //→ついき：多分なくてもいい。
-                              return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
-                            case showMoreGenre : 
-                              // console.log(displayFlag ? "true" +"+displayFlag@showMoreGenre" : "false" +"+displayFlag@showMoreGenre")
-                              // console.log(showMoreGenre+"+showMoreGenre") 
-                              displayFlag = false
-                              if(showMoreGenre != totalCountGenre){
-                                break
-                              }
-
-                            case totalCountGenre : //印象
-                              displayFlag = true
-                              return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
-                            case showMoreImpression :
-                              // console.log(j+"+showMoreImpression")
-                              displayFlag = false
-                              if(showMoreImpression != totalCountImpression){
-                                break
-                              }
-                              
-                            case totalCountImpression : // 原作
-                              displayFlag = true
-                              return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
-                            case showMoreOriginal :
-                                // case totalCountImpression + 5 :
-                              // console.log(j+"+showMoreOriginal")
-                              displayFlag = false                                
-                              if(showMoreOriginal != (totalCountOriginal)){
-                                break
-                              }
-                              
-                            case totalCountOriginal : // 人
-                              displayFlag = true
-                              return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 className={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
-                            case showMorePosition :
-                              // console.log(j+"+showMorePosition")
-                              displayFlag = false
-                              if(showMorePosition != (totalCountPosition)){
-                                break
-                              }
-                            default :
-                              break
+                    {(() => {
+                      switch(j) {
+                        case 0 : //ジャンル
+                          console.log(displayFlag ? "true" +"+displayFlag@0" :　"false" + "+displayFlag@0")
+                          displayFlag = true //→ついき：多分なくてもいい。
+                          return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 sx={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
+                        case showMoreGenre : 
+                          // console.log(displayFlag ? "true" +"+displayFlag@showMoreGenre" : "false" +"+displayFlag@showMoreGenre")
+                          // console.log(showMoreGenre+"+showMoreGenre") 
+                          displayFlag = false
+                          if(showMoreGenre != totalCountGenre){
+                            break
                           }
-                        })()}
 
-                        {/* //チップ(タグ) 表示部 */}
-                        <Collapse in={displayFlag} timeout={1000}>
-                          <Grid
-                            container item xs spacing={0}
-                            classes={{root: classes.secondTagItemGrid}}
-                          >
-                            <Chip
-                              size="small"
-                              label={[tagMap[Object.keys(tagMap)[j]].key]}
-                              clickable
-                              color={tagCheckBox[Object.keys(tagMap)[j]] ? "primary" : "default" }
-                              onClick={() => { return tagCheckBoxHandleChange({
-                                name : Object.keys(tagMap)[j] ,
-                                isClicked : tagCheckBox[Object.keys(tagMap)[j]]
-                              })}}
-                            />
-                          </Grid>
-                        </Collapse>
-
-                        {/* //Tag開閉処理部分 //もっと見る表示部分 */}
-                        {(() => {
-                          switch(j) {
-                            case (showMoreGenre - 1) :
-                              return (
-                                <Grid container item spacing={0} justify={
-                                  (showMoreGenre != totalCountGenre) 
-                                    ? "flex-end" 
-                                    : "flex-start"
-                                  }
-                                  alignItems="flex-start"
-                                >  
-                                  <Button onClick={() => {
-                                    // setShowMoreGenre(showMoreGenre + 3) 
-                                    setShowMoreGenre((preShowMoreGenre) => { 
-                                      if(showMoreGenre != totalCountGenre){　 //全てが表示されていない
-                                        preShowMoreGenre = preShowMoreGenre + ONE_CLICK_APPEARANCE_IN_POSTING
-                                        console.log(preShowMoreGenre+"+preShowMoreGenre")
-                                        console.log(totalCountGenre+"+totalCountGenre")
-                                        if (preShowMoreGenre > (totalCountGenre)) {
-                                          return totalCountGenre
-                                        } else {
-                                          console.log("preShowMoreGenre")
-                                          return preShowMoreGenre
-                                        }
-                                      } else {// 現在Maxに達しているか
-                                        return firstCheckBoxDisp
-                                      }
-                                    })
-                                  }}> 
-                                    {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
-                                  </Button>
-                                </Grid>
-                              )
-                            case (showMoreImpression - 1) :
-                              return (
-                                <Grid container item spacing={0} justify={
-                                  (showMoreImpression != totalCountImpression)
-                                    ? "flex-end" 
-                                    : "flex-start"
-                                  }
-                                  alignItems="flex-start"
-                                >  
-                                  <Button onClick={() => {
-                                    // setShowMoreGenre(showMoreGenre + 3) 
-                                    setShowMoreImpression((preShowMoreImpressions) => { 
-                                      if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
-                                        preShowMoreImpressions = preShowMoreImpressions + ONE_CLICK_APPEARANCE_IN_POSTING
-                                        if (preShowMoreImpressions > (totalCountImpression)) {
-                                            return totalCountImpression
-                                        } else {
-                                          return preShowMoreImpressions
-                                        }
-                                      } else {
-                                        return (totalCountGenre + firstCheckBoxDisp)
-                                      }
-                                    })
-                                  }}> 
-                                    {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
-                                  </Button>
-                                </Grid>
-                              )
-                            // case (showMoreOriginal - 1) :
-                            // return (
-                            //   <Grid container item spacing={0} justify={
-                            //     (showMoreOriginal != (totalCountOriginal))
-                            //       ? "flex-end" 
-                            //       : "flex-start"
-                            //     }
-                            //     alignItems="flex-start"
-                            //   >  
-                            //     <Button onClick={() => {
-                            //       // setShowMoreGenre(showMoreGenre + 3) 
-                            //       setShowMoreOriginal((preShowMoreOriginal) => { 
-                            //         if(showMoreOriginal != (totalCountOriginal)){ //全てが表示されてるかいなか
-                            //           preShowMoreOriginal = preShowMoreOriginal + ONE_CLICK_APPEARANCE_IN_POSTING
-                            //           if (preShowMoreOriginal > (totalCountOriginal)) {
-                            //               return (totalCountOriginal)
-                            //           } else {
-                            //             return preShowMoreOriginal
-                            //           }
-                            //         } else {
-                            //           return (totalCountImpression + firstCheckBoxDisp)
-                            //         }
-                            //       })
-                            //     }}> 
-                            //       {(showMoreOriginal == (totalCountOriginal) ) ? "　縮める" :  "もっと見る　"}
-                            //     </Button>
-                            //   </Grid>
-                            // )
-                            case (showMorePosition - 1) :
-                              return (
-                                <Grid container item spacing={0} justify={
-                                  (showMorePosition != (totalCountPosition))
-                                    ? "flex-end" 
-                                    : "flex-start"
-                                  }
-                                  alignItems="flex-start"
-                                >  
-                                  <Button onClick={() => {
-                                    // setShowMoreGenre(showMoreGenre + 3) 
-                                    setShowMorePosition((preShowMorePosition) => { 
-                                      if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
-                                        preShowMorePosition = preShowMorePosition + ONE_CLICK_APPEARANCE_IN_POSTING
-                                        if (preShowMorePosition > (totalCountPosition)) {
-                                          console.log("retorun max ")
-                                          return (totalCountPosition)
-                                        } else {
-                                          return preShowMorePosition
-                                        }
-                                      } else {
-                                        return (totalCountOriginal + firstCheckBoxDisp)
-                                      }
-                                    })
-                                  }}> 
-                                    {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
-                                  </Button>
-                                </Grid>
-                              )
-                            default :
-                              break                          
+                        case totalCountGenre : //印象
+                          displayFlag = true
+                          return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 sx={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
+                        case showMoreImpression :
+                          // console.log(j+"+showMoreImpression")
+                          displayFlag = false
+                          if(showMoreImpression != totalCountImpression){
+                            break
                           }
-                        })()}
-                      </>
-                    ]
-                  }
-                  return <>{tagList}</>
-                })()}
-              </Grid>
-            </Collapse>
-          </FormControl>
-        </FormGroup>
+                          
+                        case totalCountImpression : // 原作
+                          displayFlag = true
+                          return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 sx={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
+                        case showMoreOriginal :
+                            // case totalCountImpression + 5 :
+                          // console.log(j+"+showMoreOriginal")
+                          displayFlag = false                                
+                          if(showMoreOriginal != (totalCountOriginal)){
+                            break
+                          }
+                          
+                        case totalCountOriginal : // 人
+                          displayFlag = true
+                          return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 sx={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
+                        case showMorePosition :
+                          // console.log(j+"+showMorePosition")
+                          displayFlag = false
+                          if(showMorePosition != (totalCountPosition)){
+                            break
+                          }
+                        default :
+                          break
+                      }
+                    })()}
 
-        <Grid container item spacing={0} justify={"center"} alignItems="center">  
-          <Button onClick={() => {
-            setShowGenre(!showGenre)
-          }}> 
-            {(showGenre == true) ? "タグ候補を非表示" : "タグ候補を表示"}
-          </Button>
-        </Grid>
+                    {/* //チップ(タグ) 表示部 */}
+                    <Collapse in={displayFlag} timeout={1000}>
+                      <Grid
+                        container item xs spacing={0}
+                        classes={{root: classes.secondTagItemGrid}}
+                      >
+                        <Chip
+                          size="small"
+                          label={[tagMap[Object.keys(tagMap)[j]].key]}
+                          clickable
+                          color={tagCheckBox[Object.keys(tagMap)[j]] ? "primary" : "default" }
+                          onClick={() => { return tagCheckBoxHandleChange({
+                            name : Object.keys(tagMap)[j] ,
+                            isClicked : tagCheckBox[Object.keys(tagMap)[j]]
+                          })}}
+                        />
+                      </Grid>
+                    </Collapse>
 
-        <Grid container xs className={classes.likedPosition}>
-          <Typography className={classes.h5WorksLikeTitle}>
+                    {/* //Tag開閉処理部分 //もっと見る表示部分 */}
+                    {(() => {
+                      switch(j) {
+                        case (showMoreGenre - 1) :
+                          return (
+                            <Grid container item spacing={0} justify={
+                              (showMoreGenre != totalCountGenre) 
+                                ? "flex-end" 
+                                : "flex-start"
+                              }
+                              alignItems="flex-start"
+                            >  
+                              <Button onClick={() => {
+                                // setShowMoreGenre(showMoreGenre + 3) 
+                                setShowMoreGenre((preShowMoreGenre) => { 
+                                  if(showMoreGenre != totalCountGenre){　 //全てが表示されていない
+                                    preShowMoreGenre = preShowMoreGenre + ONE_CLICK_APPEARANCE_IN_POSTING
+                                    console.log(preShowMoreGenre+"+preShowMoreGenre")
+                                    console.log(totalCountGenre+"+totalCountGenre")
+                                    if (preShowMoreGenre > (totalCountGenre)) {
+                                      return totalCountGenre
+                                    } else {
+                                      console.log("preShowMoreGenre")
+                                      return preShowMoreGenre
+                                    }
+                                  } else {// 現在Maxに達しているか
+                                    return firstCheckBoxDisp
+                                  }
+                                })
+                              }}> 
+                                {(showMoreGenre == totalCountGenre) ? "　縮める" :  "もっと見る　"}
+                              </Button>
+                            </Grid>
+                          )
+                        case (showMoreImpression - 1) :
+                          return (
+                            <Grid container item spacing={0} justify={
+                              (showMoreImpression != totalCountImpression)
+                                ? "flex-end" 
+                                : "flex-start"
+                              }
+                              alignItems="flex-start"
+                            >  
+                              <Button onClick={() => {
+                                // setShowMoreGenre(showMoreGenre + 3) 
+                                setShowMoreImpression((preShowMoreImpressions) => { 
+                                  if(showMoreImpression != (totalCountImpression)){ //全てが表示されてるかいなか
+                                    preShowMoreImpressions = preShowMoreImpressions + ONE_CLICK_APPEARANCE_IN_POSTING
+                                    if (preShowMoreImpressions > (totalCountImpression)) {
+                                        return totalCountImpression
+                                    } else {
+                                      return preShowMoreImpressions
+                                    }
+                                  } else {
+                                    return (totalCountGenre + firstCheckBoxDisp)
+                                  }
+                                })
+                              }}> 
+                                {(showMoreImpression == (totalCountImpression) ) ? "　縮める" :  "もっと見る　"}
+                              </Button>
+                            </Grid>
+                          )
+                        // case (showMoreOriginal - 1) :
+                        // return (
+                        //   <Grid container item spacing={0} justify={
+                        //     (showMoreOriginal != (totalCountOriginal))
+                        //       ? "flex-end" 
+                        //       : "flex-start"
+                        //     }
+                        //     alignItems="flex-start"
+                        //   >  
+                        //     <Button onClick={() => {
+                        //       // setShowMoreGenre(showMoreGenre + 3) 
+                        //       setShowMoreOriginal((preShowMoreOriginal) => { 
+                        //         if(showMoreOriginal != (totalCountOriginal)){ //全てが表示されてるかいなか
+                        //           preShowMoreOriginal = preShowMoreOriginal + ONE_CLICK_APPEARANCE_IN_POSTING
+                        //           if (preShowMoreOriginal > (totalCountOriginal)) {
+                        //               return (totalCountOriginal)
+                        //           } else {
+                        //             return preShowMoreOriginal
+                        //           }
+                        //         } else {
+                        //           return (totalCountImpression + firstCheckBoxDisp)
+                        //         }
+                        //       })
+                        //     }}> 
+                        //       {(showMoreOriginal == (totalCountOriginal) ) ? "　縮める" :  "もっと見る　"}
+                        //     </Button>
+                        //   </Grid>
+                        // )
+                        case (showMorePosition - 1) :
+                          return (
+                            <Grid container item spacing={0} justify={
+                              (showMorePosition != (totalCountPosition))
+                                ? "flex-end" 
+                                : "flex-start"
+                              }
+                              alignItems="flex-start"
+                            >  
+                              <Button onClick={() => {
+                                // setShowMoreGenre(showMoreGenre + 3) 
+                                setShowMorePosition((preShowMorePosition) => { 
+                                  if(showMorePosition != (totalCountPosition)){ //全てが表示されてるかいなか
+                                    preShowMorePosition = preShowMorePosition + ONE_CLICK_APPEARANCE_IN_POSTING
+                                    if (preShowMorePosition > (totalCountPosition)) {
+                                      console.log("retorun max ")
+                                      return (totalCountPosition)
+                                    } else {
+                                      return preShowMorePosition
+                                    }
+                                  } else {
+                                    return (totalCountOriginal + firstCheckBoxDisp)
+                                  }
+                                })
+                              }}> 
+                                {(showMorePosition == (totalCountPosition) ) ? "　縮める" :  "もっと見る　"}
+                              </Button>
+                            </Grid>
+                          )
+                        default :
+                          break                          
+                      }
+                    })()}
+                  </>
+                ]
+              }
+              return <>{tagList}</>
+            })()}
+          </Grid>
+        </Collapse>
+        <ExplanationChildSet middleTitle="" text={
+          <Grid container item spacing={0} justify={"flex-start"} alignItems="center">  
+            <Button 
+              sx={classes.tagAppeareButton}
+              size="small"
+              // variant="outlined"
+              onClick={() => {
+                setShowGenre(!showGenre)
+            }}> 
+              {(showGenre == true) ? "タグ候補を非表示" : "タグ候補を表示"}
+            </Button>
+          </Grid>
+        }/>
+
+        {/* <Grid container xs sx={classes.likedPosition}>
+          <Typography sx={classes.h5WorksLikeTitle}>
             コメント
           </Typography>
-        </Grid>
-        {/* <h2 className={classes.h3WorksTitle}>コメント</h2> */}
-        {/* <h2 className={classes.postingInlineH2}>コメント</h2> */}
-
-        <Grid container xs={12} className={classes.postingNetabarePosition}>
-          <Grid container item xs={12} justify={"flex-end"}>
-            <FormControlLabel
-              control={
-                <Switch size="small" checked={isSpoiler} onChange={isSpoilerHandleChange} />
-              }
-              label = {
-                <span className={classes.postingInlineNetabareText}>ネタバレ</span>
-              }
-              labelPlacement="bottom"
-            />
-          </Grid>
-        </Grid>
-
-        <Grid container xs={12} justify={"center"} className={classes.postingCommentPosition}>
-        {/* <Grid container xs={12} flexGrow={1} justify={"center"} className={classes.postingCommentPosition}> */}
-          <TextField
+        </Grid> */}
+        <ItemExplanationSet middleTitle="コメント" text={
+          <FormControl fullWidth>
+            <TextField
             id="standard-multiline-flexible"
-            fullWidth={true} label={"コメント"} multiline variant="standard"
+            fullWidth={true}
+            // label={"コメント"}
+            multiline variant="standard"
             // required={true}
             maxRows={4} value={workComment} type={"text"} onChange={inputWorkComment}
-            className={classes.commentField} 
+            // sx={classes.commentField} 
             placeholder={"感想、評価などを5000字以内"}
+            />
+          </FormControl>
+        }/>
+        <Grid container xs={12} sx={classes.netabareGrid}>
+  　　　　　<FormControlLabel
+            sx={classes.netabareLabel}
+            control={
+              <Switch size="small" checked={isSpoiler} onChange={isSpoilerHandleChange} />
+            }
+            label = {
+              <span sx={classes.postingInlineNetabareText}>ネタバレ</span>
+            }
+            labelPlacement="bottom"
           />
         </Grid>
+
+        {/* <Grid container xs={12} justify={"center"} sx={classes.postingCommentPosition}> */}
+        {/* <Grid container xs={12} flexGrow={1} justify={"center"} sx={classes.postingCommentPosition}> */}
+
+        {/* </Grid> */}
 
         {/* 投稿ボタン */}
         <PostingButton 
@@ -1829,16 +1909,16 @@ const Posting = () => {
         />
 
         {/* <h2>作品情報を入力(オプション)</h2> */}
-        <H2CenterLine> {"作品詳細情報"} </H2CenterLine>
+        <HighLightBar style={{marginTop:"1.8em"}}> {"作品詳細情報"} </HighLightBar>
         <>
           {(state.winfoEditor == RdUserId || firstPostFlag == FIRST_POSTED_FLAG_NOT_POSTED)
             ? <>
               <Grid container item xs={12} 
-                // className={classes.postingWinfoCreator}
+                // sx={classes.postingWinfoCreator}
                 justify="space-around"
               >
                 <Grid container item xs={11} justify="center" 
-                  className={classes.postingWinfoOneData}
+                  sx={classes.postingWinfoOneData}
                 >
                   <TextField
                     fullWidth={true} label={"作品情報"} multiline variant="standard"
@@ -1847,9 +1927,9 @@ const Posting = () => {
                   />
                 </Grid>
               </Grid>
-              <Grid item container xs={12} className={classes.postingWinfoCreator}>
+              <Grid item container xs={12} sx={classes.postingWinfoCreator}>
                 <Grid item container xs={4} justify={"center"}>
-                  <FormControl className={classes.winfoCreatorFormControl}>
+                  <FormControl sx={classes.winfoCreatorFormControl}>
                     <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
                     <NativeSelect
                       id="NativeSelect-winfoCreator"
@@ -1874,7 +1954,7 @@ const Posting = () => {
                     value={winfoOneCreatorName} 
                     type={"text"} 
                     onChange={inputWinfoOneCreatorName}
-                    className={classes.commentField} 
+                    sx={classes.commentField} 
                     placeholder={"名称"}
                   />
                 </Grid>
@@ -1891,19 +1971,21 @@ const Posting = () => {
                 <DragDropContext onDragEnd={winfoCreatorHandleOnDragEnd}>
                   <Droppable droppableId="droppable">
                     {(provided,snapshot) => (
-                      <RootRef rootRef={provided.innerRef}>
+                      // <RootRef rootRef={provided.innerRef}>
                       <List 
-                        className={classes.winfoCreatorList}
+                        ref={provided.innerRef} 
+                        sx={classes.winfoCreatorList}
                       >
                         {state.winfoCreator.map(({id , kind, name }, index) => {
                           return (
                             <Draggable key={id} draggableId={id} index={index}>
                               {(provided,snapshot) => (
-                                <RootRef rootRef={provided.innerRef}>
+                                // <RootRef rootRef={provided.innerRef}>
                                   <ListItem
+                                    ref={provided.innerRef} 
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className={classes.winfoCreatorListItems}
+                                    sx={classes.winfoCreatorListItems}
                                   >
                                     <Grid container xs>
                                     {/* <Grid container xs justyfy="flexStart"> */}
@@ -1919,7 +2001,7 @@ const Posting = () => {
                                           }}
                                         >
                                           <IconButton
-                                            className={classes.iconButton}  
+                                            sx={classes.iconButton}  
                                           >
                                             <EditIcon/>
                                           </IconButton>
@@ -1927,20 +2009,20 @@ const Posting = () => {
                                       </Grid>
                                       <Grid container item xs={10} alignItems="center">
                                         <ListItemText 
-                                          className={classes.displayText}
+                                          sx={classes.displayText}
                                           primary={kind+"  /  "+name}
                                         />
                                       </Grid>
                                     </Grid>
                                 </ListItem>
-                                </RootRef>
+                                // </RootRef>
                               )}
                             </Draggable>
                           );
                         })}
                         {provided.placeholder}
                       </List>
-                      </RootRef>
+                      // </RootRef>
                     )}
                   </Droppable>
                 </DragDropContext>
@@ -1948,9 +2030,9 @@ const Posting = () => {
               <Dialog open={openCreatorDialog} onClose={handleCloseCreatorDialog} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
                 <DialogContent>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingWinfoCreatorDialog}>
+                  <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoCreatorDialog}>
                     <Grid item container xs={4} >
-                      <FormControl className={classes.winfoCreatorFormControl}>
+                      <FormControl sx={classes.winfoCreatorFormControl}>
                         <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
                         <NativeSelect
                           id="NativeSelect-winfoCreator"
@@ -1974,7 +2056,7 @@ const Posting = () => {
                         value={winfoOneCreatorDialogName} 
                         type={"text"} 
                         onChange={inputWinfoOneCreatorDialogName}
-                        className={classes.commentField} 
+                        sx={classes.commentField} 
                         placeholder={"名称"}
                       />
                     </Grid>
@@ -1982,7 +2064,7 @@ const Posting = () => {
                 </DialogContent>
                 <DialogActions>
                   <IconButton
-                    className={classes.winfoCreatorNodalDeleteIcon}
+                    sx={classes.winfoCreatorNodalDeleteIcon}
                     onClick={() => {
                       console.log("delete clicked")
                       inputWinfoCreatorDelete()
@@ -1995,7 +2077,7 @@ const Posting = () => {
                   <Button 
                     onClick={handleCloseCreatorDialog}
                     color="primary"
-                    className={classes.winfoCreatorNodalCancelUpdateButton}
+                    sx={classes.winfoCreatorNodalCancelUpdateButton}
                   >
                     キャンセル
                   </Button>
@@ -2005,14 +2087,14 @@ const Posting = () => {
                       handleCloseCreatorDialog()
                     }}
                     color="primary"
-                    className={classes.winfoCreatorNodalCancelUpdateButton}
+                    sx={classes.winfoCreatorNodalCancelUpdateButton}
                   >
                       更新
                   </Button>
                 </DialogActions>
               </Dialog>
-              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
-                <FormControl className={classes.winfoCreatorFormControl}>
+              <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
+                <FormControl sx={classes.winfoCreatorFormControl}>
                   <InputLabel id="demo-controlled-open-country-select-label">制作国</InputLabel>
                   <NativeSelect
                     id="NativeSelect-winfoCreator-country"
@@ -2032,11 +2114,11 @@ const Posting = () => {
                   fullWidth={true} label={"国"} multiline variant="standard"
                   // required={true}
                   maxRows={4} value={state.winfoCountry} type={"text"} onChange={inputWinfoCountry}
-                  className={classes.commentField} 
+                  sx={classes.commentField} 
                   placeholder={"制作国"}
                 /> */}
               </Grid>
-              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              <Grid item container xs={12} justify={"flex-start"} sx={classes.postingWinfoOneData}>
                 {/* <DesktopDatePicker
                   label="リリース"
                   inputFormat="MM/dd/yyyy"
@@ -2050,49 +2132,49 @@ const Posting = () => {
                   fullWidth={false} label={"リリース"} variant="standard"
                   // required={true}
                   value={state.winfoStart} type={"date"} onChange={inputWinfoStart}
-                  className={classes.commentField} 
+                  sx={classes.commentField} 
                   placeholder={"リリース時期"}
                 />
               </Grid>
-              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              <Grid item container xs={12} justify={"flex-start"} sx={classes.postingWinfoOneData}>
                 <TextField
                   InputLabelProps={{ shrink: true }} 
                   id="standard-multiline-flexible"
                   fullWidth={false} label={"完結"} variant="standard"
                   // required={true}
                   value={state.winfoFinish} type={"date"} onChange={inputWinfoFinish}
-                  className={classes.commentField} 
+                  sx={classes.commentField} 
                   placeholder={"完結した時期"}
                 />
               </Grid>
-              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
                 <p>画像登録フォーム</p>
               </Grid>
               {/* Step2 */}
-              {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              {/* <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
                 <p>親選択フォーム</p>
               </Grid>
-              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
                 <p>子選択フォーム</p>
               </Grid>
-              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
                 <p>シリーズフォーム(選択と自由入力フォーム)</p>
               </Grid> */}
-              {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              {/* <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
                 <TextField
                   id="standard-multiline-flexible"
                   fullWidth={true} label={"主題歌"} multiline variant="standard"
                   // required={true}
                   maxRows={4} value={state.winfoMusic} type={"text"} onChange={inputWinfoMusic}
-                  className={classes.commentField} 
+                  sx={classes.commentField} 
                   placeholder={"主題歌(登録と同時にworkIdが発行される?)"}
                 />
               </Grid> */}
 {/* 
               //////////////////主題歌 */}
-              <Grid item container xs={12} className={classes.postingWinfoCreator}>
+              <Grid item container xs={12} sx={classes.postingWinfoCreator}>
                 <Grid item container xs={4} justify={"center"}>
-                  <FormControl className={classes.winfoCreatorFormControl}>
+                  <FormControl sx={classes.winfoCreatorFormControl}>
                     <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
                     <NativeSelect
                       id="NativeSelect-winfoMusic"
@@ -2117,7 +2199,7 @@ const Posting = () => {
                     value={winfoOneMusicName} 
                     type={"text"} 
                     onChange={inputWinfoOneMusicName}
-                    className={classes.commentField} 
+                    sx={classes.commentField} 
                     placeholder={"名称"}
                   />
                 </Grid>
@@ -2134,19 +2216,21 @@ const Posting = () => {
                 <DragDropContext onDragEnd={winfoMusicHandleOnDragEnd}>
                   <Droppable droppableId="droppable">
                     {(provided,snapshot) => (
-                      <RootRef rootRef={provided.innerRef}>
+                      // <RootRef rootRef={provided.innerRef}>
                       <List 
-                        className={classes.winfoCreatorList}
+                        ref={provided.innerRef} 
+                        sx={classes.winfoCreatorList}
                       >
                         {state.winfoMusic.map(({id , kind, name }, index) => {
                           return (
                             <Draggable key={id} draggableId={id} index={index}>
                               {(provided,snapshot) => (
-                                <RootRef rootRef={provided.innerRef}>
+                                // <RootRef rootRef={provided.innerRef}>
                                   <ListItem
+                                    ref={provided.innerRef} 
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className={classes.winfoCreatorListItems}
+                                    sx={classes.winfoCreatorListItems}
                                   >
                                     <Grid container xs={12}
                                     >
@@ -2163,7 +2247,7 @@ const Posting = () => {
                                           }}
                                         >
                                           <IconButton
-                                            className={classes.iconButton}  
+                                            sx={classes.iconButton}  
                                           >
                                             <EditIcon/>
                                           </IconButton>
@@ -2171,20 +2255,20 @@ const Posting = () => {
                                       </Grid>
                                       <Grid container item xs={10} alignItems="center">
                                         <ListItemText 
-                                          className={classes.displayText}
+                                          sx={classes.displayText}
                                           primary={kind+"  /  "+name}
                                         />
                                       </Grid>
                                     </Grid>
                                 </ListItem>
-                                </RootRef>
+                                // </RootRef>
                               )}
                             </Draggable>
                           );
                         })}
                         {provided.placeholder}
                       </List>
-                      </RootRef>
+                      // </RootRef>
                     )}
                   </Droppable>
                 </DragDropContext>
@@ -2193,9 +2277,9 @@ const Posting = () => {
               <Dialog open={openMusicDialog} onClose={handleCloseMusicDialog} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">項目を編集</DialogTitle>
                 <DialogContent>
-                  <Grid item container xs={12} justify={"center"} className={classes.postingwinfoCreatorDialog}>
+                  <Grid item container xs={12} justify={"center"} sx={classes.postingwinfoCreatorDialog}>
                     <Grid item container xs={4} >
-                      <FormControl className={classes.winfoCreatorFormControl}>
+                      <FormControl sx={classes.winfoCreatorFormControl}>
                         <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
                         <NativeSelect
                           id="NativeSelect-winfoMusic"
@@ -2219,16 +2303,17 @@ const Posting = () => {
                         value={winfoOneMusicDialogName} 
                         type={"text"} 
                         onChange={inputWinfoOneMusicDialogName}
-                        className={classes.commentField} 
+                        sx={classes.commentField} 
                         placeholder={"名称"}
                       />
                     </Grid>
                   </Grid>
 
                 </DialogContent>
+
                 <DialogActions>
                   <IconButton
-                    className={classes.winfoCreatorNodalDeleteIcon}
+                    sx={classes.winfoCreatorNodalDeleteIcon}
                     onClick={() => {
                       console.log("delete clicked")
                       inputWinfoMusicDelete()
@@ -2241,7 +2326,7 @@ const Posting = () => {
                   <Button 
                     onClick={handleCloseMusicDialog}
                     color="primary"
-                    className={classes.winfoCreatorNodalCancelUpdateButton}
+                    sx={classes.winfoCreatorNodalCancelUpdateButton}
                   >
                     キャンセル
                   </Button>
@@ -2251,62 +2336,66 @@ const Posting = () => {
                       handleCloseMusicDialog()
                     }}
                     color="primary"
-                    className={classes.winfoCreatorNodalCancelUpdateButton}
+                    sx={classes.winfoCreatorNodalCancelUpdateButton}
                   >
                       更新
                   </Button>
                 </DialogActions>
               </Dialog>
 
-              {/* <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              {/* <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
                 <TextField
                   id="standard-multiline-flexible"
                   fullWidth={false} label={"ページ数"} variant="standard"
                   // required={true}
                   inputProps={{min: 0, style: { textAlign: 'center' }}}
                   value={state.winfoPages} type={"text"} onChange={inputWinfoPages}
-                  className={classes.commentField} 
+                  sx={classes.commentField} 
                   placeholder={"数字入力"}
                 />
               </Grid>
-              <Grid item container xs={12} justify={"center"} className={classes.postingWinfoOneData}>
+              <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
                 <TextField
                   id="standard-multiline-flexible"
                   fullWidth={false} label={"時間(分)"} variant="standard"
                   inputProps={{min: 0, style: { textAlign: 'center' }}}
                   // required={true}
                   value={state.winfoMinutes} type={"text"} onChange={inputWinfoMinutes}
-                  className={classes.commentField} 
+                  sx={classes.commentField} 
                   placeholder={"数字入力"}
                 />
               </Grid> */}
-
-              {/* 投稿ボタン */}
-              <PostingButton 
-                changeIsPublic={changeIsPublic} 
-                postButtonClicked={postButtonClicked}
-              />
             </>
             : <>
-              <SCTypografyh5>作品情報</SCTypografyh5>
-              <ExplanationTextDefault>{state.winfoInfomation ? state.winfoInfomation : "未投稿"}</ExplanationTextDefault>
-              <SCTypografyh5>作者</SCTypografyh5>
-              {state.winfoCreator.length 
-                ? state.winfoCreator.map((map) => (
-                  <><ExplanationTextDefault>
-                    {map.kind+` `+map.name}
-                  </ExplanationTextDefault></>
-                ))
-                : <ExplanationTextDefault>"投稿なし"</ExplanationTextDefault>
-              }
+              <ItemExplanationSet middleTitle="作品情報" text=
+                {state.winfoInfomation ? state.winfoInfomation : "未投稿"}
+              />
 
-              <SCTypografyh5>制作国</SCTypografyh5>
-              <ExplanationTextDefault>{state.winfoCountry ? state.winfoCountry : "未投稿"}</ExplanationTextDefault>
-              <SCTypografyh5>リリース</SCTypografyh5>
-              <ExplanationTextDefault>{state.winfoStart ? state.winfoStart : "未投稿"}</ExplanationTextDefault>
-              <SCTypografyh5>完結</SCTypografyh5>
-              <ExplanationTextDefault>{state.winfoFinish ? state.winfoFinish : "未投稿"}</ExplanationTextDefault>
-              <SCTypografyh5>主題歌</SCTypografyh5>
+              <ItemExplanationSet middleTitle="作成関係者" text=
+                {state.winfoCreator.length 
+                  ? state.winfoCreator.map((map) => (
+                    <><ExplanationTextDefault>
+                      {map.kind+` `+map.name}
+                    </ExplanationTextDefault></>
+                  ))
+                  : "投稿なし"
+                }
+              />
+
+              <ItemExplanationSet middleTitle="制作国" text=
+                {state.winfoCountry ? state.winfoCountry : "未投稿"}
+              />
+
+              <ItemExplanationSet middleTitle="リリース" text=
+                {state.winfoStart ? state.winfoStart : "未投稿"}
+              />
+              
+              <ItemExplanationSet middleTitle="完結" text=
+                {state.winfoFinish ? state.winfoFinish : "未投稿"}
+              />
+
+              <ItemExplanationSet middleTitle="主題歌" text=
+  
               {state.winfoCreator.length 
                 ? state.winfoMusic.map((map) => { return (
                   <ExplanationTextDefault>
@@ -2314,7 +2403,7 @@ const Posting = () => {
                   </ExplanationTextDefault>
                 )})
                 : <ExplanationTextDefault>{"未登録"}</ExplanationTextDefault>
-              }
+              }/>
 
               {/* 以下４項目は運用に関して再考 */}
               {/* <p>ページ数:{state.winfoPages}</p>
@@ -2325,13 +2414,19 @@ const Posting = () => {
             {/* 以下２つはS2
             <p>親:{state.winfoParent == {} ? state.winfoParent : "no parent data"}</p>
             <p>子:{state.winfoChild}</p> */}
+
             </>
           }
+          {/* 投稿ボタン */}
+          <PostingButton 
+            changeIsPublic={changeIsPublic} 
+            postButtonClicked={postButtonClicked}
+          />
         </>
         {/* <p>※新規登録なので、作品情報もオプションで入力してもらうようにする</p> */}
 
-        {(firstPostFlag != FIRST_POSTED_FLAG_NOT_POSTED && !isPublic) ? <VisibilityOffIcon className={classes.isPublicSignal}/> : null}
-        {(firstPostFlag != FIRST_POSTED_FLAG_NOT_POSTED && isPublic) ? <PublicIcon className={classes.isPublicSignal}/> : null}
+        {(firstPostFlag != FIRST_POSTED_FLAG_NOT_POSTED && !isPublic) ? <VisibilityOffIcon sx={classes.isPublicSignal}/> : null}
+        {(firstPostFlag != FIRST_POSTED_FLAG_NOT_POSTED && isPublic) ? <PublicIcon sx={classes.isPublicSignal}/> : null}
           {/* </> */}
         <Footer />
       </>

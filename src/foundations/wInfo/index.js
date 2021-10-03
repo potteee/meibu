@@ -1,5 +1,7 @@
 import React, {useState, useCallback} from 'react';
-import { db, FirebaseTimestamp } from "../../firebase/index";
+import { db } from "../../firebase/index";
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc ,updateDoc ,Timestamp } from "firebase/firestore";
+
 
 /// Redux no だからここに書いている →api配下に移行予定
 
@@ -7,6 +9,8 @@ const postWInfoCreate = (
     workName,
     workMedia,
     workScore,
+    workWatchYear,
+    workWatchTimes,
     uid,
     userName,
     checkBoxState,
@@ -20,9 +24,10 @@ const postWInfoCreate = (
     firstPostFlag,
     preWorkId) => {
     return async (dispatch) => {
-        const timestamp = FirebaseTimestamp.now()
+        const timestamp = Timestamp.now()
 
-        const wInfoRef = db.collection('wInfo').doc()
+        // const wInfoRef = db.collection('wInfo').doc()
+        const wInfoRef = doc(collection(db, 'wInfo'))
         //自動生成されたIDを取得
         let workId = wInfoRef.id
 
@@ -34,8 +39,9 @@ const postWInfoCreate = (
 
         //新規作品を登録する場合
         if(firstPostFlag == 1) {
-            assessmentRef = wInfoRef.collection('assessment').doc(uid)
-
+            // assessmentRef = wInfoRef.collection('assessment').doc(uid)
+            assessmentRef = doc( wInfoRef , 'assessment', uid)
+            
             let tmpWorkTag = {}
             // tagCheckBox  [0:xxxx,1:yyyy]
 
@@ -55,6 +61,8 @@ const postWInfoCreate = (
                 workId : workId,
                 workName : workName,
                 winfoScore : workScore ? workScore : -1, //workScore 
+                winfoWorkYear : workWatchYear ,
+                winfoWorkTimes : workWatchTimes ,
                 winfoScoreCount : workScore ? 1 : 0, //作成時の初期値なので1
                 winfoCount : 1, //作成時の初期値なので1
                 winfoLikedCount : isLiked ? 1 : 0,
@@ -99,9 +107,8 @@ const postWInfoCreate = (
             console.log(workId+"+workId")
 
             // wInfo作成
-            await wInfoRef
-            // .update(wInfoAllData)
-            .set(wInfoAllData,
+            // await wInfoRef.set(wInfoAllData,
+            await setDoc(wInfoRef,wInfoAllData,
                 { merge : true })
             .then(() => {
                 console.log("successed updating or creating ")
@@ -115,15 +122,16 @@ const postWInfoCreate = (
             workId = preWorkId
 
             // if(isPublic){
-            assessmentRef = db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
+            // assessmentRef = db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
+            assessmentRef = doc(db ,'wInfo' ,workId, 'assessment', uid)
             console.log(assessmentRef+"++++assessmentRef")
             console.log(workId+"+workId")
             console.log(uid+"+uid")
             // }
 
-            await db.collection('wInfo').doc(workId).get()
+            // await db.collection('wInfo').doc(workId).get()
+            await getDoc(doc(db ,'wInfo', workId))
             .then((snapshot) => {
-
                 //ユーザとしては新規登録
                 //// 評価点
                 const befWinfoScoreCount = snapshot.data()["winfoScoreCount"]
@@ -131,7 +139,6 @@ const postWInfoCreate = (
                 let ediWinfoScore = snapshot.data()["winfoScore"] //現状の点数を代入。評価がなければこのまま
                 if(workScore){
                     console.log(workScore+"+workScore in")
-
                     let befWinfoScore = 0
                     if(snapshot.data()["winfoScore"] != -1){
                         befWinfoScore = snapshot.data()["winfoScore"]
@@ -142,14 +149,11 @@ const postWInfoCreate = (
                     ediWinfoScore = ((befWinfoScore * befWinfoScoreCount) + Number(workScore) ) / ediWinfoScoreCount
                     // console.log((((befWinfoScore * befWinfoScoreCount ) + workScore ) / ediWinfoScoreCount )+"+CC 実数")
                     // console.log((((10 * 1 ) + 20 ) / 2 )+"+CC")
-
                     console.log(ediWinfoScoreCount+"+ediWinfoScoreCount")
                     console.log(ediWinfoScore+"+ediWinfoScore")
                 } else {
                     console.log(workScore+"+workScore out")
-
                 }
-
                 //// 評価タグ
                 let tmpWorkTag = {}
                 const befTag = snapshot.data()["winfoTag"]
@@ -182,7 +186,8 @@ const postWInfoCreate = (
 
                 // ****************************
 
-                db.collection('wInfo').doc(workId).update({
+                // db.collection('wInfo').doc(workId).update({
+                updateDoc(doc(db, 'wInfo', workId), {
                     winfoScoreCount : ediWinfoScoreCount,
                     winfoCount : ediWinfoCount,
                     winfoScore : ediWinfoScore,
@@ -220,16 +225,18 @@ const postWInfoCreate = (
             workId = preWorkId
             // if(isPublic){
             // ここにもawaitを入れないと呼び出しもとの処理が進んでしまう。
-            assessmentRef = await db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
+            // assessmentRef = await db.collection('wInfo').doc(workId).collection('assessment').doc(uid)
+            assessmentRef = await doc(db, 'wInfo', workId, 'assessment', uid)
             console.log(assessmentRef+"++++assessmentRef")
             console.log(workId+"+workId")
             console.log(uid+"+uid")
             // }
             
-            await db.collection('wInfo').doc(workId).get()
+            // await db.collection('wInfo').doc(workId).get()
+            await getDoc(doc(db, 'wInfo', workId))
             .then(async(snapshot) => {
-                await db.collection('privateUsers').doc(uid)
-                .collection('postedWorksId').doc(workId).get()
+                // await db.collection('privateUsers').doc(uid).collection('postedWorksId').doc(workId).get()
+                await getDoc(doc(db, 'privateUsers', uid, 'postedWorksId', workId))
                 .then(async(snapshotPrivate) => {
                 // .then((snapshotPrivate) => {
                     console.log(snapshotPrivate.data()["workScore"]+"++++snapshotPrivate.data()[workScore]")
@@ -387,7 +394,7 @@ const postWInfoCreate = (
                     // ****************************
 
                     // await db.collection('wInfo').doc(workId).update({
-                    await db.collection('wInfo').doc(workId).update({
+                    await updateDoc(doc(db, 'wInfo', workId), {
                         winfoCount : ediWinfoCount,
                         winfoScoreCount : ediWinfoScoreCount,
                         winfoLikedCount : tmpLikedCount,
@@ -434,6 +441,8 @@ const postWInfoCreate = (
                 // assessmentCategory : checkBoxState,
                 updateTime : new Date(),
                 workScore : workScore ? workScore : -1, // -1は初期値
+                workWatchYear : workWatchYear,
+                workWatchTimes : workWatchTimes,
                 workComment : workComment,
                 workTag : tagCheckBox,
                 // isPublic : isPublic,
@@ -447,9 +456,8 @@ const postWInfoCreate = (
 
             // assessment.updateTime = new Date()
 
-            return assessmentRef
-            // await assessmentRef
-            .set(assessment,
+            // return assessmentRef.set(assessment,
+            return setDoc(assessmentRef,assessment,
                 {merge : true } // 有効　→　指定しないフィールドを消さない
             ).then(() => {
                 console.log("assessmentRef updating or chreating")

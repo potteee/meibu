@@ -2,17 +2,23 @@
 import React, {useMemo} from 'react';
 
 import {signInAction ,signOutAction, updateUsersAction,postWorks} from "./actions";
-import { auth, db, FirebaseTimestamp } from "../../firebase/index";
+import { auth, db } from "../../firebase/index";
 import {isValidEmailFormat, isValidRequiredInput} from "../../foundations/share/common";
 
 import { parseCookies, setCookie } from 'nookies'
-import { AddAlarmOutlined } from "@material-ui/icons";
 import GetUserRedux from '../../foundations/share/getUserRedux';
 import { useSelector } from 'react-redux';
 
-const usersRef = db.collection('users')
-const privateUserRef = db.collection('privateUsers')
-// const selector = useSelector((state) => state)
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
+
+// const usersRef = db.collection('users')
+const usersRef = collection(db, "users");
+// const privateUserRef = db.collection('privateUsers')
+const privateUserRef = collection(db ,"privateUsers")
+// const privateUserRef = query(collection(db ,"privateUsers")) //whereとか使わなければqueryで囲う必要はない。
+
+const timestamp = Timestamp.now()
+
 
 export const signIn = (
     email,
@@ -42,8 +48,12 @@ export const signIn = (
             gotEmails = [email]    
         } else {
             console.log(email+" is not email")
-            await db.collection('users')
-            .where('userName' ,'==', email).get()
+            await getDocs(query(
+                collection(db, 'users'),
+            // await db.collection('users')
+                // .where('userName' ,'==', email).get()
+                where('userName' ,'==', email)
+            ))
             .then( async(snapshot) => {
                 console.log("snapshot login user")
                 console.log(snapshot)
@@ -62,8 +72,12 @@ export const signIn = (
                     // snapshot.docs[0].data().uid
                 
                 await Promise.all(gotUsersId.map(async(gotUserId) => {
-                    await db.collection('privateUsers')
-                    .where('uid' ,'==' ,gotUserId).get()
+                    // await db.collection('privateUsers')
+                    await getDocs(query(
+                        collection(db,'privateUsers'),
+                        where('uid' ,'==' ,gotUserId)
+                    ))
+                    // .where('uid' ,'==' ,gotUserId).get()
                     .then((snapshot2) => {
                         console.log("snapshot2 login user")
                         console.log(snapshot2)
@@ -265,7 +279,7 @@ export const signUp = (
                 if (user) {
                     console.log("auth success222!!!")
                     const uid = user.uid
-                    const timestamp = FirebaseTimestamp.now()
+                    // const timestamp = Timestamp.now()
                     // const workId = "99"
                     // const workName = "dummyData"
                     // const workMedia = "dummyData"
@@ -303,7 +317,8 @@ export const signUp = (
                     }
 
                     await Promise.all([
-                        usersRef.doc(uid).set(userInitialData)
+                        // usersRef.doc(uid).set(userInitialData)
+                        setDoc(doc(usersRef ,uid) ,userInitialData)
                         .then(() => {
                             console.log("auth db success!!!")
                         }).catch((error) => {
@@ -311,8 +326,8 @@ export const signUp = (
                             throw new Error(error)
                         })
                         ,
-                        privateUserRef.doc(uid)
-                        .set(privateUserInitialData)
+                        setDoc( doc(privateUserRef ,uid) ,privateUserInitialData)
+                        // privateUserRef.doc(uid).set(privateUserInitialData)
                         .then(() => {
                             console.log("private auth db success!!!")
                         }).catch((error) => {
@@ -336,25 +351,6 @@ export const signUp = (
                             hist: hist ,///////////////ここ修正星
                         }
                     })
-
-                    //サブコレクション(↓)はコレクションを作った後に追加
-                      //これこのタイミングでいらなくない？
-                    // await privateUserRef.doc(uid)
-                    // .collection('postedWorksId')
-                    // .doc(workId)
-                    // .set(postedWorksId)
-                    // .then(() => {
-                    //     console.log("posted initial db success!!!")
-                    //     router.push({
-                    //         pathname: '/auth/signin',
-                    //         query: {
-                    //             email : email,
-                    //         }
-                    //     })
-                    // }).catch((error) => {
-                    //     alert('posted inital DB fail')
-                    //     throw new Error(error)
-                    // })
                 }
             }).catch((error) => {
                 // Error Codes
@@ -390,12 +386,14 @@ export const addPostedWork = (
     isSpoiler,
     isLiked,
     workScore,
+    workWatchYear,
+    workWatchTimes,
     goCheckBoxState,
     goTagCheckBoxState,
     workComment,
     firstPostFlag) => {
     return async (dispatch) => {
-        const timestamp = FirebaseTimestamp.now()
+        // const timestamp = Timestamp.now()
 
         let postedWorksId = {}
         
@@ -411,6 +409,8 @@ export const addPostedWork = (
                 isLiked : isLiked,
                 isSpoiler: isSpoiler,
                 workScore: workScore ? workScore : -1,
+                workWatchYear : workWatchYear,
+                workWatchTimes : workWatchTimes,
                 // assessmentCategory: goCheckBoxState,
                 assessmentWorkTag : goTagCheckBoxState,
                 workComment: workComment
@@ -426,6 +426,8 @@ export const addPostedWork = (
                 isLiked : isLiked,
                 isSpoiler: isSpoiler,
                 workScore: workScore ? workScore : -1,
+                workWatchYear : workWatchYear,
+                workWatchTimes : workWatchTimes,
                 // assessmentCategory: goCheckBoxState,
                 assessmentWorkTag : goTagCheckBoxState,
                 workComment: workComment
@@ -439,6 +441,8 @@ export const addPostedWork = (
             isSpoiler: isSpoiler,
             isLiked : isLiked,
             workScore: workScore,
+            workWatchYear : workWatchYear,
+            workWatchTimes : workWatchTimes,
         }
 
         const userAssessmentWorks = {
@@ -450,13 +454,8 @@ export const addPostedWork = (
             }
         }
 
-        await privateUserRef.doc(uid)
-        .collection('postedWorksId')
-        .doc(workId)
-        .set(
-            postedWorksId,
-            {merge : true}
-        )
+        // await privateUserRef.doc(uid).collection('postedWorksId').doc(workId).set(postedWorksId,{merge : true})
+        await setDoc(doc(privateUserRef ,uid ,'postedWorksId' ,workId ),postedWorksId,{merge : true})
         .then(() => {
             console.log("posted initial db success!!!")
         }).catch((error) => {
@@ -465,10 +464,8 @@ export const addPostedWork = (
         })
 
         if(isPublic){
-            usersRef.doc(uid)
-            .collection('pubPostedWorksId')
-            .doc(workId)
-            .set(pubPostedWorksId)
+            // usersRef.doc(uid).collection('pubPostedWorksId').doc(workId).set(pubPostedWorksId)
+            setDoc(doc(usersRef ,uid ,'pubPostedWorksId' ,workId) ,pubPostedWorksId)
             .then(() => {
                 console.log("PublicPost success!!")
             }).catch((error) => {
@@ -502,7 +499,7 @@ export const addPostedWork = (
 }
 
 export const likedWork = (userAssessmentWorks) => {
-    const timestamp = FirebaseTimestamp.now()
+    // const timestamp = Timestamp.now()
 
     const instantChangedWorkId = {
         [Object.keys(userAssessmentWorks)[0]] : {timestamp : timestamp},

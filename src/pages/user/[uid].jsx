@@ -1,4 +1,6 @@
 import React, {useEffect ,useState} from 'react';
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
+
 import Link from 'next/link'
 
 import Footer from '../../components/footer'
@@ -63,8 +65,9 @@ const userPage = ( props ) => {
 export async function getStaticPaths() {
 
   let uids = false
-  const snapshot = await db.collection('users').get()
-
+  // const snapshot = await db.collection('users').get()
+  const snapshot = await getDocs(collection(db, 'users'))
+  
   snapshot.forEach((doc) => {
     if(uids == false) {
       uids = [doc.data().uid]

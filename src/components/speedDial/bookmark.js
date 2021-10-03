@@ -1,12 +1,15 @@
 import React from 'react';
 import {useDispatch,useSelector} from "react-redux"
 import {db} from "src/firebase/index";
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
+
 import {updateUsers } from 'src/reducks/users/operations'
 
 const bookmark = async(props) => {
   let privateUserData = {}
   let privateUserReduxData = {}
-  const privateUserRef = db.collection('privateUsers').doc(props.uid)
+  // const privateUserRef = db.collection('privateUsers').doc(props.uid)
+  const privateUserRef = doc(db ,'privateUsers' ,props.uid)
   const urlBookmarkDelete = `/api/firebase/userBookmark/${props.workId}_${props.uid}`
   
   if(props.uid == "uid initial"){
@@ -72,8 +75,8 @@ const bookmark = async(props) => {
     
     await Promise.all([
       //DB
-      privateUserRef
-      .set(
+      // privateUserRef.set(
+      setDoc(privateUserRef,
         privateUserData,
         {merge : true } // 有効　→　指定しないフィールドを消さない
       ).then(()=>{

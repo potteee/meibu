@@ -1,25 +1,25 @@
 import React from 'react';
 
 //material UI
-import FormGroup from '@material-ui/core/FormGroup'
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import SaveAltIcon from '@material-ui/icons/SaveAlt';
-import PublishIcon from '@material-ui/icons/Publish';
+import FormGroup from '@mui/material/FormGroup'
+// import { makeStyles } from '@mui/styles';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import PublishIcon from '@mui/icons-material/Publish';
 
 export default function PostingButton(props) {
   console.log("Pos Start")
   console.dir(props)
 
-  const useStyles = makeStyles((theme) => ({
+  const useStyles = {
     postingGrid : {
       margin : "40px 0px 20px 0px",    
     },
     postingButton : {
       padding : "8px 29px",
-      margin : "0px 0.5rem",
+      margin : "0px 0.5em",
     },
     postingBox : {
       margin : "0px 5px 0px 15px",
@@ -30,34 +30,39 @@ export default function PostingButton(props) {
     postingSubTypology : {
       fontSize : 11,
     },
-  }))
-  const classes = useStyles();
+    // FormGroupStyle : {
+    //   marginTop : "1em",
+    // }
+  }
+  const classes = useStyles;
 
   return (
-    <FormGroup row>
-    <Grid container item xs={12} classes={{root : classes.postingGrid}}
+    <FormGroup row 
+      // sx={classes.FormGroupStyle}
     >
-      <Grid container item xs={6} justify="center">
+    <Grid container xs={12} sx={classes.postingGrid} justifyContent={"center"}>
+      <Grid container item xs={6} justifyContent="center">
         <Button
-          variant="contained"
-          color="default"
+          // variant="contained"
+          variant="outlined"
+          // color="secondary"
           size="large"
-          startIcon={<SaveAltIcon 
-          />}
-          classes={{root : classes.postingButton}}
+          startIcon={<SaveAltIcon />}
+          sx={classes.postingButton}
           onClick={() => {
-            props.changeIsPublic((preIsPublic) => false)
+            props.changeIsPublic(false)
+            // props.changeIsPublic((preIsPublic) => false)
             props.postButtonClicked(false)
           }}
         >
           <Grid container item xs={12}>
-            <Grid item xs={12} className={classes.postingBox}>
-              <Typography classes={{root : classes.postingTypology}}>
+            <Grid item xs={12} sx={classes.postingBox}>
+              <Typography sx={classes.postingTypology}>
                 投稿
             </Typography>
             </Grid>
-            <Grid item xs={12} className={classes.postingBox}>
-              <Typography classes={{root : classes.postingSubTypology}}>
+            <Grid item xs={12} sx={classes.postingBox}>
+              <Typography sx={classes.postingSubTypology}>
                 個人記録
             </Typography>
             </Grid>
@@ -65,26 +70,27 @@ export default function PostingButton(props) {
         </Button>
       </Grid>
 
-      <Grid container item xs={6} justify="center">
+      <Grid container item xs={6} justifyContent="center">
         <Button
           variant="contained"
           color="primary"
           size="large"
           startIcon={<PublishIcon />}
-          classes={{root : classes.postingButton}}
+          // classes={{root : classes.postingButton}}
+          sx={classes.postingButton}
           onClick={() => {
             props.changeIsPublic(true)
             props.postButtonClicked(true)
           }}
         >
           <Grid container item xs={12}>
-            <Grid item xs={12} className={classes.postingBox}>
-              <Typography classes={{root : classes.postingTypology}}>
+            <Grid item xs={12} sx={classes.postingBox}>
+            <Typography sx={classes.postingTypology}>
                 投稿
             </Typography>
             </Grid>
-            <Grid item xs={12} className={classes.postingBox}>
-              <Typography classes={{root : classes.postingSubTypology}}>
+            <Grid item xs={12} sx={classes.postingBox}>
+            <Typography sx={classes.postingSubTypology}>
                 一般公開
             </Typography>
             </Grid>

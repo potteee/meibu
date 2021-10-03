@@ -1,11 +1,13 @@
 import React,{useCallback, useState, useEffect} from "react"
 
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
+
 import { TextInput,PrimaryButton,RadioButton } from "../../styles/UIkit"
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import RadioGroup from '@mui/material/RadioGroup';
+import Radio from '@mui/material/Radio';
 
 import Link from 'next/link'
 
@@ -21,8 +23,10 @@ import Header from '../../components/header'
 import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
 
-import { auth, db, FirebaseTimestamp } from "../../firebase/index";
-import { Button } from "@material-ui/core";
+import { auth, db } from "../../firebase/index";
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc ,Timestamp } from "firebase/firestore";
+
+import { Button } from "@mui/material";
 
 import { SCButtonActive, SCButtonDeactive } from "../../styles/SC/components/bookmark/button";
 
@@ -107,7 +111,7 @@ const mypageEdit = () => {
   
   const changeButtonClicked = async() => {
     if(publicChangeFlag == true || privateChangeFlag == true){
-      const timestamp = FirebaseTimestamp.now()
+      const timestamp = Timestamp.now()
 
       let updateUserBookmark = {}
 
@@ -136,7 +140,8 @@ const mypageEdit = () => {
       console.log(JSON.stringify(userRedux,null,2))
 
       await Promise.all([
-        db.collection('users').doc(uid).update({
+        // db.collection('users').doc(uid).update({
+        updateDoc(doc(db, 'users',uid),{
           userName: userName,
           userSex: userSex,
           userProfile: userProfile,
@@ -147,8 +152,8 @@ const mypageEdit = () => {
           alert('パブリックデータの更新に失敗しました')
           throw new Error(error)
         }),
-        db.collection('privateUsers').doc(uid).update(
-          {
+        // db.collection('privateUsers').doc(uid).update(
+        updateDoc(doc(db, 'privateUsers', uid),{
             email: userEmail,
             userLiveIn: userLiveIn,
             userWebsite: userWebsite,
