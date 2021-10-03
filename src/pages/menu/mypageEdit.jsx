@@ -1,5 +1,6 @@
 import React,{useCallback, useState, useEffect} from "react"
 
+import { auth, db } from "../../firebase/index";
 import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
 
 import { TextInput,PrimaryButton,RadioButton } from "../../styles/UIkit"
@@ -22,9 +23,6 @@ import { useRouter } from 'next/router'
 import Header from '../../components/header'
 import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
-
-import { auth, db } from "../../firebase/index";
-import { collection, doc, query, where, getDocs ,getDoc ,setDoc ,Timestamp } from "firebase/firestore";
 
 import { Button } from "@mui/material";
 
