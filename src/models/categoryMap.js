@@ -6,6 +6,7 @@
     Batoru : "バトル",
     Sennsou : "戦争",
     Rabusutoorii : "ラブストーリー",
+    Entame : "エンタメ",
     Komedhii : "コメディ",
     MIsuterii : "ミステリー",
     Dokyumenntarii : "ドキュメンタリー",

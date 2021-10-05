@@ -13,7 +13,7 @@ export default function ItemExplanationSet (props) {
     return (
         <>
             <TitleSpacing container item xs={12}>
-                <Grid container item xs={4} alignItems={"flex-start "}>
+                <Grid container item xs={4} alignItems={props.titleFlex}>
                 <MiddleTitle>
                     {props.middleTitle}
                 </MiddleTitle>

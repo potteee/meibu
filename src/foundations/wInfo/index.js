@@ -61,8 +61,8 @@ const postWInfoCreate = (
                 workId : workId,
                 workName : workName,
                 winfoScore : workScore ? workScore : -1, //workScore 
-                winfoWorkWatchYear : workWatchYear ,
-                winfoWorkWatchTimes : workWatchTimes ,
+                // winfoWorkWatchYear : workWatchYear ,
+                // winfoWorkWatchTimes : workWatchTimes ,
                 winfoScoreCount : workScore ? 1 : 0, //作成時の初期値なので1
                 winfoCount : 1, //作成時の初期値なので1
                 winfoLikedCount : isLiked ? 1 : 0,

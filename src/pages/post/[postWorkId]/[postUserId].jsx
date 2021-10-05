@@ -102,11 +102,14 @@ const getOriginalDBData = async(params,history) => {
     assessment: dBData[0] 
       ? {
         ...dBData[0],
-        createTime : dBData[0].createTime 
+        createTime : dBData[0].createTime //型変換して入れ直してあげないとSerializableErrorで怒られる
           ? dBData[0].createTime.toDate().toLocaleString("ja") 
           : null
         , //最近追加２０２１０８０６ 
         updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
+        workWatchYear : dBData[0].workWatchYear
+          ? dBData[0].workWatchYear.toDate().toLocaleString("ja")
+          : null
       }
       : null  
     ,
@@ -116,7 +119,8 @@ const getOriginalDBData = async(params,history) => {
     postedWorksId : {
       ...dBData[2],
       created_at : dBData[2].created_at.toDate().toLocaleString("ja"),
-      updated_at : dBData[2].updated_at.toDate().toLocaleString("ja")
+      updated_at : dBData[2].updated_at.toDate().toLocaleString("ja"),
+      workWatchYear : dBData[2].workWatchYear.toDate().toLocaleString("ja"),
     }
   }
 
