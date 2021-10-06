@@ -19,8 +19,8 @@ const News = ({worksData}) => {
     setIsLoading(isReady ? false : true)
   },[isReady])
 
-  // if(!worksData){
-  if(!worksData || isLoading){
+  if(isLoading){
+  // if(!worksData || isLoading){
     console.log("GLoading at /index.jsx")
     return (
       <>
@@ -34,27 +34,24 @@ const News = ({worksData}) => {
       <ApplicationBar title="NEWS"/>
       {/* <p>worksのデータを一覧表示。→バズビデオみたいにカテゴリごとに表示</p> */}
       <p>作品名：評価点：カテゴリ</p>
-      <ul>
-      {worksData.map(oneworksData => (
-        <li>
-          <Link href="/post/[id]" 
-          as={`/post/${oneworksData.workId}`}>
-            {oneworksData.workName+"("+oneworksData.winfoCount+")"}
-          </Link>
-          <a>：{oneworksData.winfoScore != -1 
-            ? Math.floor(oneworksData.winfoScore * 10) / 10  
-            : "採点なし"
-          }</a>
-          <a>：{oneworksData.winfoCategory.map(cate => ( 
-          <>{cate+" "}</>
-          ))}
-          </a>
-        </li>
-      ))}
-      </ul>
-      {worksData.length == 0 
-        ?  <p>投稿されている作品データは有りません</p>
-        : null
+      {worksData != false 
+        ? <ul> {worksData.map(oneworksData => (
+          <li>
+            <Link href="/post/[id]" 
+            as={`/post/${oneworksData.workId}`}>
+              {oneworksData.workName+"("+oneworksData.winfoCount+")"}
+            </Link>
+            <a>：{oneworksData.winfoScore != -1 
+              ? Math.floor(oneworksData.winfoScore * 10) / 10  
+              : "採点なし"
+            }</a>
+            <a>：{oneworksData.winfoCategory.map(cate => ( 
+            <>{cate+" "}</>
+            ))}
+            </a>
+          </li>
+        ))} </ul>
+        : <p>投稿されている作品データは有りません</p>
       }
       検索機能へのリンクを目立つように
       <SpeedDialPosting />
