@@ -3,7 +3,8 @@ import Header from '../../components/header'
 import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
 import {signOut} from "../../reducks/users/operations";
-import { PrimaryButton } from "../../styles/UIkit"
+
+import ButtonPrimary from "src/components/ButtonPrimary";
 import {useDispatch,useSelector} from "react-redux";
 import { useRouter } from 'next/router'
 import { destroyCookie } from 'nookies'
@@ -58,7 +59,7 @@ const SignOut = () => {
       {/* <h1>SignOut</h1> */}
 
       <div className="center">
-          <PrimaryButton
+          <ButtonPrimary
               label={"ログアウトする"}
               onClick={signButtonClicked}
           />

@@ -6,7 +6,7 @@ const useStyles = makeStyles( {
     "button" : {
         backgroundColor: "#4dddd",
         color: "#000",
-        fontSize: 16,
+        fontSize: 25,
         height: 48,
         marginButton: 16,
         width : 256
@@ -17,9 +17,11 @@ const PrimaryButton = (props) => {
     const classes = useStyles();
 
     return (
-        <Button className={classes.button} variant="contained" onClick={() => props.onClick()}>
+        <Button 
+          sx={classes.button}
+          variant="contained"
+          onClick={() => props.onClick()}>
             {props.label}
-
         </Button>
     )
 }

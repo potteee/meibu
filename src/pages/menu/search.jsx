@@ -3,7 +3,9 @@ import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
 
 import React, {useState, useCallback} from 'react';
-import { PrimaryButton, TextInput } from "../../styles/UIkit"
+import { TextInput } from "../../styles/UIkit"
+
+import ButtonPrimary from "src/components/ButtonPrimary";
 
 import Link from 'next/link'
 
@@ -64,7 +66,7 @@ const Search = () => {
         fullWidth={true} label={"作品名"} multiline={false} required={true}
         rows={1} value={searchWord} type={"text"} onChange={inputSearchWord}
     />
-    <PrimaryButton label={"検索"} onClick={searchButtonClicked} />
+    <ButtonPrimary label={"検索"} onClick={searchButtonClicked} />
 
     <Footer />
 

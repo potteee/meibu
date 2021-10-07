@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback,useReducer} from 'react'
-import { PrimaryButton, TextInput ,CheckIconBox} from "../../../styles/UIkit"
+import { TextInput ,CheckIconBox} from "../../../styles/UIkit"
 
 //MaterialUi
 // import { makeStyles } from '@mui/styles';

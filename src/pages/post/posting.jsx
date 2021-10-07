@@ -1,9 +1,9 @@
 import React, {useState, useEffect, useCallback,useReducer} from 'react'
-import { PrimaryButton,TextInput ,CheckIconBox} from "../../styles/UIkit"
+import { TextInput ,CheckIconBox} from "../../styles/UIkit"
 
 //style
 // import { H2CenterLine } from "src/styles/SC/shared/typografy/centerLine"
-import { HighLightBar } from "src/styles/SC/shared/typografy/highLightBar"
+import { CSHighLightBar } from "src/styles/SC/shared/typografy/highLightBar"
 import { MiddleTitle } from "src/styles/SC/shared/typografy/middleTitle"
 import { SCTypografyh5,SCTypografyh5Top } from 'src/styles/SC/shared/typografy/h5'
 import { SCtagChip } from 'src/styles/SC/shared/chip/tagChip'
@@ -1342,7 +1342,7 @@ const Posting = () => {
       <>
         <ApplicationBar title="新規登録"/>
 
-        <HighLightBar>作品情報</HighLightBar>
+        <CSHighLightBar>作品情報</CSHighLightBar>
 
         {(firstPostFlag == FIRST_POSTED_FLAG_ANOTHER_ONLY_POSTED ||
           firstPostFlag == FIRST_POSTED_FLAG_I_POSTED ) && (
@@ -1458,7 +1458,7 @@ const Posting = () => {
           </>
         )}
 
-        <HighLightBar style={{marginTop:"1.8em"}}>評価</HighLightBar>
+        <CSHighLightBar style={{marginTop:"1.8em"}}>評価</CSHighLightBar>
 
         <TitleSpacing container item xs={12}>
         <Grid container item xs={4} alignItems={"center"}>
@@ -1922,7 +1922,7 @@ const Posting = () => {
         />
 
         {/* <h2>作品情報を入力(オプション)</h2> */}
-        <HighLightBar style={{marginTop:"1.8em"}}> {"作品詳細情報"} </HighLightBar>
+        <CSHighLightBar style={{marginTop:"1.8em"}}> {"作品詳細情報"} </CSHighLightBar>
         <>
           {(state.winfoEditor == RdUserId || firstPostFlag == FIRST_POSTED_FLAG_NOT_POSTED)
             ? <>

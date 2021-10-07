@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import Link from 'next/link'
-import { TextInput,PrimaryButton } from "../../styles/UIkit"
+import { TextInput } from "../../styles/UIkit"
 
 import Header from '../../components/header'
 import Footer from '../../components/footer'
@@ -14,6 +14,7 @@ import { useRouter } from 'next/router'
 import SpeedDialPosting from '../../components/speedDialPosting'
 import GLoading from '../../components/GLoading';
 
+import ButtonPrimary from "src/components/ButtonPrimary";
 //API
 
 

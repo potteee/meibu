@@ -4,7 +4,9 @@ import React, {useState, useEffect, useCallback} from 'react';
 
 import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
 
-import { PrimaryButton, TextInput } from "../../styles/UIkit"
+import { TextInput } from "../../styles/UIkit"
+import ButtonPrimary from "src/components/ButtonPrimary";
+
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
@@ -232,7 +234,7 @@ const searchResult = () => {
             </>
             )}
           </ul>
-          <PrimaryButton label={"候補にないので新しい作品として登録する"} onClick={createNewWork} />
+          <ButtonPrimary label={"候補にないので新しい作品として登録する"} onClick={createNewWork} />
           <Footer />
         </>
       )
@@ -242,7 +244,7 @@ const searchResult = () => {
           <ApplicationBar title="検索結果"/>
           <div className="c-section-container">
             <div>お探しの作品が見つかりません.</div>
-            <PrimaryButton label={"新しい作品として登録する"} onClick={createNewWork} />
+            <ButtonPrimary label={"新しい作品として登録する"} onClick={createNewWork} />
 
           </div>
           <Footer />

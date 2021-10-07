@@ -130,7 +130,7 @@ const getOriginalDBData = async(params,history) => {
 const handlerPostUserId = (props) => {
 
   console.log("main props")
-  console.table(props)
+  console.table(props) //SGしたオブジェクトを格納
 
   const selector = useSelector((state) => state)
   const RdGetUid = getUserId(selector)

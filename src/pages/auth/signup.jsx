@@ -3,11 +3,13 @@ import React,{useCallback, useState} from "react";
 import Header from '../../components/header'
 import Footer from '../../components/footer'
 import ApplicationBar from '../../components/applicationBar'
-import { TextInput,PrimaryButton } from "../../styles/UIkit"
+import { TextInput } from "../../styles/UIkit"
 import { signUp } from "../../reducks/users/operations"
 import {useDispatch} from "react-redux";
 
 import { useRouter } from 'next/router'
+
+import ButtonPrimary from "src/components/ButtonPrimary";
 
 // import { auth } from '../../firebase'
 // import firebase from 'firebase/app'
@@ -92,14 +94,14 @@ const SignUp = () => {
           rows={1} value={confirmPassword} type={"password"} onChange={inputConfirmPassword}
         />
         <div className="center">
-          <PrimaryButton
+          <ButtonPrimary
             label={"アカウントを登録"}
             onClick={accountButtonClicked}
           />
         </div>
         <br/>
         <p>アカウントを既にお持ちの方</p>
-        <PrimaryButton
+        <ButtonPrimary
           label={"ログインはこちら"}
           onClick={() => {
             router.push({

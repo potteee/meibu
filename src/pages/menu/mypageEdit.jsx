@@ -3,7 +3,9 @@ import React,{useCallback, useState, useEffect} from "react"
 import { auth, db } from "../../firebase/index";
 import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
 
-import { TextInput,PrimaryButton,RadioButton } from "../../styles/UIkit"
+import { TextInput ,RadioButton } from "../../styles/UIkit"
+import ButtonPrimary from "src/components/ButtonPrimary";
+
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
@@ -256,7 +258,7 @@ const mypageEdit = () => {
         </p>
       }    
       <div className="center">
-        <PrimaryButton
+        <ButtonPrimary
             label={"変更を確定"}
             onClick={changeButtonClicked}
         />  
