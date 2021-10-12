@@ -7,11 +7,10 @@ import Typography from '@mui/material/Typography';
 export const CSHighLightBar = styled.a`
 && {
   padding : 1.5px 8.7px;
+  margin : 2em 0 1em 0;
   text-align : right;
   font-weight: bold;
   font-family: sans-serif;
-  /* align-items : center; */
-  /* align : center; */
   color: white;
   background-color: black;
   display: block;

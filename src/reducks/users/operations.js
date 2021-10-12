@@ -9,7 +9,7 @@ import { parseCookies, setCookie } from 'nookies'
 import GetUserRedux from '../../foundations/share/getUserRedux';
 import { useSelector } from 'react-redux';
 
-import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp } from "firebase/firestore";
+import { collection, doc, query, where, getDocs ,getDoc ,setDoc, updateDoc ,Timestamp,deleteDoc } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword,createUserWithEmailAndPassword } from "firebase/auth";
 
 const auth = getAuth();
@@ -189,7 +189,7 @@ export const signIn = (
                 const userRedux = await GetUserRedux(userID)
                 
                 await setCookie(null, 'userID', userID, {
-                    maxAge: 30 * 24 * 60 * 60,
+                    maxAge: 60 * 60 * 24 * 30 * 12 * 5, //5年はログイン状態が保持される。
                     path: '/',
                 })
                 console.log(JSON.stringify(userRedux)+"+usrRedux@J")
@@ -305,18 +305,6 @@ export const signUp = (
                     updated_at: timestamp,   
                 }
 
-                // const postedWorksId = {
-                //     workId : workId, //ダミー値(99)
-                //     workName : workName, //dummyData
-                //     workMedia : workMedia, //dummyData
-                //     uid : uid,
-                //     created_at: timestamp,
-                //     updated_at: timestamp,
-                //     isPublic: false,
-                //     isSpoiler: false,
-                //     isLiked : false,
-                // }
-
                 await Promise.all([
                     setDoc(doc(usersRef ,uid) ,userInitialData)
                     .then(() => {
@@ -335,20 +323,11 @@ export const signUp = (
                         throw new Error(error)
                     })
                 ])
-
                 router.push({
-                    // pathname: '/auth/signin',
-                    // query: {
-                        //     email : email,
-                        // }
                     pathname: '/auth/signin',
                     query: { 
                         email : email,
-                        searchWord: searchWord ,
-                        infoMedia : infoMedia,
-                        workId : workId,
-                        firstPostFlag : firstPostFlag,
-                        hist: hist ,///////////////ここ修正星
+                        hist: "succeedSignUp" ,///////////////ここ修正星
                     }
                 })
             }
@@ -473,10 +452,8 @@ export const addPostedWork = (
                 throw new Error(error)
             })
         } else {
-            usersRef.doc(uid)
-            .collection('pubPostedWorksId')
-            .doc(workId)
-            .delete()
+            // usersRef.doc(uid).collection('pubPostedWorksId').doc(workId).delete()
+            deleteDoc(doc(usersRef, uid, 'pubPostedWorksId', workId))
             .then(() => {
                 console.log("PublicPost delete success!!")
             }).catch((error) => {

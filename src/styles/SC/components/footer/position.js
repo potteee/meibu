@@ -16,7 +16,7 @@ export const SCAppBar = styled(AppBar)`
 
 export const SCToolBar = styled(Toolbar)`
 && {
-  height : 2.3rem; //親要素のrem倍
+  height : 3.3rem; //親要素のrem倍
   min-height : 2.3rem;
 }
 `;

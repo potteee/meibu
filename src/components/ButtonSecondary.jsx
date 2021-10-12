@@ -5,12 +5,8 @@ export default function ButtonSecondary (props) {
     const classes = {
         useStyle : {
             background : '#ffcc33',
-            color: '#fffff',
-            // color: '#000000',
-            fontSize: '25',
-            height: '48',
-            marginBottom: '16',
-            width: '256',
+            color: '#0099ff',
+            margin: '1.2em',
         }
     }
     return (

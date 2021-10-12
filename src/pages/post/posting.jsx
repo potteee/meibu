@@ -113,7 +113,7 @@ import PleaseSignUpIn from '../menu/PleaseSignUpIn'
 import GLoading from '../../components/GLoading';
 
 import { DragDropContext,Droppable,Draggable} from 'react-beautiful-dnd';
-import { fontSize, width } from '@mui/system'
+import { fontSize, height, width } from '@mui/system'
 import { isConditionalExpression } from 'typescript'
 import { titleSpacing } from '../../styles/SC/shared/grid/titleSpacing'
 import { red } from '@mui/material/colors'
@@ -174,8 +174,12 @@ const useStyles = {
   },
   postingWinfoCreator: {
     marginTop:"0.7em",
-    // justifyContent:"center",
-    justifyContent:"space-around",
+    justifyContent:"flex-start",
+    // gap : "10px",
+    // justifyContent:"space-around",
+    '& > div' : { //子要素に適用。Gridはdivなのでdivを指定
+      marginRight : "10px",
+    }
   },
   winfoCreatorNodalDeleteIcon: {
     position : "absolute",
@@ -207,6 +211,7 @@ const useStyles = {
   },
   commentField: {
     maxWidth : 630,
+    // paddingBottom : "7px",
   },
   mediaFormControl: {
     margin : "0px 0px 4px 0px",
@@ -423,6 +428,9 @@ const useStyles = {
   iconButton : {
     padding : "5px",
   },
+  textFieldFont : {
+    fontSize : "20px",
+  }
 }
 
 //任意入力の作品情報
@@ -1951,7 +1959,6 @@ const Posting = () => {
                       ))}
                     </NativeSelect>
                   </FormControl>
-
                 </Grid>
                 <Grid item container xs={5} >
                   <TextField
@@ -1968,6 +1975,7 @@ const Posting = () => {
                 <Grid item container xs={1} justify="flexStart" alignItems="center">
                   <FormControl>
                     <AddCircleOutlineIcon
+                      color={"primary"}
                       onClick={inputWinfoCreatorAdd}
                     />
                   </FormControl>
@@ -2101,63 +2109,54 @@ const Posting = () => {
                   </Button>
                 </DialogActions>
               </Dialog>
-              <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
-                <FormControl sx={classes.winfoCreatorFormControl}>
-                  <InputLabel id="demo-controlled-open-country-select-label">制作国</InputLabel>
-                  <NativeSelect
-                    id="NativeSelect-winfoCreator-country"
-                    value={state.winfoCountry}
-                    onChange={inputWinfoCountry}
-                  >
-                    <option aria-label="未選択" value="" />
-                    {Object.keys(countryList).map((map) => (
-                      <option value={countryList[map]}>
-                        {countryList[map]}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                </FormControl>
-                {/* <TextField
-                  id="standard-multiline-flexible"
-                  fullWidth={true} label={"国"} multiline variant="standard"
-                  // required={true}
-                  maxRows={4} value={state.winfoCountry} type={"text"} onChange={inputWinfoCountry}
-                  sx={classes.commentField} 
-                  placeholder={"制作国"}
-                /> */}
-              </Grid>
-              <Grid item container xs={12} justify={"flex-start"} sx={classes.postingWinfoOneData}>
-                {/* <DesktopDatePicker
-                  label="リリース"
-                  inputFormat="MM/dd/yyyy"
-                  value={state.winfoStart}
-                  onChange={inputWinfoStart}
-                  renderInput={(params) => <TextField {...params} />}
-                /> */}
+
+              <ItemExplanationSet middleTitle="制作国" text={
+                <NativeSelect
+                  id="NativeSelect-winfoCreator-country"
+                  value={state.winfoCountry}
+                  onChange={inputWinfoCountry}
+                >
+                  <option aria-label="未選択" value="" />
+                  {Object.keys(countryList).map((map) => (
+                    <option value={countryList[map]}>
+                      {countryList[map]}
+                    </option>
+                  ))}
+                </NativeSelect>
+              }/>
+
+              <ItemExplanationSet middleTitle="リリース" text={
                 <TextField
                   InputLabelProps={{ shrink: true }} 
                   id="standard-multiline-flexible"
-                  fullWidth={false} label={"リリース"} variant="standard"
+                  fullWidth={false}
+                  // label={"リリース"} 
+                  variant="standard"
                   // required={true}
                   value={state.winfoStart} type={"date"} onChange={inputWinfoStart}
                   sx={classes.commentField} 
                   placeholder={"リリース時期"}
                 />
-              </Grid>
-              <Grid item container xs={12} justify={"flex-start"} sx={classes.postingWinfoOneData}>
+              }/>
+
+              <ItemExplanationSet middleTitle="完結" text={
                 <TextField
                   InputLabelProps={{ shrink: true }} 
                   id="standard-multiline-flexible"
-                  fullWidth={false} label={"完結"} variant="standard"
+                  fullWidth={false}
+                  // label={"完結"}
+                  variant="standard"
                   // required={true}
                   value={state.winfoFinish} type={"date"} onChange={inputWinfoFinish}
                   sx={classes.commentField} 
                   placeholder={"完結した時期"}
                 />
-              </Grid>
-              <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
+              }/>
+
+              <ItemExplanationSet middleTitle="表示画像" text={
                 <p>画像登録フォーム</p>
-              </Grid>
+              }/>
+
               {/* Step2 */}
               {/* <Grid item container xs={12} justify={"center"} sx={classes.postingWinfoOneData}>
                 <p>親選択フォーム</p>
@@ -2178,47 +2177,50 @@ const Posting = () => {
                   placeholder={"主題歌(登録と同時にworkIdが発行される?)"}
                 />
               </Grid> */}
-{/* 
-              //////////////////主題歌 */}
-              <Grid item container xs={12} sx={classes.postingWinfoCreator}>
-                <Grid item container xs={4} justify={"center"}>
-                  <FormControl sx={classes.winfoCreatorFormControl}>
-                    <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
-                    <NativeSelect
-                      id="NativeSelect-winfoMusic"
-                      value={winfoOneMusicKind}
-                      onChange={inputWinfoOneMusicKind}
-                    >
-                      <option aria-label="未選択" value="" />
-                      {Object.keys(winfoMusicList).map((map) => (
-                        <option value={winfoMusicList[map]}>
-                          {winfoMusicList[map]}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </FormControl>
 
-                </Grid>
-                <Grid item container xs={5} >
-                  <TextField
-                    id="standard-multiline-flexible"
-                    fullWidth={true} label={"楽曲"} multiline variant="standard"
-                    maxRows={4} 
-                    value={winfoOneMusicName} 
-                    type={"text"} 
-                    onChange={inputWinfoOneMusicName}
-                    sx={classes.commentField} 
-                    placeholder={"名称"}
-                  />
-                </Grid>
-                <Grid item container xs={1} justify="flexStart" alignItems="center">
-                  <FormControl>
-                    <AddCircleOutlineIcon
-                      onClick={inputWinfoMusicAdd}
+              <ItemExplanationSet middleTitle="主題歌" titleFlex={"flex-end"} text={
+                <Grid item container xs={12} sx={classes.postingWinfoCreator}>
+                  <Grid item container xs={4} justify={"center"}>
+                    <FormControl sx={classes.winfoCreatorFormControl}>
+                      <InputLabel id="demo-controlled-open-select-label">分類</InputLabel>
+                      <NativeSelect
+                        id="NativeSelect-winfoMusic"
+                        value={winfoOneMusicKind}
+                        onChange={inputWinfoOneMusicKind}
+                      >
+                        <option aria-label="未選択" value="" />
+                        {Object.keys(winfoMusicList).map((map) => (
+                          <option value={winfoMusicList[map]}>
+                            {winfoMusicList[map]}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </FormControl>
+                  </Grid>
+                  <Grid item container xs={5} >
+                    <TextField
+                      id="standard-multiline-flexible"
+                      fullWidth={true} label={"楽曲名"} multiline variant="standard"
+                      maxRows={4} 
+                      value={winfoOneMusicName} 
+                      type={"text"} 
+                      onChange={inputWinfoOneMusicName}
+                      sx={
+                        classes.commentField
+                      }
+                      placeholder={"名称"}
                     />
-                  </FormControl>
+                  </Grid>
+                  <Grid item container xs={1} justify="flexStart" alignItems="center">
+                    <FormControl>
+                      <AddCircleOutlineIcon
+                        color={"primary"}
+                        onClick={inputWinfoMusicAdd}
+                      />
+                    </FormControl>
+                  </Grid>
                 </Grid>
-              </Grid>
+              }/>
               
               <Grid item container xs={12} justify="center" alignItems="center">
                 <DragDropContext onDragEnd={winfoMusicHandleOnDragEnd}>

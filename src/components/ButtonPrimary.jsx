@@ -5,11 +5,11 @@ export default function ButtonPrimary (props) {
     const classes = {
         useStyle : {
             background : '#4dddd',
+            // color: '#000000',
             color: '#fffff',
-            fontSize: '25',
-            height: '48',
-            marginBottom: '16',
-            width: '256',
+            // fontSize: '25px',
+            // height: '4em',
+            margin: '1.2em',
         }
     }
     return (

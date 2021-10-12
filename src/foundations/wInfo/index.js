@@ -1,6 +1,6 @@
 import React, {useState, useCallback} from 'react';
 import { db } from "../../firebase/index";
-import { collection, doc, query, where, getDocs ,getDoc ,setDoc ,updateDoc ,Timestamp } from "firebase/firestore";
+import { collection, doc ,getDoc ,setDoc ,updateDoc ,Timestamp ,deleteDoc} from "firebase/firestore";
 
 
 /// Redux no だからここに書いている →api配下に移行予定
@@ -469,8 +469,8 @@ const postWInfoCreate = (
         } else {
             console.log(workId+"++workId at isPublic false")
             ///////////削除する処理
-            return assessmentRef
-            .delete()
+            return deleteDoc(assessmentRef)
+            // .delete()
             .then(() => {
                 console.log("Document successfully deleted!")
                 return workId
