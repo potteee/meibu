@@ -7,7 +7,7 @@ import ButtonScondary from "src/components/ButtonSecondary";
 
 import Grid from "@mui/material/Grid"
 import Modal from "@mui/material/Modal"
-import Box from "@mui/material/box"
+import Box from "@mui/material/Box"
 import Typography from "@mui/material/Typography"
 import TextField from "@mui/material/TextField"
 
