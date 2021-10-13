@@ -7,6 +7,7 @@ import { Typography } from '@mui/material';
 export const ExplanationTextDefault = styled(Typography)`
 && {
   font-size: 1.2em;
+  color : black;
   /* width : 40em; */
   width : 100%;
   display : block;

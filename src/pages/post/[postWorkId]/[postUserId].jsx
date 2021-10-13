@@ -7,6 +7,7 @@ import Footer from '../../../components/footer'
 import ApplicationBar from '../../../components/applicationBar'
 import SpeedDialPosting from '../../../components/speedDialPosting'
 import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
+import ItemExplanationSet from 'src/components/ItemExplanationSet'
 
 import { db } from '../../../firebase/index'
 import { collection, doc, query, where, getDocs ,getDoc ,setDoc ,Timestamp } from "firebase/firestore";
@@ -15,11 +16,50 @@ import {useDispatch, useSelector} from "react-redux";
 import {getUserId ,getUserName,getUserAssessmentWorks,getInstantChangedWorksId ,getIsSignedIn} from '../../../reducks/users/selectors'
 
 import CreateIcon from '@mui/icons-material/Create';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Collapse from '@mui/material/Collapse';
+import Button from '@mui/material/Button';
+
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+
+import { TitleSpacing } from 'src/styles/SC/shared/grid/titleSpacing'
+import { MiddleTitle } from "src/styles/SC/shared/typografy/middleTitle"
+import { CSHighLightSkewBar,CSHighLightSkewInnerBar } from "src/styles/SC/shared/typografy/highLightSkewBar"
 
 import Link from 'next/link'
 
 import post from 'src/components/speedDial/post'
 import GLoading from '../../../components/GLoading'
+
+const classes = {
+  workMedia : {
+    fontSize : "1rem",
+    marginLeft : "1rem",
+    position : "relative",
+    top : "0.1rem",
+  },
+  assesmenter : {
+    color : "gray",
+    fontSize : "1rem",
+    marginRight : "0.6rem",
+    // marginRight : "1em",
+    // alignItem : flex-end
+  },
+  unpublic : {
+    color : "gray",
+    fontSize : "0.2rem",
+    marginRight : "0.6rem",
+  },
+  score : {
+    fontSize : "1.5em",
+  },
+  date : {
+    marginTop : "1.5rem",
+    fontSize : "0.7rem",
+  }
+}
 
 //ユーザごとの作品ページを検索
 const initialState = {
@@ -32,8 +72,12 @@ const initialState = {
   workTag : [],
   workComment : "",
   isLiked : false,
+  isSpoiler : false,
   workInfomation : "",
-  workUpdateTime : "",
+  workCreateTime : "-",
+  workUpdateTime : "-",
+  workWatchYear : "-",
+  workWatchTimes : "-",
   assessmentComment : [""],
   assessmentLike : 0,
   isPublic : false,
@@ -143,6 +187,7 @@ const handlerPostUserId = (props) => {
   const { isReady } = useRouter()
 
   const [state,dispatch] = useReducer(reducer, initialState)
+  const [showComment, setShowComment] = useState(false)
 
   const timestamp = Timestamp.now()
 
@@ -203,9 +248,12 @@ const handlerPostUserId = (props) => {
         workTag : postedWorksIdSnapshot.assessmentWorkTag,
         workComment : postedWorksIdSnapshot.workComment,
         isLiked : postedWorksIdSnapshot.isLiked,
+        isSpoiler : postedWorksIdSnapshot.isSpoiler,
         workInfomation : wInfoSnapshot.winfoInfomation,
         workCreateTime : postedWorksIdSnapshot.created_at,
         workUpdateTime : postedWorksIdSnapshot.updated_at,
+        workWatchYear : postedWorksIdSnapshot.workWatchYear,
+        workWatchTimes : postedWorksIdSnapshot.workWatchTimes,
         assessmentComment : assessmentSnapshot 
           ? assessmentSnapshot.assessmentComment
           // ? assessmentSnapshot.workComment
@@ -251,41 +299,132 @@ const handlerPostUserId = (props) => {
         <ApplicationBar title="作品評価"/>
         {/* <h2>ユーザごとの作品評価ページ</h2> */}
         
-        {!state.isPublic && (<a>※このページは他のユーザには公開されません</a>)}
-        
-        <Link href="/user/[uid]" 
-          as={`/user/${postUserId}/`}>
-          <h3>評価者(L)：{state.userName}</h3>
-        </Link>
-
+        {/* 作品名 */}
         <Link href="/post/[postWorkId]" 
           as={`/post/${postWorkId}`}>
-          <h3>作品名(L)：{state.workName}</h3>
+            <Typography variant="h5" component="h1" gutterBottom>
+              {state.workName}
+            </Typography>
         </Link>
-        {/* <h3>作品名(L)：{workName}</h3> */}
-        <h4>メディア：{state.workMedia}</h4>
+        
+        <Grid container xs={12} justifyContent={"space-between"}>
+          {/* メディア */}
+          <Grid container item xs={5} justifyContent={"flex-start"} alignItems={"flex-end"}>
+            {/* <Typography variant="h6" component="h6" gutterBottom align="right" sx={classes.assesmenter}> */}
+            <Typography variant="h6" component="h6" align="center" sx={classes.workMedia}>
+              {state.workMedia}
+            </Typography>
+          </Grid>
 
-        <h3>いいね：{state.isLiked ? "いいね" : "だめね"}</h3>
-        <h3>採点：{state.workScore != -1 ? state.workScore : "採点なし"}</h3>
-        <h3>カテゴリ：{
-          state.workCategory.map(mapWorkCategory => (
-            <a> {mapWorkCategory} </a>
-          ))
-          }
-        </h3>
-        <h3>タグ：{ state.workTag.length != 0 
-          ? state.workTag.map(mapWorkTag => (
-            <a>{mapWorkTag} </a>
-          ))
-          : <a>タグなし</a>
+          {/* カテゴリ　→　不要（評価画面なのであえて記載する必要はない） */}
+
+          <Grid container item xs={7} justifyContent={"flex-end"} alignItems={"flex-end"}>
+            <Link href="/user/[uid]" 
+              as={`/user/${postUserId}/`}
+            >
+            {/* 評価者名 */}
+              <Typography variant="string" component="h4" sx={classes.assesmenter}>
+                {state.userName}
+              </Typography>
+            </Link>
+
+          </Grid>
+        </Grid>
+        {/* 非公開評価時のみ表示 */}
+        {!state.isPublic && 
+          //variant=stringだとalign効かない
+          <Typography variant="h6" align="right" sx={classes.unpublic}>
+            {"※非公開評価"}
+          </Typography>
         }
-              
-        </h3>
-        <h3>作品に対するコメント：{state.workComment}</h3>
-        <h3>投稿日時：{state.workUpdateTime}</h3>
+        <CSHighLightSkewBar>
+          <div>評価</div>
+        </CSHighLightSkewBar>
 
+        <TitleSpacing container item xs={12}>
+          <Grid container item xs={4} alignItems={"center"}>
+            <MiddleTitle>
+              採点
+            </MiddleTitle>
+          </Grid>
+          <Grid container item xs={2} alignItems={"center"}>
+            <Typography sx={classes.score}>
+            {state.workScore != -1 ? state.workScore : "-"}
+            </Typography>
+          </Grid>
+          <Grid container item xs={4} alignItems={"center"}>
+            {state.isLiked ? <FavoriteIcon/> : <FavoriteBorder/>}
+          </Grid>
+        </TitleSpacing>
+
+        <ItemExplanationSet middleTitle="タグ" text={
+          state.workTag.length != 0 
+            ? state.workTag.map(mapWorkTag => (
+              <a>{mapWorkTag} </a>
+            ))
+            : <a>タグなし</a>
+        }/>
+        <ItemExplanationSet middleTitle="コメント" text={
+          state.isSpoiler 
+            ? ( <>
+              <Collapse in={showComment} timeout={300}>
+                {state.workComment}
+              </Collapse>
+              <Button 
+                size="small"
+                onClick={() => {
+                  setShowComment(!showComment)
+              }}> 
+                {showComment ? "非表示" : "ネタバレコメントを表示"}
+              </Button>
+            </> )
+            : (state.workComment == "" 
+              ? "未投稿"
+              : state.workComment 
+            )
+        }/>
+        
+        <Grid container xs={12} justifyContent={"flex-end"} sx={classes.date}>
+          <Grid item container xs={3} direction={"column"} justifyContent={"center"} alignItems={"center"}>
+            <Grid item>
+              視聴年
+            </Grid>
+            <Grid item>
+              {state.workWatchYear.slice(0,4)}
+            </Grid>
+          </Grid>
+          <Grid item container xs={3} direction={"column"} justifyContent={"center"} alignItems={"center"}>
+            <Grid item>
+              視聴回数
+            </Grid>
+            <Grid item >
+              {state.workWatchTimes == "" 
+                ? "-"
+                : state.workWatchTimes
+              }
+            </Grid>
+          </Grid>
+          <Grid item container xs={3} direction={"column"} justifyContent={"center"} alignItems={"center"}>
+            <Grid item>
+              投稿日
+            </Grid>
+            <Grid item>
+              {state.workCreateTime.split(" ")[0]}
+            </Grid>
+          </Grid>
+          <Grid item container xs={3} direction={"column"} justifyContent={"center"} alignItems={"center"}>
+            <Grid item>
+              編集日
+            </Grid>
+            <Grid item>
+              {state.workUpdateTime.slice(0,10)}
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {/* speedDialogで補完 */}
         {/* リダックスのユーザ情報と作品のユーザ情報が同一の場合 */}
-        {(postUserId == RdGetUid) 
+        {/* {(postUserId == RdGetUid) 
         ? (
           <>
             <Link href={{
@@ -300,7 +439,7 @@ const handlerPostUserId = (props) => {
               <a>編集する</a>
             </Link>
           </>
-        ) : null }
+        ) : null } */}
 
         {isSignedIn && (<SpeedDialPosting
           workName={state.workName}
@@ -321,9 +460,9 @@ const handlerPostUserId = (props) => {
         />
         )}
 
-        <br/>
-        <h3>評価に対するコメント：{state.assessmentComment}</h3>
-        <h3>いいね：{state.assessmentLike}</h3>
+        {/* step2 */}
+        {/* <h3>評価に対するコメント：{state.assessmentComment}</h3>
+        <h3>いいね：{state.assessmentLike}</h3> */}
 
         <Footer />
       </>
