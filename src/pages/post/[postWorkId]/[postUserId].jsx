@@ -57,6 +57,7 @@ const classes = {
   },
   date : {
     marginTop : "1.5rem",
+    marginBottom : "4rem",
     fontSize : "0.7rem",
   }
 }
@@ -288,6 +289,8 @@ const handlerPostUserId = (props) => {
 
   console.log(JSON.stringify(RdInstantChangedWorksId)+"+RdInstantChangedWorkId")
 
+  console.log(postWorkId+"postedWorksId")
+
   if(state.isLoading){
     return <>
       {/* loading...loginUserData:{state.loginUserData} RdGetUid:{RdGetUid} */}
@@ -300,14 +303,16 @@ const handlerPostUserId = (props) => {
         {/* <h2>ユーザごとの作品評価ページ</h2> */}
         
         {/* 作品名 */}
-        <Link href="/post/[postWorkId]" 
+        <Link 
+          href="/post/[postWorkId]" 
+          // href={`/post/[postWorkId]`} 
           as={`/post/${postWorkId}`}>
             <Typography variant="h5" component="h1" gutterBottom>
               {state.workName}
             </Typography>
         </Link>
         
-        <Grid container xs={12} justifyContent={"space-between"}>
+        <Grid container item xs={12} justifyContent={"space-between"}>
           {/* メディア */}
           <Grid container item xs={5} justifyContent={"flex-start"} alignItems={"flex-end"}>
             {/* <Typography variant="h6" component="h6" gutterBottom align="right" sx={classes.assesmenter}> */}
@@ -384,7 +389,7 @@ const handlerPostUserId = (props) => {
             )
         }/>
         
-        <Grid container xs={12} justifyContent={"flex-end"} sx={classes.date}>
+        <Grid container item xs={12} justifyContent={"flex-end"} sx={classes.date}>
           <Grid item container xs={3} direction={"column"} justifyContent={"center"} alignItems={"center"}>
             <Grid item>
               視聴年

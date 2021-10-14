@@ -485,7 +485,9 @@ const Post = (props) => {
                   {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (
                     <>
                       <li>
-                        <Link href="/post/[id]/[postUserId]" 
+                        <Link 
+                          // href="/post/[id]/[postUserId]" 
+                          href="/post/[postWorkId]/[postUserId]" 
                           as={`/post/${workId}/${mapAssessmentData.uid}`}>
                           <a>{mapAssessmentData.userName}</a>
                         </Link>
@@ -506,7 +508,9 @@ const Post = (props) => {
         {/* <a>userId:::: {userId}</a> */}
         {isLoginUserAssessment == true && (
           <>
-            <Link href="/post/[id]/[postUserId]" 
+            <Link 
+              // href="/post/[id]/[postUserId]" 
+              href="/post/[postWorkId]/[postUserId]" 
               as={`/post/${workId}/${userId}`}>
               <p>{RdUserName}自身の評価をみる</p>
             </Link>

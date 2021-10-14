@@ -318,7 +318,8 @@ const useStyles = {
   },
   likedIconPosition: {
     position : "relative",
-    left : "9.5px",
+    left : "11px",
+    marginLeft : "0.9rem",
   },
 
   h4LinkTag: {
@@ -1469,7 +1470,7 @@ const Posting = () => {
         <CSHighLightBar style={{marginTop:"1.8em"}}>評価</CSHighLightBar>
 
         <TitleSpacing container item xs={12}>
-        <Grid container item xs={4} alignItems={"center"}>
+        <Grid container item xs={3} alignItems={"center"}>
           <MiddleTitle>
             Like
           </MiddleTitle>
@@ -1941,7 +1942,7 @@ const Posting = () => {
                   placeholder={"作品のストーリーや概要など"}
                 />}
               />
-              <ItemExplanationSet middleTitle="作成関係者" titleFlex={"flex-end"} text={
+              <ItemExplanationSet middleTitle="関係者" titleFlex={"flex-end"} text={
               <Grid item container xs={12} sx={classes.postingWinfoCreator}>
                 <Grid item container xs={4} justify={"center"}>
                   <FormControl sx={classes.winfoCreatorFormControl}>
@@ -2067,7 +2068,7 @@ const Posting = () => {
                     <Grid item container xs={5} >
                       <TextField
                         id="standard-multiline-flexible"
-                        fullWidth={true} label={"作成関係者"} multiline variant="standard"
+                        fullWidth={true} label={"関係者"} multiline variant="standard"
                         maxRows={4} 
                         value={winfoOneCreatorDialogName} 
                         type={"text"} 
@@ -2308,7 +2309,7 @@ const Posting = () => {
                     <Grid item container xs={5} >
                       <TextField
                         id="standard-multiline-flexible"
-                        fullWidth={true} label={"作成関係者"} multiline variant="standard"
+                        fullWidth={true} label={"関係者"} multiline variant="standard"
                         maxRows={4} 
                         value={winfoOneMusicDialogName} 
                         type={"text"} 
@@ -2381,7 +2382,7 @@ const Posting = () => {
                 {state.winfoInfomation ? state.winfoInfomation : "未投稿"}
               />
 
-              <ItemExplanationSet middleTitle="作成関係者" text=
+              <ItemExplanationSet middleTitle="関係者" text=
                 {state.winfoCreator.length 
                   ? state.winfoCreator.map((map) => (
                     <><ExplanationTextDefault>
@@ -2393,7 +2394,7 @@ const Posting = () => {
               />
 
               <ItemExplanationSet middleTitle="制作国" text=
-                {state.winfoCountry ? state.winfoCountry : "未投稿"}
+                {state.winfoCountry.length ? state.winfoCountry : "未投稿"}
               />
 
               <ItemExplanationSet middleTitle="リリース" text=

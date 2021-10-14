@@ -37,7 +37,9 @@ const News = ({worksData}) => {
       {worksData != false 
         ? <ul> {worksData.map(oneworksData => (
           <li>
-            <Link href="/post/[id]" 
+            <Link 
+            // href="/post/[id]" 
+            href="/post/[postWorkId]" 
             as={`/post/${oneworksData.workId}`}>
               {oneworksData.workName+"("+oneworksData.winfoCount+")"}
             </Link>

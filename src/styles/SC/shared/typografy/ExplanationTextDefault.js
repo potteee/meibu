@@ -6,7 +6,7 @@ import { Typography } from '@mui/material';
 // Create a overRide styles.
 export const ExplanationTextDefault = styled(Typography)`
 && {
-  font-size: 1.2em;
+  font-size: 1.0rem;
   color : black;
   /* width : 40em; */
   width : 100%;

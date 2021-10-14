@@ -85,7 +85,7 @@ const ApplicationBar = (props) => {
     <>
       <AppBar sx={classes.appBarPositionHeader}>
         <Toolbar variant="dense">
-          <Grid container xs={12} justify="space-between" direction="row">
+          <Grid container item xs={12} justify="space-between" direction="row">
             <Grid container item xs={1}>
               <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={handleLeftMenu}>
                 <MenuIcon />
