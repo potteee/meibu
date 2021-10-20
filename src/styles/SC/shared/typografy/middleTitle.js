@@ -13,7 +13,5 @@ export const MiddleTitle = styled(Typography)`
   margin : 0em 0px 0px 0px;
   color : #393e4f; //青褐あおかち
   font-size : 1.2rem;
-  /* font-size : 1.6rem; */
-  /* top : 5px; */
 }
 `;

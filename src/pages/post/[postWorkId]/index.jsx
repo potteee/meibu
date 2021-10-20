@@ -16,6 +16,10 @@ import ObjectSort from '../../../foundations/share/objectSort'
 //style
 import { SCTypografyh5,SCTypografyh5Top } from 'src/styles/SC/shared/typografy/h5'
 import { ExplanationTextDefault } from 'src/styles/SC/shared/typografy/ExplanationTextDefault'
+import { CSHighLightSkewBar } from "src/styles/SC/shared/typografy/highLightSkewBar"
+import ItemExplanationSet from 'src/components/ItemExplanationSet'
+import { TitleSpacing } from 'src/styles/SC/shared/grid/titleSpacing'
+import { MiddleTitle } from "src/styles/SC/shared/typografy/middleTitle"
 
 import {db} from '../../../firebase/index'
 import {useSelector} from 'react-redux'
@@ -29,6 +33,8 @@ import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 import CreateIcon from '@mui/icons-material/Create';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 
 import GLoading from 'src/components/GLoading'
 import like ,{likeHikoukai} from 'src/components/speedDial/like'
@@ -53,6 +59,8 @@ const initialState = {
   workStart : "",
   workFinish : "",
   workImage : "",
+  workCountry : "",
+  workMusic : [],
   winfoTag　: [],
   isLiked : false,
   isBookmark : false,
@@ -242,7 +250,7 @@ const Post = (props) => {
   // console.log(Timestamp+"+Timestamp")
   console.log(JSON.stringify(Timestamp)+"+Timestamp@J")
 
-  const useStyles = () => ({
+  const classes = {
     isLikedSignal : {
       position: 'fixed',
       top : "2.4em",
@@ -253,9 +261,22 @@ const Post = (props) => {
       top : "3.9em",
       right : "0.6em",
     },
-  })
+    workMedia : {
+      fontSize : "1rem",
+      marginLeft : "1rem",
+      position : "relative",
+      top : "0.1rem",
+    },
+    workCategory : {
+      fontSize : "0.6rem",
+      marginLeft : "1rem",
+      marginBottom : "0.7rem",
+      position : "relative",
+      // top : "0.1rem",
+    },
+  }
 
-  const classes = useStyles();
+  // const classes = useStyles();
 
   console.log(workId+"=workId")
 
@@ -326,7 +347,9 @@ const Post = (props) => {
         workStart : wInfoSnapshot.winfoStart,
         workFinish : wInfoSnapshot.winfoFinish,
         workImage : wInfoSnapshot.winfoImage,
-        winfoTag : (ObjectSort(wInfoSnapshot.winfoTag,"asc")),
+        workCountry : wInfoSnapshot.winfoCountry,
+        workMusic : wInfoSnapshot.winfoMusic,
+        winfoTag : (ObjectSort(wInfoSnapshot.winfoTag,"desc",1)),
         //assessmentSnapshot
         assessmentData : (assessmentSnapshot && state.assessmentData.length == 0) ? [...assessmentSnapshot] : state.assessmentData,
         isAssessmenter : isAssessmenterFlag,
@@ -371,180 +394,228 @@ const Post = (props) => {
     return (
       <>     
         <ApplicationBar title="作品情報"/>
-        <SCTypografyh5Top>
+        {/* <SCTypografyh5Top>
           {"作品名"}
-        </SCTypografyh5Top>        
+        </SCTypografyh5Top>         */}
 
-        <ExplanationTextDefault>
+        <Typography variant="h5" component="h1">
           {state.workName}
-        </ExplanationTextDefault>
+        </Typography>
 
-        <SCTypografyh5>
-          {"メディア"}
-        </SCTypografyh5>        
-
-        <ExplanationTextDefault>
+        <Typography variant="h6" component="h3" align="left" sx={classes.workMedia}>
           {state.workMedia}
-        </ExplanationTextDefault>
+        </Typography>
+        
+        <Typography variant="h6" component="h4" align="left" sx={classes.workCategory}>
+          {state.winfoCategory.map(cate => (
+          <span>{cate} </span>
+        ))}
+        </Typography>
 
-        <SCTypografyh5>
-          {"スコア"}
-        </SCTypografyh5> 
+        <CSHighLightSkewBar>
+          <div>詳細情報</div>
+        </CSHighLightSkewBar>
 
-        {/* //小数点切り捨て */}
-        <ExplanationTextDefault> 
-          {state.workScore != -1 ? Math.floor(state.workScore * 10) / 10  : "評価なし"}
-        </ExplanationTextDefault>
+        <ItemExplanationSet middleTitle="作品情報" text={
+          state.workInfo ? state.workInfo : "未登録"
+        }/>
 
-        <SCTypografyh5>
-          {"評価投稿数"}
-        </SCTypografyh5> 
+        <ItemExplanationSet middleTitle="関係者" text=
+          {state.workCreator.length 
+            ? state.workCreator.map((map) => (
+              <><ExplanationTextDefault>
+                {map.kind+` `+map.name}
+              </ExplanationTextDefault></>
+            ))
+            : "未投稿"
+          }
+        />
+        
+        <ItemExplanationSet middleTitle="制作国" text={
+          state.workCountry ? state.workCountry : "未登録"
+        }/>
+        <ItemExplanationSet middleTitle="リリース" text={
+          state.workStart ? state.workStart : "未登録"
+        }/>
+        <ItemExplanationSet middleTitle="完結" text={
+          state.workFinish ? state.workFinish : "未登録"
+        }/>
+        <ItemExplanationSet middleTitle="主題歌" text=
+          {state.workMusic.length 
+            ? state.workMusic.map((map) => (
+              <>
+                <ExplanationTextDefault>
+                  {map.kind+` `+map.name}
+                </ExplanationTextDefault>
+              </>
+            ))
+            : "未投稿"
+          }
+        />
 
-        <ExplanationTextDefault>
+        <CSHighLightSkewBar style={{marginTop : "30px"}}>
+          <div>評価情報</div>
+        </CSHighLightSkewBar>
+
+        <ItemExplanationSet middleTitle="平均評価" text={
+          state.workScore != -1 
+            ? Math.floor(state.workScore * 10) / 10  
+            : "評価なし"
+        }/>
+        
+        <ItemExplanationSet middleTitle="評価数" text={
+          state.infoCount ? state.infoCount : "未登録"
+        }/>
+
+        {/* <ExplanationTextDefault>
           {state.infoCount}
-        </ExplanationTextDefault>
+        </ExplanationTextDefault> */}
 
-        <SCTypografyh5>
+        <ItemExplanationSet middleTitle="いいね数" text={
+          state.likedCount ? state.likedCount : "未登録"
+        }/>
+
+        {/* <SCTypografyh5>
           {"いいね数"}
-        </SCTypografyh5> 
-
+        </SCTypografyh5>
         <ExplanationTextDefault>
           {state.likedCount ? state.likedCount : 0}
-        </ExplanationTextDefault>
+        </ExplanationTextDefault> */}
 
         {/* いらなそうだけど・・・
         {workScore == [""] && (
           <h2>score: 未評価 </h2>
         )} */}
 
-        <SCTypografyh5>
-          {"情報"}
-        </SCTypografyh5> 
+        <TitleSpacing container item xs={12}>
+          <Grid container item xs={3} justifyContent={"center"}>
+          <MiddleTitle>
+            {/* {props.middleTitle} */}
+            {"タグ"}
+          </MiddleTitle>
+          </Grid>
 
-        <ExplanationTextDefault>
-          {state.workInfo ? state.workInfo : "未登録"}
-        </ExplanationTextDefault>
+          <Grid container item xs={8} alignItems={"center"} style={{
+            marginLeft : "0.9rem",
+          }}>
+            {/* {Object.keys(state.winfoTag).map(token => ( */}
+            {(() => {
+              let befNumber = 0;
+              let tags = []
+              for(let i = 0;i < Object.keys(state.winfoTag).length;i++){
+                var token = Object.keys(state.winfoTag)[i]
+                
+                tags = [...tags,
+                  <>
+                  <Grid container item xs={12}>
+                    <Grid container item xs={2}> {/* 投稿件数表示部*/}
+                    <ExplanationTextDefault>
+                      {state.winfoTag[token] !== befNumber 
+                        ? state.winfoTag[token]
+                        : ""
+                      }
+                    </ExplanationTextDefault>
+                    </Grid>
+                    <Grid container item xs={10}> {/* タグ名表示部 */}
+                    <ExplanationTextDefault>
+                      {token}
+                    </ExplanationTextDefault>
+                    </Grid>
+                  </Grid>
+                  </>
+                ]
+                befNumber = state.winfoTag[token]
+              }
+              return <>{tags}</>;
+            })()}
+            {/* ))} */}
+          </Grid>
+        </TitleSpacing>
 
-        <SCTypografyh5>
-          {"カテゴリ"}
-        </SCTypografyh5> 
-        
-        <ExplanationTextDefault>{state.winfoCategory.map(cate => (
-          <span>{cate} </span>
-        ))}</ExplanationTextDefault>
-
-        <SCTypografyh5>
-          {"タグ/属性"}
-        </SCTypografyh5>
-
-        {/* //ソーーーーーとする。 */}
-        <ExplanationTextDefault>{Object.keys(state.winfoTag).map(tokens => (
-          <>
-          {/* {(1) && ( */}
-          {state.winfoTag[tokens] 
-          ? (
-            <div >
-            {/* <span>{tokens}:{winfoTag[tokens]} </span> */}
-            {state.winfoTag[tokens]+" "+tokens}
-            </div >
-          )
-          : (
-            ''
-          )}
-          </>
-        ))}</ExplanationTextDefault>
-        <SCTypografyh5>
-          {"クリエーター"}
-        </SCTypografyh5> 
-        
-        <ExplanationTextDefault>
-          {state.workCreator.length ? state.workCreator[0].kind+":"+state.workCreator[0].name : "no data at Creator" }
-        </ExplanationTextDefault>
-        <SCTypografyh5>
-          {"シリーズ"}
-        </SCTypografyh5> 
-        
-        <ExplanationTextDefault>
-          {state.workSeries ? state.workSeries : "no data at workSeries"}
-        </ExplanationTextDefault>
-
-        {/* <h2>クリエーター：{workCreator ? workCreator : "no data at Creator" }</h2> */}
+        {/* step2 */}
         {/* <p>シリーズ：{workSeries ? workSeries : "no data at workSeries"}</p> */}
 
-        {/* <p>出版社：{workPublisher}</p>
-        <p>発表：{workStart}</p>
-        <p>完結：{workFinish}</p>
-        <p>画：{workImage}</p> */}
+        {/* <h3>この作品を評価した人</h3> */}
 
-        <h3>この作品を評価した人</h3>
-        {(state.assessmentData.length != 0 && state.isAssessmenter == true) && (
+        <CSHighLightSkewBar style={{marginTop : "30px"}}>
+          <div>評価者</div>
+        </CSHighLightSkewBar>
+
+        <ItemExplanationSet middleTitle="お名前" text={
           <>
-            <ul>
-              {state.assessmentData.map(mapAssessmentData => ( 
-                <>
-                  {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (
-                    <>
-                      <li>
-                        <Link 
-                          // href="/post/[id]/[postUserId]" 
-                          href="/post/[postWorkId]/[postUserId]" 
-                          as={`/post/${workId}/${mapAssessmentData.uid}`}>
-                          <a>{mapAssessmentData.userName}</a>
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                  {mapAssessmentData.uid == userId && (
-                    isLoginUserAssessment = true
-                  )}
-                </>
-              ))}
-            </ul>
-          </>
-        )}
-        {state.isAssessmenter == false && (<p> 公開可能情報なし </p>) }
+            {(state.assessmentData.length != 0 && state.isAssessmenter == true) && (
+            <>
+              {/* <ul> */}
+                {state.assessmentData.map(mapAssessmentData => ( 
+                  <>
+                    {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (
+                      <>
+                        {/* <li> */}
+                        <ExplanationTextDefault>
+                          <Link 
+                            // href="/post/[id]/[postUserId]" 
+                            href="/post/[postWorkId]/[postUserId]" 
+                            as={`/post/${workId}/${mapAssessmentData.uid}`}>
+                            <a>{mapAssessmentData.userName}</a>
+                          </Link>
+                        </ExplanationTextDefault>
+                        {/* </li> */}
+                      </>
+                    )}
+                    {mapAssessmentData.uid == userId && (
+                      isLoginUserAssessment = true
+                    )}
+                  </>
+                ))}
+              {/* </ul> */}
+            </>
+          )}
+        {state.isAssessmenter == false && (<p> 公開可能情報なし </p>)}
+        </>
+        }/>
 
         {/* <ExplanationTextDefault>あなたの評価</ExplanationTextDefault> */}
         {/* <a>userId:::: {userId}</a> */}
-        {isLoginUserAssessment == true && (
+        {/* {isLoginUserAssessment == true && (
           <>
             <Link 
               // href="/post/[id]/[postUserId]" 
               href="/post/[postWorkId]/[postUserId]" 
-              as={`/post/${workId}/${userId}`}>
+              as={`/post/${workId}/${userId}`}
+            >
               <p>{RdUserName}自身の評価をみる</p>
             </Link>
           </>
-        )}
+        )} */}
 
-          <Link href={{
-            pathname: "/post/posting",
-            query: {
-              searchWord: state.workName,
-              infoMedia : state.workMedia,
-              workId : workId,
-              firstPostFlag : state.isAssessed ? 2 : 0 ,
-            }
-          }}>
-            <a>[{state.workName}] {state.isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
-          </Link>
-          {isSignIn && (<SpeedDialPosting
-              workName={state.workName} 
-              workMedia={state.workMedia} 
-              workId={workId} 
-              isLiked={state.isLiked}
-              isBookmark={state.isBookmark}
-              likedCount={state.likedCount}
-              isAssessed={state.isAssessed}
-              infoCount={state.infoCount}
-              // uid={userId}
-              isPublic={true}//常にtrueで渡して、非公開の時にlikeHikoukaiでfalseに変える
-              pfirstPostFlag={state.isAssessed ? 2 : 0} 
-              hist={"work"}
-              sdpActions={state.sdpActions}
-              dispatch={dispatch}
-            />) 
+        {/* <Link href={{
+          pathname: "/post/posting",
+          query: {
+            searchWord: state.workName,
+            infoMedia : state.workMedia,
+            workId : workId,
+            firstPostFlag : state.isAssessed ? 2 : 0 ,
           }
+        }}>
+          <a>[{state.workName}] {state.isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
+        </Link> */}
+        {isSignIn && (<SpeedDialPosting
+            workName={state.workName} 
+            workMedia={state.workMedia} 
+            workId={workId} 
+            isLiked={state.isLiked}
+            isBookmark={state.isBookmark}
+            likedCount={state.likedCount}
+            isAssessed={state.isAssessed}
+            infoCount={state.infoCount}
+            // uid={userId}
+            isPublic={true}//常にtrueで渡して、非公開の時にlikeHikoukaiでfalseに変える
+            pfirstPostFlag={state.isAssessed ? 2 : 0} 
+            hist={"work"}
+            sdpActions={state.sdpActions}
+            dispatch={dispatch}
+          />) 
+        }
         {(state.isLiked && state.isMyAssessmentPublic) ? <FavoriteIcon sx={classes.isLikedSignal}/> : null}
         {(state.isLiked && !state.isMyAssessmentPublic) ? <FavoriteTwoToneIcon sx={classes.isLikedSignal}/> : null}
         {(state.isBookmark && !state.isLiked) ? <CollectionsBookmarkIcon sx={classes.isLikedSignal}/> : null}

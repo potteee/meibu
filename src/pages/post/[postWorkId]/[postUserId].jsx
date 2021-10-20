@@ -26,7 +26,7 @@ import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 
 import { TitleSpacing } from 'src/styles/SC/shared/grid/titleSpacing'
 import { MiddleTitle } from "src/styles/SC/shared/typografy/middleTitle"
-import { CSHighLightSkewBar,CSHighLightSkewInnerBar } from "src/styles/SC/shared/typografy/highLightSkewBar"
+import { CSHighLightSkewBar } from "src/styles/SC/shared/typografy/highLightSkewBar"
 
 import Link from 'next/link'
 
@@ -307,7 +307,7 @@ const handlerPostUserId = (props) => {
           href="/post/[postWorkId]" 
           // href={`/post/[postWorkId]`} 
           as={`/post/${postWorkId}`}>
-            <Typography variant="h5" component="h1" gutterBottom>
+            <Typography variant="h5" component="h1">
               {state.workName}
             </Typography>
         </Link>

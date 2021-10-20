@@ -441,7 +441,7 @@ const initialState = {
   winfoInfomation : "",
   winfoCreator : [],
   // winfoPublisher : [],
-  winfoCountry : [],
+  winfoCountry : "",
   winfoStart : "",
   winfoFinish : "",
   winfoImage : "",
@@ -2389,12 +2389,12 @@ const Posting = () => {
                       {map.kind+` `+map.name}
                     </ExplanationTextDefault></>
                   ))
-                  : "投稿なし"
+                  : "未投稿"
                 }
               />
 
               <ItemExplanationSet middleTitle="制作国" text=
-                {state.winfoCountry.length ? state.winfoCountry : "未投稿"}
+                {state.winfoCountry ? state.winfoCountry : "未投稿"}
               />
 
               <ItemExplanationSet middleTitle="リリース" text=

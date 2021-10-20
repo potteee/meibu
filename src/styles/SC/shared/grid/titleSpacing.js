@@ -8,5 +8,6 @@ export const TitleSpacing = styled(Grid)`
   color : #393e4f; //青褐あおかち
   font-size : 0.8em;
   justify-content : flex-start;
+  /* margin-bottom: "20px"; */
 }
 `;

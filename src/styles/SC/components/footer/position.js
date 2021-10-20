@@ -8,7 +8,11 @@ import Toolbar from '@mui/material/Toolbar';
 export const SCAppBar = styled(AppBar)`
 && {
   top: auto;
+  /* position : absolute; */
+  /* position : relative; */
   /* bottom: -1px; */
+  /* padding : 10; */
+  margin-top : 10px;
   bottom: 0px;
   box-shadow : none;
 }
