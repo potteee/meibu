@@ -20,6 +20,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Collapse from '@mui/material/Collapse';
 import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
@@ -31,7 +32,10 @@ import { CSHighLightSkewBar } from "src/styles/SC/shared/typografy/highLightSkew
 import Link from 'next/link'
 
 import post from 'src/components/speedDial/post'
+import DeleteAssessment from 'src/components/DeleteAssessment'
+import deleteAssessmentFlagFunc from 'src/components/speedDial/deleteAssessmentFlagFunc'
 import GLoading from '../../../components/GLoading'
+// import DeleteAssessment from '../../../components/deleteAssessment'
 
 const classes = {
   workMedia : {
@@ -54,6 +58,7 @@ const classes = {
   },
   score : {
     fontSize : "1.5em",
+    marginLeft : "0.9rem",
   },
   date : {
     marginTop : "1.5rem",
@@ -189,6 +194,8 @@ const handlerPostUserId = (props) => {
 
   const [state,dispatch] = useReducer(reducer, initialState)
   const [showComment, setShowComment] = useState(false)
+
+  const [dialogFlag,setDialogFlag] = useState(false)
 
   const timestamp = Timestamp.now()
 
@@ -347,7 +354,7 @@ const handlerPostUserId = (props) => {
         </CSHighLightSkewBar>
 
         <TitleSpacing container item xs={12}>
-          <Grid container item xs={4} alignItems={"center"}>
+          <Grid container item xs={3} alignItems={"center"}>
             <MiddleTitle>
               採点
             </MiddleTitle>
@@ -450,20 +457,35 @@ const handlerPostUserId = (props) => {
           workName={state.workName}
           workMedia={state.workMedia}
           workId={postWorkId}
+          setDialogFlag={setDialogFlag}
           isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
           // uid= {RdGetUid}
           pfirstPostFlag = {(state.loginUserData === 1) ? 2 : 0}
           hist={"assessment"}
-          sdpActions = {[{
-            icon: <CreateIcon />,
-            name: (state.loginUserData === 2) 
-              ? '評価投稿' 
-              : '評価を編集',
-            function: post,
-          }]}
+          sdpActions = {[
+            {
+              icon: <DeleteIcon />,
+              name: "評価を削除",
+              function: deleteAssessmentFlagFunc,
+            },
+            {
+              icon: <CreateIcon />,
+              name: (state.loginUserData === 2) 
+                ? '評価投稿' 
+                : '評価を編集',
+              function: post,
+            }
+          ]}
           // router={router}
         />
         )}
+
+        {/* //条件　記載予定 dialogFlagがtrueなら表示 */}
+        {
+          dialogFlag 
+            ? <DeleteAssessment setDialogFlag={setDialogFlag} />
+            : ""
+        }
 
         {/* step2 */}
         {/* <h3>評価に対するコメント：{state.assessmentComment}</h3>

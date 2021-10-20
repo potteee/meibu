@@ -2128,7 +2128,7 @@ const Posting = () => {
 
               <ItemExplanationSet middleTitle="リリース" text={
                 <TextField
-                  InputLabelProps={{ shrink: true }} 
+                  // InputLabelProps={{ shrink: true }} 
                   id="standard-multiline-flexible"
                   fullWidth={false}
                   // label={"リリース"} 
@@ -2142,7 +2142,7 @@ const Posting = () => {
 
               <ItemExplanationSet middleTitle="完結" text={
                 <TextField
-                  InputLabelProps={{ shrink: true }} 
+                  // InputLabelProps={{ shrink: true }} 
                   id="standard-multiline-flexible"
                   fullWidth={false}
                   // label={"完結"}
@@ -2319,9 +2319,7 @@ const Posting = () => {
                       />
                     </Grid>
                   </Grid>
-
                 </DialogContent>
-
                 <DialogActions>
                   <IconButton
                     sx={classes.winfoCreatorNodalDeleteIcon}
@@ -2333,7 +2331,6 @@ const Posting = () => {
                   >
                   <DeleteIcon fontSize="small"/>
                   </IconButton>
-
                   <Button 
                     onClick={handleCloseMusicDialog}
                     color="primary"

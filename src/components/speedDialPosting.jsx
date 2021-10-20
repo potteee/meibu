@@ -78,6 +78,7 @@ export default function SpeedDialPosting(props) {
               tooltipTitle={action.name}
               tooltipOpen
               onClick={() => {
+                handleClose()
                 action.function({
                   ...props,
                   dispatchRedux : dispatchRedux ,
@@ -86,7 +87,6 @@ export default function SpeedDialPosting(props) {
                   selector : selector,
                   router : router
                 })
-                handleClose()
               }}
             />
           ))}
