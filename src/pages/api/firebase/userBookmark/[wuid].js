@@ -4,7 +4,7 @@ import React from 'react'
 import firebase from 'firebase/app';
 
 const userBookmarkHandler = async(req, res) => { //{}内はファイルの[]内の名前にする
-  console.log("apiStart");
+  console.log("apiStart userBookmaerkHandler");
   var admin = require("firebase-admin");
   const wuid = req.query.wuid
   console.log(wuid+"+wuid api");

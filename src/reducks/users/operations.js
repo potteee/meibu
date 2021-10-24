@@ -1,7 +1,7 @@
 //redux-thunkを使うとこのようにasync/awaitを使える様になる。
 import React, {useMemo} from 'react';
 
-import {signInAction ,signOutAction, updateUsersAction,postWorks} from "./actions";
+import {signInAction ,signOutAction, updateUsersAction,postWorksAction} from "./actions";
 import { db } from "../../firebase/index";
 import {isValidEmailFormat, isValidRequiredInput} from "../../foundations/share/common";
 
@@ -383,7 +383,7 @@ export const addPostedWork = (
                 workMedia : workMedia,
                 uid : uid,
                 created_at: timestamp,
-                updated_at:timestamp,
+                updated_at: timestamp,
                 isPublic: isPublic,
                 isLiked : isLiked,
                 isSpoiler: isSpoiler,
@@ -467,7 +467,7 @@ export const addPostedWork = (
         }
 
         await dispatch(
-            postWorks(
+            postWorksAction(
                 userAssessmentWorks,
                 instantChangedWorkId,
             )
@@ -486,7 +486,7 @@ export const likedWork = (userAssessmentWorks) => {
 
     return async (dispatch) => {
         await dispatch(
-            postWorks(
+            postWorksAction(
                 userAssessmentWorks,
                 instantChangedWorkId,
             )
@@ -507,5 +507,11 @@ export const updateUsers = (userRedux) => {
 export const updateUsersWithSignIn = (userRedux) => {
     return async(dispatch) => {
         await dispatch(signInAction(userRedux))
+    }
+}
+
+export const deleteAssessment = (assessmentWorks) => {
+    return async(dispatch) => {
+        await dispatch(deleteAssessmentAction(assessmentWorks))
     }
 }

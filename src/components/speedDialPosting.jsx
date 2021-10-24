@@ -72,23 +72,26 @@ export default function SpeedDialPosting(props) {
           open={open}
         >
           {props.sdpActions.map((action) => (
-            <SpeedDialAction
-              key={action.name}
-              icon={action.icon}
-              tooltipTitle={action.name}
-              tooltipOpen
-              onClick={() => {
-                handleClose()
-                action.function({
-                  ...props,
-                  dispatchRedux : dispatchRedux ,
-                  uid : uid,
-                  userName : userName,
-                  selector : selector,
-                  router : router
-                })
-              }}
-            />
+            action 
+            ?  <SpeedDialAction
+                key={action.name}
+                icon={action.icon}
+                tooltipTitle={action.name}
+                // open={action.open}
+                tooltipOpen
+                onClick={() => {
+                  handleClose()
+                  action.function({
+                    ...props,
+                    dispatchRedux : dispatchRedux ,
+                    uid : uid,
+                    userName : userName,
+                    selector : selector,
+                    router : router
+                  })
+                }}
+              />
+            : null
           ))}
         </SpeedDial>)
         : (<SpeedDial

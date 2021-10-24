@@ -488,7 +488,7 @@ const Post = (props) => {
         )} */}
 
         <TitleSpacing container item xs={12}>
-          <Grid container item xs={3} justifyContent={"center"}>
+          <Grid container item xs={3} justifyContent={"flex-start"}>
           <MiddleTitle>
             {/* {props.middleTitle} */}
             {"タグ"}
@@ -548,18 +548,21 @@ const Post = (props) => {
               {/* <ul> */}
                 {state.assessmentData.map(mapAssessmentData => ( 
                   <>
-                    {(mapAssessmentData.uid != "非公開" && mapAssessmentData.uid != userId ) && (
+                    {(mapAssessmentData.uid != userId ) && ( //自身は非表示（別途表示）
                       <>
-                        {/* <li> */}
                         <ExplanationTextDefault>
                           <Link 
-                            // href="/post/[id]/[postUserId]" 
                             href="/post/[postWorkId]/[postUserId]" 
                             as={`/post/${workId}/${mapAssessmentData.uid}`}>
-                            <a>{mapAssessmentData.userName}</a>
+                            <a>
+                              {mapAssessmentData.userName}
+                              {mapAssessmentData.uid == "非公開" 
+                                ? "　(非公開)"
+                                : null
+                              }
+                            </a>
                           </Link>
                         </ExplanationTextDefault>
-                        {/* </li> */}
                       </>
                     )}
                     {mapAssessmentData.uid == userId && (
@@ -567,38 +570,29 @@ const Post = (props) => {
                     )}
                   </>
                 ))}
-              {/* </ul> */}
             </>
           )}
         {state.isAssessmenter == false && (<p> 公開可能情報なし </p>)}
         </>
         }/>
+        <ItemExplanationSet middleTitle="自己評価" text={
+          state.isAssessed 
+            ? state.isMyAssessmentPublic
+              ? <Link 
+                  href="/post/[postWorkId]/[postUserId]" 
+                  as={`/post/${workId}/${userId}`}
+                >
+                  <a>{RdUserName}(公開)</a>
+                </Link>
+              : <Link 
+                  href="/post/[postWorkId]/[postUserId]" 
+                  as={`/post/${workId}/${userId}`}
+                >
+                  <a>{RdUserName}(非公開)</a>
+                </Link>
+            : "未評価"
+        }/>
 
-        {/* <ExplanationTextDefault>あなたの評価</ExplanationTextDefault> */}
-        {/* <a>userId:::: {userId}</a> */}
-        {/* {isLoginUserAssessment == true && (
-          <>
-            <Link 
-              // href="/post/[id]/[postUserId]" 
-              href="/post/[postWorkId]/[postUserId]" 
-              as={`/post/${workId}/${userId}`}
-            >
-              <p>{RdUserName}自身の評価をみる</p>
-            </Link>
-          </>
-        )} */}
-
-        {/* <Link href={{
-          pathname: "/post/posting",
-          query: {
-            searchWord: state.workName,
-            infoMedia : state.workMedia,
-            workId : workId,
-            firstPostFlag : state.isAssessed ? 2 : 0 ,
-          }
-        }}>
-          <a>[{state.workName}] {state.isAssessed ? "の評価を編集する。" : "を評価する。"} </a>
-        </Link> */}
         {isSignIn && (<SpeedDialPosting
             workName={state.workName} 
             workMedia={state.workMedia} 

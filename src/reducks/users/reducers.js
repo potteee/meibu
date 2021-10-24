@@ -57,6 +57,11 @@ export const UsersReducer = (state = initialState.users, action) => {
                     ...action.payload.instantChangedWorkId
                 }
             }
+        case Actions.DELETE_ASSESSMENT:
+            return {
+                ...state,
+                userAssessmentWorks : actions.payload.userAssessmentWorks
+            }
         default:
             console.log("default")
             return state

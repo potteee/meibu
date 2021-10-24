@@ -2,7 +2,7 @@ import React from "react"
 import { useRouter } from 'next/router'
 
 //Redux
-import { useSelector} from 'react-redux'
+import {useSelector} from 'react-redux'
 import {getIsSignedIn } from "../reducks/users/selectors";
 
 //makeStyles

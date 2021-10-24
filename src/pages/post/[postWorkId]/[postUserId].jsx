@@ -93,9 +93,17 @@ const initialState = {
 const reducer = (state,action) => {
   switch(action.type){
     case "loadDB" : {
+      console.log("reducer loadDB")
       return {
         ...state,
         ...action.payload,
+      }
+    }
+    case "IS_LOADING" : {
+      console.log("reducer IS_LOADING")
+      return {
+        ...state,
+        ...action.payload.isLoading,
       }
     }
   }
@@ -457,23 +465,29 @@ const handlerPostUserId = (props) => {
           workName={state.workName}
           workMedia={state.workMedia}
           workId={postWorkId}
+
           setDialogFlag={setDialogFlag}
           isLiked={true} //いいねを表示させないようにするための暫定値。評価に対するいいね機能作成時に修正。
           // uid= {RdGetUid}
           pfirstPostFlag = {(state.loginUserData === 1) ? 2 : 0}
           hist={"assessment"}
           sdpActions = {[
-            {
-              icon: <DeleteIcon />,
-              name: "評価を削除",
-              function: deleteAssessmentFlagFunc,
-            },
+            postUserId == RdGetUid 
+            ? {
+                icon: <DeleteIcon />,
+                name: "評価を削除",
+                function: deleteAssessmentFlagFunc,
+                // open : postUserId == RdGetUid ? true : false,
+              }
+            : null
+            ,
             {
               icon: <CreateIcon />,
               name: (state.loginUserData === 2) 
                 ? '評価投稿' 
                 : '評価を編集',
               function: post,
+              open : true
             }
           ]}
           // router={router}
@@ -483,7 +497,16 @@ const handlerPostUserId = (props) => {
         {/* //条件　記載予定 dialogFlagがtrueなら表示 */}
         {
           dialogFlag 
-            ? <DeleteAssessment setDialogFlag={setDialogFlag} />
+            ? <DeleteAssessment 
+                setDialogFlag={setDialogFlag} 
+                userId={postUserId} 
+                workId={postWorkId}
+                workTag={state.workTag}
+                isLiked={state.isLiked}
+                workScore={state.workScore}
+                workWatchTimes={state.workWatchTimes}
+                dispatch={dispatch}
+              />
             : ""
         }
 

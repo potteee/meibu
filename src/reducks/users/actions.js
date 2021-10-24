@@ -58,7 +58,7 @@ export const updateUsersAction = (userState) => {
 }
 
 export const POST_WORK = "POST_WORK"
-export const postWorks = (userAssessmentWorks,instantChangedWorkId) => {
+export const postWorksAction = (userAssessmentWorks,instantChangedWorkId) => {
     console.log(JSON.stringify(userAssessmentWorks)+"userAssessmentWorks actions in post work")
     console.log(JSON.stringify(instantChangedWorkId)+"instantChangedWorkId actions in post work")
     return {
@@ -82,3 +82,13 @@ export const likedWorks = (userAssessmentWorks,instantChangedWorkId) => {
     }
 }
 
+export const DELETE_ASSESSMENT = "DELETE_ASSESSMENT"
+export const deleteAssessmentAction = (userAssessmentWorks) => {
+    console.log(JSON.stringify(userAssessmentWorks)+"userAssessmentWorks actions in Delete Assessment")
+    return {
+        type: "DELETE_ASSESSMENT",
+        payload: {
+            userAssessmentWorks: userAssessmentWorks, // 削除された評価
+        }
+    }
+}

@@ -47,7 +47,7 @@ const bookmark = async(props) => {
       //Redux
       props.dispatchRedux(updateUsers(privateUserReduxData)),
       
-      //Display
+      //Display(reducer)
       props.dispatch({type : "setIsBookmark", 
         payload : {
           isBookmark : false
