@@ -504,6 +504,9 @@ const Post = (props) => {
               let tags = []
               for(let i = 0;i < Object.keys(state.winfoTag).length;i++){
                 var token = Object.keys(state.winfoTag)[i]
+                if(state.winfoTag[token] == 0){
+                  continue;
+                }
                 
                 tags = [...tags,
                   <>
@@ -544,8 +547,7 @@ const Post = (props) => {
         <ItemExplanationSet middleTitle="お名前" text={
           <>
             {(state.assessmentData.length != 0 && state.isAssessmenter == true) && (
-            <>
-              {/* <ul> */}
+              <>
                 {state.assessmentData.map(mapAssessmentData => ( 
                   <>
                     {(mapAssessmentData.uid != userId ) && ( //自身は非表示（別途表示）
@@ -570,10 +572,11 @@ const Post = (props) => {
                     )}
                   </>
                 ))}
-            </>
-          )}
-        {state.isAssessmenter == false && (<p> 公開可能情報なし </p>)}
-        </>
+              </>
+            )}
+            {state.isAssessmenter == false && <a> 公開可能情報なし </a>}
+            {/* {state.isAssessmenter == false || (state.isAssessed && state.isMyAssessmentPublic) && (<p> 公開可能情報なし </p>)} */}
+          </>
         }/>
         <ItemExplanationSet middleTitle="自己評価" text={
           state.isAssessed 

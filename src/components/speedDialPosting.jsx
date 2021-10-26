@@ -28,28 +28,31 @@ export default function SpeedDialPosting(props) {
   const uid = getUserId(selector)
   const userName = getUserName(selector);
 
-  const useStyles = makeStyles((theme) => ({
+  const classes = {
     root: {
       transform: 'translateZ(0px)',
       flexGrow: 1,
       position: 'fixed',
       top : "auto",
-      bottom : "30em",
+      bottom : "10em",
       left : "auto",
       right : "25em",
     },
     speedDial: {
       position: 'fixed',
-      bottom : "-26em",
-      right : "-24em",
+      bottom : "4rem",
+      right : "0.9rem",
+      // bottom : "-26em",
+      // right : "-24em",
     },
     backdropStyle: {
 
     }
-  }));
-  const classes = useStyles();
+  }
+
   const router = useRouter()
   const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(true);
 
   const handleOpen = () => {
     setOpen(true);
@@ -65,7 +68,7 @@ export default function SpeedDialPosting(props) {
       {props?.sdpActions
         ? (<SpeedDial
           ariaLabel="SpeedDial tooltip example"
-          classes={{root:classes.speedDial}}
+          sx={classes.speedDial}
           icon={<SpeedDialIcon />}
           onClose={handleClose}
           onOpen={handleOpen}
@@ -96,7 +99,7 @@ export default function SpeedDialPosting(props) {
         </SpeedDial>)
         : (<SpeedDial
           ariaLabel="SpeedDial tooltip example"
-          classes={{root:classes.speedDial}}
+          sx={classes.speedDial}
           icon={<CreateIcon />}
           onClick={() => {
             router.push({
