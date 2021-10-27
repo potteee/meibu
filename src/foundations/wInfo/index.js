@@ -137,7 +137,7 @@ const postWInfoCreate = (
                 const befWinfoScoreCount = snapshot.data()["winfoScoreCount"]
                 const ediWinfoScoreCount = befWinfoScoreCount + 1
                 let ediWinfoScore = snapshot.data()["winfoScore"] //現状の点数を代入。評価がなければこのまま
-                if(workScore){
+                if(workScore != ""){
                     console.log(workScore+"+workScore in")
                     let befWinfoScore = 0
                     if(snapshot.data()["winfoScore"] != -1){
@@ -257,7 +257,7 @@ const postWInfoCreate = (
                     //編集不可
 
                     //// 評価点
-                    if(workScore){ //評価していなければ""となる
+                    if(workScore != ""){ //評価していなければ""となる
                         console.log(workScore+"+workScore in")
                         const befWinfoScoreCount = snapshot.data()["winfoScoreCount"]
                         
