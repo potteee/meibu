@@ -60,10 +60,10 @@ const postWInfoCreate = (
                 winfoEditor : uid,
                 workId : workId,
                 workName : workName,
-                winfoScore : workScore ? workScore : -1, //workScore 
+                winfoScore : workScore != "" ? workScore : -1, //workScore 
                 // winfoWorkWatchYear : workWatchYear ,
                 // winfoWorkWatchTimes : workWatchTimes ,
-                winfoScoreCount : workScore ? 1 : 0, //作成時の初期値なので1
+                winfoScoreCount : workScore != "" ? 1 : 0, //作成時の初期値なので1
                 winfoCount : 1, //作成時の初期値なので1
                 winfoLikedCount : isLiked ? 1 : 0,
                 winfoTag : tmpWorkTag, ///////////新規　5/17 {xxxx : 3},{yyyy : 2} 
@@ -440,7 +440,7 @@ const postWInfoCreate = (
                 userName : userName,
                 // assessmentCategory : checkBoxState,
                 updateTime : new Date(),
-                workScore : workScore ? workScore : -1, // -1は初期値
+                workScore : workScore != ""  ? workScore : -1, // -1は初期値
                 workWatchYear : workWatchYear,
                 workWatchTimes : workWatchTimes,
                 workComment : workComment,

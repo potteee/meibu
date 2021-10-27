@@ -505,6 +505,7 @@ const Post = (props) => {
               for(let i = 0;i < Object.keys(state.winfoTag).length;i++){
                 var token = Object.keys(state.winfoTag)[i]
                 if(state.winfoTag[token] == 0){
+                  befNumber = state.winfoTag[token]
                   continue;
                 }
                 
@@ -550,7 +551,8 @@ const Post = (props) => {
               <>
                 {state.assessmentData.map(mapAssessmentData => ( 
                   <>
-                    {(mapAssessmentData.uid != userId ) && ( //自身は非表示（別途表示）
+                    {/* {(mapAssessmentData.uid != userId ) && ( //自身は非表示（別途表示） */}
+                    {/* 表示してもいいか */}
                       <>
                         <ExplanationTextDefault>
                           <Link 
@@ -566,7 +568,7 @@ const Post = (props) => {
                           </Link>
                         </ExplanationTextDefault>
                       </>
-                    )}
+                    {/* )} */}
                     {mapAssessmentData.uid == userId && (
                       isLoginUserAssessment = true
                     )}
@@ -585,13 +587,13 @@ const Post = (props) => {
                   href="/post/[postWorkId]/[postUserId]" 
                   as={`/post/${workId}/${userId}`}
                 >
-                  <a>{RdUserName}(公開)</a>
+                  <a>公開評価</a>
                 </Link>
               : <Link 
                   href="/post/[postWorkId]/[postUserId]" 
                   as={`/post/${workId}/${userId}`}
                 >
-                  <a>{RdUserName}(非公開)</a>
+                  <a>非公開評価</a>
                 </Link>
             : "未評価"
         }/>
