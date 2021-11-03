@@ -61,14 +61,20 @@ const deleteAssessment = async({query:{ wuid },body :bodyData}, res) => { //{}�
 
   let aftScore = -1
   
-  if(befScoreCount === 1　||　befScore === -1 ){ //ラス１の評価もしくは全く評価されていない場合。
-    console.log("befScoreCount is last or non")
-  } else {
-    aftScore = (( befScoreCount * befScore ) - objectData.workScore) / (befScoreCount - 1)
+  //ここで自身が点数評価しているかどうかを判定しなければならない
+  //自身が点数評価していない場合、aftScore=befScoreとなる。
+  if(objectData.workScore === -1){ 
+    aftScore = befScore
+  } else { //評価している場合
+    if(befScoreCount === 1){ //ラス１の評価の場合
+      console.log("befScoreCount is last")
+    } else { //ラス１評価でない場合
+      aftScore = (( befScoreCount * befScore ) - objectData.workScore) / (befScoreCount - 1)
+    }
   }
-  
-  console.log(aftScore+"+aftScore")
 
+  console.log(aftScore+"+aftScore")
+  
   //likeの判定
   let aftLikeCount = wInfoData.data().winfoLikedCount
   if (objectData.isLiked){
