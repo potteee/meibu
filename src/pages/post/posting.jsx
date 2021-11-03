@@ -1288,6 +1288,7 @@ const Posting = () => {
     // const workId = await RDDispatch(postWorkCreate(workName,workScore,goCheckBoxState,workComment,RdUserId))
 
     console.log(RdUserName+"+RdUserName a")
+    console.log(workScore+"+workScore @ posting")
     // 作品の固有データをDBに登録
     // 新規登録なのでScoreは入力値のまま　*-*- (wInfo)
     await RDDispatch(postWInfoCreate( //セキュアなでーたがあるならapi下でやった方がいい。
