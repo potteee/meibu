@@ -80,12 +80,12 @@ export default function DeleteAssessment (props) {
         deleteAssessment(aftAssessmentWorks)
 
         // 作品情報画面に移動
-        await router.push({ /////////対象に変更
-            pathname : '/post/[postWorkId]',
-            // as : `/post/${props.workId}`,
-            query : { 
-                postWorkId : props.workId,
-            },
+        await router.push({
+            pathname : '/menu/mypage',
+            // pathname : '/post/[postWorkId]',
+            // query : { 
+            //     postWorkId : props.workId,
+            // },
         })
     }
 

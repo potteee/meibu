@@ -61,13 +61,12 @@ const deleteAssessment = async({query:{ wuid },body :bodyData}, res) => { //{}�
 
   let aftScore = -1
   
-  //ここで自身が点数評価しているかどうかを判定しなければならない
   //自身が点数評価していない場合、aftScore=befScoreとなる。
   if(objectData.workScore === -1){ 
     aftScore = befScore
   } else { //評価している場合
     if(befScoreCount === 1){ //ラス１の評価の場合
-      console.log("befScoreCount is last")
+      console.log("befScoreCount is last") //aftScore=-1
     } else { //ラス１評価でない場合
       aftScore = (( befScoreCount * befScore ) - objectData.workScore) / (befScoreCount - 1)
     }

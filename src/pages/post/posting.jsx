@@ -630,9 +630,15 @@ const Posting = () => {
     setWorkName(event.target.value)
   }, [])
   
-  const inputWorkScore = useCallback((event) => {
-    setWorkScore(textToNumber(event.target.value))
-  },[])
+  const inputWorkScore = (event) => {
+    setWorkScore(event.target.value)
+    // setWorkScore(textToNumber(event.target.value))
+  }
+
+
+  // const inputWorkScore = useCallback((event) => {
+  //   setWorkScore(textToNumber(event.target.value))
+  // },[])
   // },[workScore])
   const inputWorkWatchTimes = (event) => {
     setWorkWatchTimes(event.target.value)
@@ -997,20 +1003,20 @@ const Posting = () => {
     setWinfoOneMusicDialogId("")
   }
 
-  const inputWinfoPages = (event) => {
-    dispatch({type:"changeWinfo",
-      payload : {
-        winfoPages : textToNumber(event.target.value)
-      }
-    })
-  }
-  const inputWinfoMinutes = (event) => {
-    dispatch({type:"changeWinfo",
-      payload : {
-        winfoMinutes : textToNumber(event.target.value)
-      }
-    })
-  }
+  // const inputWinfoPages = (event) => {
+  //   dispatch({type:"changeWinfo",
+  //     payload : {
+  //       winfoPages : textToNumber(event.target.value)
+  //     }
+  //   })
+  // }
+  // const inputWinfoMinutes = (event) => {
+  //   dispatch({type:"changeWinfo",
+  //     payload : {
+  //       winfoMinutes : textToNumber(event.target.value)
+  //     }
+  //   })
+  // }
 
   // winfoCreatorDrag Function
   function winfoCreatorHandleOnDragEnd(result) {
@@ -1340,7 +1346,7 @@ const Posting = () => {
     })
   }
 
-  console.log(JSON.stringify(tagCheckBox)+"+tagCheckBox")
+  // console.log(JSON.stringify(tagCheckBox)+"+tagCheckBox")
 
   // if(!isReady || !standbyState){
   if(isLoading || !oriQuery || !RdIsSignin){
@@ -1495,7 +1501,10 @@ const Posting = () => {
         <ItemExplanationSet middleTitle="採点" text={
           <TextField
             fullWidth={false} label={""} multiline={false} required={true} variant="standard"
-            rows={1} value={workScore} type={"text"} onChange={inputWorkScore}
+            rows={1} 
+            value={textToNumber(workScore)}
+            // value={workScore}
+            type={"text"} onChange={inputWorkScore}
             inputProps={{min: 0, style: { textAlign: 'center' }}}
             sx={classes.ScorePosition}//.Muiを編集したい時はこれ。Part2  
             // sx={classes.ScorePosition}//.Muiを編集したい時はこれ。Part2  
