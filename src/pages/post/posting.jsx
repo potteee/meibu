@@ -46,7 +46,7 @@ import Paper from '@mui/material/Paper';
 // import TextField from '@mui/material/TextField';
 import TextField from '@mui/material/TextField';
 import NativeSelect from '@mui/material/NativeSelect';
-import { ListItemIcon,ListItemSecondaryAction,IconButton } from '@mui/material';
+import { ListItemIcon,ListItemSecondaryAction,IconButton, fabClasses } from '@mui/material';
 // import RootRef from "@mui/material/RootRef";
 
 import Dialog from '@mui/material/Dialog';
@@ -223,6 +223,13 @@ const useStyles = {
   tagMasterGrid: {
     justifyContent : "space-evenly",
   },
+  // tagAppearArea: {
+  //   margin : "0px 0px 20px 0px"
+  // },
+  tagAppearButton: {
+    color : "#393e4f", //青褐あおかち
+    fontSize : "0.8rem",
+  },
   cateMasterGrid: {
     justifyContent : "space-between",
   },
@@ -231,8 +238,8 @@ const useStyles = {
   },
   firstTagItemGrid: {
     position : "relative",
-    top : "-2px",
-    left : "-2px",
+    // top : "-2px",
+    // left : "-2px",
     // marginBottom : "14px",
     justifyContent : "flex-start",
     // '& > *': {
@@ -273,6 +280,11 @@ const useStyles = {
   },
   tagFormGroup:{
     position: "relative",
+  },
+  tagGenreTitle:{
+    color: "black", //青褐あおかち
+    fontSize : "1.0em",
+    padding : "0rem 1rem",
   },
   gridTagKey: {
     flexGrow: 1,
@@ -502,6 +514,9 @@ const Posting = () => {
   const props = router.query
   const { isReady } = useRouter()
   const [isLoading,setIsLoading] = useState(true)
+
+  //定数
+  const DISPLAY_START_POINT = 1
   
   //props
   let hist = props.hist
@@ -564,6 +579,8 @@ const Posting = () => {
 
   const [winfoOneMusicDialogIndex, setWinfoOneMusicDialogIndex] = useState("")
   const [winfoOneMusicDialogId, setWinfoOneMusicDialogId] = useState("")
+
+  const [tagSelectDisplayPoint,setTagSelectDisplayPoint] = useState(DISPLAY_START_POINT) 
 
   ////showmore
   const firstCheckBoxDisp = 22
@@ -1552,27 +1569,37 @@ const Posting = () => {
         <ItemExplanationSet
           middleTitle="タグ"
           titleFlex={
-            Object.values(tagCheckBox).includes(true)
-            ? "flex-start"
-            : "flex-end"
+            "flex-start"
+            // Object.values(tagCheckBox).includes(true)
+            // ? "flex-start"
+            // : "flex-end"
           } 
           text=
           {<>
+            {/* 選択したタグの表示部 */}
             {(() => {
             let postedTag = []
+            let displayFlag = true;
+            // const DISPLAY_START_POINT = 5
+            // let displayPoint = DISPLAY_START_POINT
+            let displayCount = 0
             for(let j = 0;j < Object.keys(tagMap).length;j++){
               if(tagCheckBox[Object.keys(tagMap)[j]]){
+                displayCount++;
+                if(displayCount > tagSelectDisplayPoint){displayFlag=false}
                 postedTag = [...postedTag , 
-                  <SCtagChip
-                    size="small"
-                    label={[tagMap[Object.keys(tagMap)[j]].key]}
-                    // clickable
-                    color="primary"
-                    onDelete={() => { return tagCheckBoxHandleChange({
-                      name : Object.keys(tagMap)[j] ,
-                      isClicked : true
-                    })}}
-                  />
+                  <Collapse in={displayFlag} timeout={1000}>
+                    <SCtagChip
+                      size="small"
+                      label={[tagMap[Object.keys(tagMap)[j]].key]}
+                      // clickable
+                      color="primary"
+                      onDelete={() => { return tagCheckBoxHandleChange({
+                        name : Object.keys(tagMap)[j] ,
+                        isClicked : true
+                      })}}
+                    />
+                  </Collapse>
                 ]
               } 
             }
@@ -1580,7 +1607,33 @@ const Posting = () => {
               container item xs spacing={0}
               sx={classes.firstTagItemGrid}
             > 
-              {postedTag}
+              {postedTag.length
+                ? <>
+                    {/* <Grid container item sx={classes.tagAppearArea}> */}
+                      {postedTag}
+                    {/* </Grid> */}
+                    <Grid container item justifyContent="flex-end">
+                      <Button onClick={()=>{
+                        if(tagSelectDisplayPoint == DISPLAY_START_POINT){
+                          // displayPoint = 9999
+                          setTagSelectDisplayPoint(9999)
+                        } else {
+                          // displayPoint = DISPLAY_START_POINT
+                          setTagSelectDisplayPoint(DISPLAY_START_POINT)
+                        }
+                        console.log(tagSelectDisplayPoint+"Button displayPoint")
+                      }}>
+                        <Typography sx={classes.tagAppearButton}>
+                          {tagSelectDisplayPoint == DISPLAY_START_POINT
+                            ? ">>>"
+                            : "<<<"
+                          }
+                          </Typography>
+                      </Button>
+                    </Grid>
+                  </>
+                : ""
+              }
             </Grid>
             })()}
             <FormControl sx={classes.FCfreeWordSearchTag}>
@@ -1609,35 +1662,7 @@ const Posting = () => {
                       // padding : "20px",
                     },
                   },
-                  // option : {
-                  // // '& .MuiAutocomplete-option' : {
-                  //   minHeight : '0.7em', //デフォルトで大きい数値になっているから上書き
-                  //   padding : "2px",
-                  // },
-                  // '& .MuiAutocomplete-paper' : {             
-                  //   '& .MuiInput-root' : {             
-                  //     '& .MuiAutocomplete-listbox' : {
-                  //       '& .MuiAutocomplete-option' : {
-                  //         minHeight : '0.7em', //デフォルトで大きい数値になっているから上書き
-                  //         padding : "2px",
-                  //       }
-                  //     }
-                  //   }
-                  // }
                 }}
-                // classes={{
-                //   // option : {   
-                //   '& .MuiAutocomplete-paper' : {             
-                //     '& .MuiInput-root' : {             
-                //       '& .MuiAutocomplete-listbox' : {
-                //         '& .MuiAutocomplete-option' : {
-                //           minHeight : '0.7em', //デフォルトで大きい数値になっているから上書き
-                //           padding : "2px",
-                //         }
-                //       }
-                //     }
-                //   }
-                // }}
                 id="tagSearch"
                 options={Object.values(tagMap)}
                 getOptionLabel={(option) => option.key}
@@ -1690,20 +1715,22 @@ const Posting = () => {
                         case 0 : //ジャンル
                           console.log(displayFlag ? "true" +"+displayFlag@0" :　"false" + "+displayFlag@0")
                           displayFlag = true //→ついき：多分なくてもいい。
-                          return <Grid container item xs={12} justify="center" sx={classes.inputTagKey }><h3 sx={classes.h3TagKey}>{tagExtraData.Genre.key}</h3></Grid>;
+                          return (
+                            <Grid container item xs={12} justify="center" sx={classes.inputTagKey }>
+                              <Typography sx={classes.tagGenreTitle}>{tagExtraData.Genre.key}</Typography>
+                            </Grid>)
                         case showMoreGenre : 
-                          // console.log(displayFlag ? "true" +"+displayFlag@showMoreGenre" : "false" +"+displayFlag@showMoreGenre")
-                          // console.log(showMoreGenre+"+showMoreGenre") 
                           displayFlag = false
                           if(showMoreGenre != totalCountGenre){
                             break
                           }
-
                         case totalCountGenre : //印象
                           displayFlag = true
-                          return <Grid container item xs={12} justify="center" classes={{ root: classes.inputTagKey }} ><h3 sx={classes.h3TagKey}>{tagExtraData.Impression.key}</h3></Grid>;
+                          return (
+                            <Grid container item xs={12} justify="center" sx={classes.inputTagKey }>
+                              <Typography sx={classes.tagGenreTitle}>{tagExtraData.Impression.key}</Typography>
+                            </Grid>)
                         case showMoreImpression :
-                          // console.log(j+"+showMoreImpression")
                           displayFlag = false
                           if(showMoreImpression != totalCountImpression){
                             break
@@ -1711,20 +1738,22 @@ const Posting = () => {
                           
                         case totalCountImpression : // 原作
                           displayFlag = true
-                          return <Grid container item xs={12} justify="center" sx={classes.inputTagKey }><h3 sx={classes.h3TagKey}>{tagExtraData.Original.key}</h3></Grid>;
+                          return (
+                            <Grid container item xs={12} justify="center" sx={classes.inputTagKey }>
+                              <Typography sx={classes.tagGenreTitle}>{tagExtraData.Original.key}</Typography>
+                            </Grid>)
                         case showMoreOriginal :
-                            // case totalCountImpression + 5 :
-                          // console.log(j+"+showMoreOriginal")
                           displayFlag = false                                
                           if(showMoreOriginal != (totalCountOriginal)){
                             break
                           }
-                          
                         case totalCountOriginal : // 人
                           displayFlag = true
-                          return <Grid container item xs={12} justify="center" sx={classes.inputTagKey} ><h3 sx={classes.h3TagKey}>{tagExtraData.Position.key}</h3></Grid>;
+                          return (
+                            <Grid container item xs={12} justify="center" sx={classes.inputTagKey }>
+                              <Typography sx={classes.tagGenreTitle}>{tagExtraData.Position.key}</Typography>
+                            </Grid>)
                         case showMorePosition :
-                          // console.log(j+"+showMorePosition")
                           displayFlag = false
                           if(showMorePosition != (totalCountPosition)){
                             break
@@ -1758,17 +1787,14 @@ const Posting = () => {
                       switch(j) {
                         case (showMoreGenre - 1) :
                           return (
-                            <Grid container item spacing={0} justify={
-                              (showMoreGenre != totalCountGenre) 
-                                ? "flex-end" 
-                                : "flex-start"
-                              }
+                            <Grid container item spacing={0} 
+                              justifyContent="flex-end"
                               alignItems="flex-start"
-                            >  
+                            > 
                               <Button onClick={() => {
                                 // setShowMoreGenre(showMoreGenre + 3) 
                                 setShowMoreGenre((preShowMoreGenre) => { 
-                                  if(showMoreGenre != totalCountGenre){　 //全てが表示されていない
+                                  if(showMoreGenre != totalCountGenre){//全てが表示されていない
                                     preShowMoreGenre = preShowMoreGenre + ONE_CLICK_APPEARANCE_IN_POSTING
                                     console.log(preShowMoreGenre+"+preShowMoreGenre")
                                     console.log(totalCountGenre+"+totalCountGenre")
@@ -1789,11 +1815,8 @@ const Posting = () => {
                           )
                         case (showMoreImpression - 1) :
                           return (
-                            <Grid container item spacing={0} justify={
-                              (showMoreImpression != totalCountImpression)
-                                ? "flex-end" 
-                                : "flex-start"
-                              }
+                            <Grid container item spacing={0} 
+                              justifyContent="flex-end"
                               alignItems="flex-start"
                             >  
                               <Button onClick={() => {
@@ -1845,11 +1868,8 @@ const Posting = () => {
                         // )
                         case (showMorePosition - 1) :
                           return (
-                            <Grid container item spacing={0} justify={
-                              (showMorePosition != (totalCountPosition))
-                                ? "flex-end" 
-                                : "flex-start"
-                              }
+                            <Grid container item spacing={0} 
+                              justifyContent="flex-end"
                               alignItems="flex-start"
                             >  
                               <Button onClick={() => {

@@ -60,9 +60,9 @@ const classes = {
     fontSize : "1.5em",
     marginLeft : "0.9rem",
   },
-  date : {
+  aboutDate : {
     marginTop : "1.5rem",
-    marginBottom : "4rem",
+    paddingBottom : "4rem",
     fontSize : "0.7rem",
   }
 }
@@ -404,7 +404,7 @@ const handlerPostUserId = (props) => {
             )
         }/>
         
-        <Grid container item xs={12} justifyContent={"flex-end"} sx={classes.date}>
+        <Grid container item xs={12} justifyContent={"flex-end"} sx={classes.aboutDate}>
           <Grid item container xs={3} direction={"column"} justifyContent={"center"} alignItems={"center"}>
             <Grid item>
               視聴年
