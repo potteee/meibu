@@ -76,7 +76,8 @@ import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -117,6 +118,7 @@ import { fontSize, height, width } from '@mui/system'
 import { isConditionalExpression } from 'typescript'
 import { titleSpacing } from '../../styles/SC/shared/grid/titleSpacing'
 import { red } from '@mui/material/colors'
+import { FormatAlignJustifyOutlined } from '@mui/icons-material'
 
 const useStyles = {
   autoCompleteStyle : {
@@ -223,9 +225,15 @@ const useStyles = {
   tagMasterGrid: {
     justifyContent : "space-evenly",
   },
-  // tagAppearArea: {
-  //   margin : "0px 0px 20px 0px"
-  // },
+  tagAppearArea: {
+    // margin : "0px 0px 20px 0px"
+    paddingRight : "0px"
+  },
+  tagAppearAreaButton: {
+    // margin : "0px 0px 20px 0px"
+    paddingRight : "0px",
+    justifyContent : "flex-end"
+  },
   tagAppearButton: {
     color : "#393e4f", //青褐あおかち
     fontSize : "0.8rem",
@@ -1605,28 +1613,33 @@ const Posting = () => {
             }
             return <Grid
               container item xs spacing={0}
-              sx={classes.firstTagItemGrid}
+              sx={classes.firstTagItemGrid} xs={12}
             > 
               {postedTag.length
                 ? <>
-                    {/* <Grid container item sx={classes.tagAppearArea}> */}
+                    <Grid container item sx={classes.tagAppearArea} xs={11}>
                       {postedTag}
-                    {/* </Grid> */}
-                    <Grid container item justifyContent="flex-end">
-                      <Button onClick={()=>{
-                        if(tagSelectDisplayPoint == DISPLAY_START_POINT){
-                          // displayPoint = 9999
-                          setTagSelectDisplayPoint(9999)
-                        } else {
-                          // displayPoint = DISPLAY_START_POINT
-                          setTagSelectDisplayPoint(DISPLAY_START_POINT)
-                        }
-                        console.log(tagSelectDisplayPoint+"Button displayPoint")
-                      }}>
+                    </Grid>
+                    <Grid container item justifyContent="flex-end" 
+                      xs={1} 
+                    >
+                      <Button
+                        onClick={()=>{
+                          if(tagSelectDisplayPoint == DISPLAY_START_POINT){
+                            // displayPoint = 9999
+                            setTagSelectDisplayPoint(9999)
+                          } else {
+                            // displayPoint = DISPLAY_START_POINT
+                            setTagSelectDisplayPoint(DISPLAY_START_POINT)
+                          }
+                          console.log(tagSelectDisplayPoint+"Button displayPoint")
+                        }}
+                        sx={classes.tagAppearAreaButton}
+                      >
                         <Typography sx={classes.tagAppearButton}>
                           {tagSelectDisplayPoint == DISPLAY_START_POINT
-                            ? ">>>"
-                            : "<<<"
+                            ? <ArrowRightIcon />
+                            : <ArrowDropDownIcon />
                           }
                           </Typography>
                       </Button>

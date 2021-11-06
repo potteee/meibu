@@ -1,19 +1,48 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import Link from 'next/link'
 import {db} from '../firebase/index'
-import {useDispatch,useSelector} from 'react-redux'
 import Header from '../components/header'
 import ApplicationBar from '../components/applicationBar'
 import Footer from '../components/footer'
 import SpeedDialPosting from '../components/speedDialPosting'
 import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
 import GLoading from '../components/GLoading';
+import {getUserAssessmentWorks} from '../reducks/users/selectors'
+
+//mui
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+
 import { getFirestore, collection, doc,query, where, getDocs ,getDoc ,setDoc } from "firebase/firestore";
 
 const News = ({worksData}) => {
   // console.log(JSON.stringif(worksData,null ,2)+"+worksData@J");
   const {isReady} = useRouter()
+  const selector = useSelector((state) => state)
+
+  const userAssessment = Object.keys(getUserAssessmentWorks(selector))
+
   const [isLoading,setIsLoading] = useState(true)
+
+  console.log(userAssessment+"+userAssessment")
+
+  const classes = {
+    master : {
+      wrap : "nowrap",
+    },
+    title : {
+      paddingLeft : "0.5rem",
+    } ,
+    bolder : {
+      fontWeight: 'bolder',
+    } ,
+    counts : {
+      justifyContent : "center",
+    } ,
+    media : {
+    }
+  }
 
   useEffect(() => {
     setIsLoading(isReady ? false : true)
@@ -33,29 +62,41 @@ const News = ({worksData}) => {
     <>
       <ApplicationBar title="NEWS"/>
       {/* <p>worksのデータを一覧表示。→バズビデオみたいにカテゴリごとに表示</p> */}
-      <p>作品名：評価点：カテゴリ</p>
+      {/* <p>作品名：評価点：カテゴリ</p> */}
       {worksData != false 
-        ? <ul> {worksData.map(oneworksData => (
-          <li>
-            <Link 
-            // href="/post/[id]" 
-            href="/post/[postWorkId]" 
-            as={`/post/${oneworksData.workId}`}>
-              {oneworksData.workName+"("+oneworksData.winfoCount+")"}
-            </Link>
-            <a>：{oneworksData.winfoScore != -1 
-              ? Math.floor(oneworksData.winfoScore * 10) / 10  
-              : "採点なし"
-            }</a>
-            <a>：{oneworksData.winfoCategory.map(cate => ( 
-            <>{cate+" "}</>
-            ))}
-            </a>
-          </li>
-        ))} </ul>
+        ? <Grid container item xs={12}> {worksData.map(oneworksData => (
+          <Grid container item xs={12} sx={classes.master}>
+            <Grid container item xs={1}>
+            <Typography noWrap sx={userAssessment.includes(oneworksData.workId) ? classes.bolder : null}>
+              {oneworksData.winfoScore != -1 
+              ? Math.round(oneworksData.winfoScore)
+              // ? Math.floor(oneworksData.winfoScore * 10) / 10  
+              : "-"
+            }</Typography></Grid>
+            <Grid container item xs={8} sx={classes.title}>
+              <Link 
+                // href="/post/[id]" 
+                href="/post/[postWorkId]" 
+                as={`/post/${oneworksData.workId}`}>
+                <Typography noWrap sx={userAssessment.includes(oneworksData.workId) ? classes.bolder : null}>
+                  {oneworksData.workName}
+                </Typography>
+              </Link>
+            </Grid>
+            <Grid container item xs={2} zeroMinWidth sx={classes.media}>
+              <Typography noWrap sx={userAssessment.includes(oneworksData.workId) ? classes.bolder : null}>
+                {oneworksData.winfoMedia}
+              </Typography>
+            </Grid>
+            <Grid container item xs={1} sx={classes.counts}>
+              <Typography noWrap sx={userAssessment.includes(oneworksData.workId) ? classes.bolder : null}>
+                {oneworksData.winfoCount}
+              </Typography>
+            </Grid>
+          </Grid>
+        ))} </Grid>
         : <p>投稿されている作品データは有りません</p>
       }
-      検索機能へのリンクを目立つように
       <SpeedDialPosting />
       <Footer />
     </>
