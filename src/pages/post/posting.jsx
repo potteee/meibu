@@ -656,8 +656,8 @@ const Posting = () => {
   }, [])
   
   const inputWorkScore = (event) => {
-    setWorkScore(event.target.value)
-    // setWorkScore(textToNumber(event.target.value))
+    // setWorkScore(event.target.value)
+    setWorkScore(textToNumber(event.target.value))
   }
 
 
@@ -1527,8 +1527,8 @@ const Posting = () => {
           <TextField
             fullWidth={false} label={""} multiline={false} required={true} variant="standard"
             rows={1} 
-            value={textToNumber(workScore)}
-            // value={workScore}
+            // value={textToNumber(workScore)}
+            value={workScore}
             type={"text"} onChange={inputWorkScore}
             inputProps={{min: 0, style: { textAlign: 'center' }}}
             sx={classes.ScorePosition}//.Muiを編集したい時はこれ。Part2  

@@ -61,8 +61,7 @@ const News = ({worksData}) => {
     return (
     <>
       <ApplicationBar title="NEWS"/>
-      {/* <p>worksのデータを一覧表示。→バズビデオみたいにカテゴリごとに表示</p> */}
-      {/* <p>作品名：評価点：カテゴリ</p> */}
+      {/* バズビデオみたいにカテゴリごとに表示 */}
       {worksData != false 
         ? <Grid container item xs={12}> {worksData.map(oneworksData => (
           <Grid container item xs={12} sx={classes.master}>
