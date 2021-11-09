@@ -494,7 +494,6 @@ const handlerPostUserId = (props) => {
         />
         )}
 
-        {/* //条件　記載予定 dialogFlagがtrueなら表示 */}
         {
           dialogFlag 
             ? <DeleteAssessment 

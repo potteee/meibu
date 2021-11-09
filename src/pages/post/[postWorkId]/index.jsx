@@ -23,7 +23,7 @@ import { MiddleTitle } from "src/styles/SC/shared/typografy/middleTitle"
 
 import {db} from '../../../firebase/index'
 import {useSelector} from 'react-redux'
-import { collection, doc, query, where, getDocs ,getDoc ,setDoc , Timestamp} from "firebase/firestore";
+import {collection, doc, query, where, getDocs ,getDoc ,setDoc , Timestamp} from "firebase/firestore";
 
 import {getUserId,getUserName,getUserBookmark,getUserAssessmentWorks,getInstantChangedWorksId, getIsSignedIn} from "../../../reducks/users/selectors";
 // import { postWorkCreate } from '../../../reducks/works/operations'
@@ -31,15 +31,21 @@ import {getUserId,getUserName,getUserBookmark,getUserAssessmentWorks,getInstantC
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 import CreateIcon from '@mui/icons-material/Create';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 
 import GLoading from 'src/components/GLoading'
+import DeleteWork from 'src/components/DeleteWork'
+
 import like ,{likeHikoukai} from 'src/components/speedDial/like'
 import bookmark from 'src/components/speedDial/bookmark'
 import post from 'src/components/speedDial/post'
+import workDelete from 'src/components/speedDial/workDelete'
+
 
 import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
 
@@ -82,47 +88,28 @@ const reducer = (state, action) => {
   //更新データがあればそれに書き換える。
   let putState = {...state,...action.payload} ///宣言的に書くっていう観点で言うとこれほんとに意味ない。
   //ただ、State分の再描写はしなくなっているからそれの恩恵は受けられている。
-
-  let sdpActions = []
-
   console.log("putState")
   console.dir(putState)
   // console.log(JSON.stringify(putState,null,2)+"+putState") //なぜかブックマーク登録時にエラーになる
 
-  if(putState.isLiked){
-    sdpActions = [
-      { icon: <CreateIcon />, 
-        name: (!putState.isAssessed) 
-          ? '評価投稿' 
-          : '評価を編集',
-        function : post,
-
-      },
-      { icon: (putState.isBookmark) 
-          ? <CollectionsBookmarkOutlinedIcon /> 
-          : <CollectionsBookmarkIcon />,
-        name: (putState.isBookmark)
-          ? 'ブックマーク解除' 
-          : 'ブックマーク' ,
-        function : bookmark ,
-      }
-    ]
-  } else{
-    sdpActions = [
-      { 
-        icon: <CreateIcon />,
-        name: (!putState.isAssessed) ? '評価投稿' : '評価を編集',
-        function: post,
-      },
-      {
-        icon: (putState.isBookmark) 
-          ? <CollectionsBookmarkOutlinedIcon /> 
-          : <CollectionsBookmarkIcon />,
-        name: (putState.isBookmark) 
-          ? 'ブックマーク解除' 
-          : 'ブックマーク' ,
-        function: bookmark
-      },
+  let sdpActions = [
+    { icon: <CreateIcon />, 
+      name: (!putState.isAssessed) 
+        ? '評価投稿' 
+        : '評価を編集',
+      function : post,
+    },
+    { icon: (putState.isBookmark) 
+        ? <CollectionsBookmarkOutlinedIcon /> 
+        : <CollectionsBookmarkIcon />,
+      name: (putState.isBookmark)
+        ? 'ブックマーク解除' 
+        : 'ブックマーク' ,
+      function : bookmark ,
+    },
+  ]
+  if(!putState.isLiked){
+    sdpActions = [ ...sdpActions,
       { 
         icon: <FavoriteTwoToneIcon />,
         name: 'いいね！(非公開)' ,
@@ -132,6 +119,14 @@ const reducer = (state, action) => {
         icon: <FavoriteIcon />,
         name: 'いいね！' ,
         function: like
+      },
+    ]
+  }
+  if(true){ // 自身が作品作成者であり、他の評価者がいない場合。
+    sdpActions = [ ...sdpActions,
+      { icon: <DeleteIcon />,
+        name: "作品を削除",
+        function : workDelete ,
       },
     ]
   }
@@ -166,6 +161,14 @@ const reducer = (state, action) => {
       }
     }
 
+    case "IS_LOADING" : {
+      console.log("reducer IS_LOADING")
+      return {
+        ...state,
+        ...action.payload.isLoading,
+      }
+    }
+
     default :{
       throw new Error("not exect action")
     }
@@ -181,10 +184,10 @@ const getOriginalDBData = async(params,history) => {
   console.log(process.env.url+"+process.env.url")
 
   if (history == 'Post'){
-    assessmentUrl = `/api/firebase/assessment/${params.postWorkId}`
+    assessmentUrl = `/api/firebase/get/assessment/${params.postWorkId}`
 
   } else {
-    assessmentUrl = `${process.env.url}/api/firebase/assessment/${params.postWorkId}`
+    assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
     // assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
   }
   console.log(assessmentUrl+"+assessmentUrl")
@@ -238,6 +241,8 @@ const Post = (props) => {
   const workId = /^\/post\//.test(query) ? query.split('\/post\/')[1] : ""
 
   const [state,dispatch] = useReducer(reducer, initialState)
+
+  const [workDeleteDialogFlag,setWorkDeleteDialogFlag] = useState(false)
 
   const RdUserName = getUserName(selector)
   const RdIsBookmark = getUserBookmark(selector)
@@ -613,8 +618,24 @@ const Post = (props) => {
             hist={"work"}
             sdpActions={state.sdpActions}
             dispatch={dispatch}
+            setWorkDeleteDialogFlag={setWorkDeleteDialogFlag}
           />) 
         }
+
+        {
+          workDeleteDialogFlag 
+            ? <DeleteWork 
+                setWorkDeleteDialogFlag={setWorkDeleteDialogFlag} 
+                workId={workId}
+                workTag={state.workTag}
+                isLiked={state.isLiked}
+                workScore={state.workScore}
+                workWatchTimes={state.workWatchTimes}
+                dispatch={dispatch}
+              />
+            : ""
+        }
+
         {(state.isLiked && state.isMyAssessmentPublic) ? <FavoriteIcon sx={classes.isLikedSignal}/> : null}
         {(state.isLiked && !state.isMyAssessmentPublic) ? <FavoriteTwoToneIcon sx={classes.isLikedSignal}/> : null}
         {(state.isBookmark && !state.isLiked) ? <CollectionsBookmarkIcon sx={classes.isLikedSignal}/> : null}

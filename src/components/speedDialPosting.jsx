@@ -15,9 +15,10 @@ import SpeedDialIcon from '@mui/lab/SpeedDialIcon';
 import SpeedDialAction from '@mui/lab/SpeedDialAction';
 import CreateIcon from '@mui/icons-material/Create';
 
-import like from 'src/components/speedDial/like'
-import bookmark from 'src/components/speedDial/bookmark'
-import post from 'src/components/speedDial/post'
+// import like from 'src/components/speedDial/like'
+// import bookmark from 'src/components/speedDial/bookmark'
+// import post from 'src/components/speedDial/post'
+// import workDelete from 'src/components/speedDial/workDelete'
 
 export default function SpeedDialPosting(props) {
   console.log("SpeedDialPosting Start")

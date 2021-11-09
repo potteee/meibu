@@ -9,10 +9,9 @@ import Button from '@mui/material/Button'
 import {useSelector} from 'react-redux'
 import { getUserAssessmentWorks } from "../reducks/users/selectors";
 import { deleteAssessment } from "../reducks/users/operations";
-
 import { useRouter } from 'next/router'
 
-export default function DeleteAssessment (props) {
+export default function DeleteWork (props) {
     const selector = useSelector((state) => state)
     const assessmentWorks = getUserAssessmentWorks(selector);
     const router = useRouter()
@@ -20,17 +19,19 @@ export default function DeleteAssessment (props) {
     const [openDialog,setOpenDialog] = useState(false)
     // let openDialog = true
 
+    const urlDeleteWork = `/api/firebase/delete/work/${props.workId}`
     const urlDeleteAssessment = `/api/firebase/delete/assessment/${props.workId}_${props.userId}`
 
     const handleOncloseDialog = () => {
         console.log("openDialog")
         setOpenDialog(false);
-        props.setDialogFlag(false)
-        console.log("setDialogFlag false")
+        props.setWorkDeleteDialogFlag(false)
+        console.log("setWorkDeleteDialogFlag false")
     };
 
-    const clickedDeleteAssessment = async() => {
-        console.log("削除が押されました。2")
+    const clickedDeleteWork = async() => {
+
+        console.log("作品削除が押されました。１")
         console.log("workId"+props.workId+"userId"+props.userId)
 
         // api配下で実行
@@ -41,6 +42,8 @@ export default function DeleteAssessment (props) {
                 isLoading : true
             }
         })
+
+        // 評価削除部
         // workInfoの評価情報
         const res = await fetch(urlDeleteAssessment, {
             // 送信先URL
@@ -66,13 +69,15 @@ export default function DeleteAssessment (props) {
 
         deleteAssessment(aftAssessmentWorks)
 
+        //作品削除部
+        // 一旦コメントアウト　→ 完成したらコメントアウトを外す
+        const res = await fetch(urlDeleteWork)
+        const data = await res.json()
+        console.log(JSON.stringify(data)+"+res delete assessment data")
         // 作品情報画面に移動
+
         await router.push({
             pathname : '/menu/mypage',
-            // pathname : '/post/[postWorkId]',
-            // query : { 
-            //     postWorkId : props.workId,
-            // },
         })
     }
 
@@ -102,7 +107,7 @@ export default function DeleteAssessment (props) {
                 </Button>
                 <Button 
                     onClick={() => {
-                        clickedDeleteAssessment()
+                        clickedDeleteWork()
                         handleOncloseDialog()
                         console.log("削除が押されました。")
                     }}
@@ -117,4 +122,4 @@ export default function DeleteAssessment (props) {
     )
 };
 
-// export default deleteAssessment
+export default deleteAssessment
