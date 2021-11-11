@@ -126,8 +126,6 @@ const searchResult = () => {
           //ログインユーザが評価した作品を取得し、検索結果と比較。
           if(uid != "uid initial"){
             console.log(uid+"+uid")
-            // const snapshot = await db.collection('privateUsers').doc(uid)
-            // const snapshot = await doc(db, 'privateUsers', uid).collection('postedWorksId').get()
             const snapshot = await getDocs(collection(db, 'privateUsers', uid, 'postedWorksId'))
 
             console.log("getUserAsessmentWorks snapshot")
