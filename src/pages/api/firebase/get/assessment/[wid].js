@@ -1,4 +1,6 @@
 // post/[postWorkId]/index.jsx
+import React from 'react' 
+
 const handlerAssessmeent = async({ query: { wid } }, res) => {
   console.log("apiStart firebase/get/assessment/[wid].js");
   var admin = require("firebase-admin");

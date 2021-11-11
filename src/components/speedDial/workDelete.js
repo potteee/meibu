@@ -1,3 +1,5 @@
+import React from 'react' 
+
 const workDelete = (props) => {
 
     console.log("speeddialの「作品削除」が押されました。")

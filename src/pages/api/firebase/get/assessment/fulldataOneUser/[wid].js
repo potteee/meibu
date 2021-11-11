@@ -1,5 +1,6 @@
 // post/[postWorkId]/index.jsx
 // 現在未使用 & 未完成(2021/11/11) 
+import React from 'react' 
 
 const handlerAssessmeent = async({ query: { wuid } }, res) => {
   console.log("apiStart firebase/get/assessment/fulldataOneUser/[wuid].js");
