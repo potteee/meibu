@@ -1,4 +1,3 @@
-import React, {useState, useCallback} from 'react';
 import { db } from "../../firebase/index";
 import { collection, doc ,getDoc ,setDoc ,updateDoc ,Timestamp ,deleteDoc} from "firebase/firestore";
 
@@ -26,7 +25,6 @@ const postWInfoCreate = (
     return async (dispatch) => {
         const timestamp = Timestamp.now()
 
-        // const wInfoRef = db.collection('wInfo').doc()
         const wInfoRef = doc(collection(db, 'wInfo'))
         //自動生成されたIDを取得
         let workId = wInfoRef.id
@@ -39,7 +37,6 @@ const postWInfoCreate = (
 
         //新規作品を登録する場合
         if(firstPostFlag == 1) {
-            // assessmentRef = wInfoRef.collection('assessment').doc(uid)
             assessmentRef = doc( wInfoRef , 'assessment', uid)
             
             let tmpWorkTag = {}
@@ -61,8 +58,6 @@ const postWInfoCreate = (
                 workId : workId,
                 workName : workName,
                 winfoScore : workScore != "" ? workScore : -1, //workScore 
-                // winfoWorkWatchYear : workWatchYear ,
-                // winfoWorkWatchTimes : workWatchTimes ,
                 winfoScoreCount : workScore != "" ? 1 : 0, //作成時の初期値なので1
                 winfoCount : 1, //作成時の初期値なので1
                 winfoLikedCount : isLiked ? 1 : 0,
@@ -70,28 +65,12 @@ const postWInfoCreate = (
                 winfoCategory : checkBoxState,
                 winfoMedia : workMedia,
                 tokenMap : tokenMap,
-                // winfoIllustrator : [],
-                // winfoInfomation : "no data at infomation",
-                // winfoCreator : [],
-                // winfoSeries : [],
-                // winfoParent : {},
-                // winfoChild : [],
-                // winfoMusic : [],
-                // winfoPublisher : [],
-                // winfoCountry : [],
-                // winfoStart : [],
-                // winfoFinish : [],
-                // winfoImage : "",
-                // statisticsData : "",
-                // winfoPages : "", //Number
-                // winfoMinutes : "", //Number
                 winfoInfomation : winfoData.winfoInfomation,
                 winfoCreator : winfoData.winfoCreator,
                 winfoSeries : winfoData.winfoSeries,
                 winfoParent : winfoData.winfoParent,
                 winfoChild : winfoData.winfoChild,
                 winfoMusic : winfoData.winfoMusic,
-                // winfoPublisher : winfoData.winfoPublisher,
                 winfoCountry : winfoData.winfoCountry,
                 winfoStart : winfoData.winfoStart,
                 winfoFinish : winfoData.winfoFinish,
@@ -100,8 +79,9 @@ const postWInfoCreate = (
                 winfoPages : winfoData.winfoPages, //Number
                 winfoMinutes : winfoData.winfoMinutes, //Number
                 winfoPlatform : winfoData.winfoPlatform,
-                // assessment : {}
-                // histories : {}, // subCollection。 
+                createTime : timestamp,
+                updateTime : timestamp,
+                deletable : true,
             }
             console.log(JSON.stringify(wInfoAllData)+"+wInfoAllData")
             console.log(workId+"+workId")
@@ -210,6 +190,10 @@ const postWInfoCreate = (
                     winfoPages : winfoData.winfoPages, //Number
                     winfoMinutes : winfoData.winfoMinutes, //Number
                     winfoPlatform : winfoData.winfoPlatform,
+                    // createTime : timestamp,
+                    updateTime : timestamp,
+                    //自分以外が作成したものだった場合、false。自分が作成したものだった場合、変更なし。
+                    deletable : uid != snapshot.data()["winfoEditor"] ? false : snapshot.data()["deletable"],
                 }).then(() => {
                     console.log("successed to update Count & Score")
                     return workId
@@ -346,7 +330,6 @@ const postWInfoCreate = (
                             ediWinfoScore = befWinfoScore // wrote 0707
                             // 何も実行しない。
                             // wInfoも更新なし。　//更新しないというわけには行かないので初期値を代入
-
                         }
                     }
                     //// 評価タグ
@@ -417,6 +400,8 @@ const postWInfoCreate = (
                         winfoPages : winfoData.winfoPages, //Number
                         winfoMinutes : winfoData.winfoMinutes, //Number
                         winfoPlatform : winfoData.winfoPlatform,
+                        updateTime : timestamp,
+                        // deletable : uid == snapshot.data()["winfoEditor"] ? true : false,//変更不要
                     }).then(() => {
                         console.log("successed to update Count & Score")
                         // return workId

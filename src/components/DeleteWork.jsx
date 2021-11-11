@@ -7,20 +7,24 @@ import Button from '@mui/material/Button'
 
 //Redux
 import {useSelector} from 'react-redux'
-import { getUserAssessmentWorks } from "../reducks/users/selectors";
+import { getUserId,getUserAssessmentWorks } from "../reducks/users/selectors";
 import { deleteAssessment } from "../reducks/users/operations";
 import { useRouter } from 'next/router'
 
 export default function DeleteWork (props) {
     const selector = useSelector((state) => state)
     const assessmentWorks = getUserAssessmentWorks(selector);
+    const userId = getUserId(selector)
+
     const router = useRouter()
 
     const [openDialog,setOpenDialog] = useState(false)
     // let openDialog = true
 
     const urlDeleteWork = `/api/firebase/delete/work/${props.workId}`
-    const urlDeleteAssessment = `/api/firebase/delete/assessment/${props.workId}_${props.userId}`
+    // const urlGetPostdWorksId = `/api/firebase/get/assessment/fulldata/${props.workId}`
+    const urlGetPostdWorksId = `/api/firebase/get/privateUsers/postedWorksId/${props.workId}_${userId}`
+    const urlDeleteAssessment = `/api/firebase/delete/assessment/${props.workId}_${userId}`
 
     const handleOncloseDialog = () => {
         console.log("openDialog")
@@ -30,7 +34,6 @@ export default function DeleteWork (props) {
     };
 
     const clickedDeleteWork = async() => {
-
         console.log("作品削除が押されました。１")
         console.log("workId"+props.workId+"userId"+props.userId)
 
@@ -43,37 +46,36 @@ export default function DeleteWork (props) {
             }
         })
 
+        const resPostdWorksId = await fetch(urlGetPostdWorksId)
+
+        const dataPostdWorksId = await resPostdWorksId.json()
+        console.log(JSON.stringify(dataPostdWorksId)+"+res delete dataPostdWorksId data")
+
         // 評価削除部
         // workInfoの評価情報
-        const res = await fetch(urlDeleteAssessment, {
+        // const resAssess = await fetch(urlDeleteAssessment, {
+        await fetch(urlDeleteAssessment, {
             // 送信先URL
             method: 'post', 
             // 通信メソッド    
             header: {'Content-Type': 'application/json'}, 
             // JSON形式のデータのヘッダー    
             body: JSON.stringify({
-                workTag:props.workTag,
-                isLiked:props.isLiked,
-                workScore:props.workScore,
-                workWatchTimes:props.workWatchTimes,
+                workTag:dataPostdWorksId.assessmentWorkTag,
+                isLiked:dataPostdWorksId.isLiked,
+                workScore:dataPostdWorksId.workScore,
             }) 
-            // JSON形式のデータ  })
         })
-        const data = await res.json()
-        console.log(JSON.stringify(data)+"+res delete assessment data")
 
         // redux (userAssessmentWorks)    
         const aftAssessmentWorks = delete assessmentWorks[props.workId]
-
         console.log(JSON.stringify(aftAssessmentWorks)+"aftAssessmentWorks")
-
         deleteAssessment(aftAssessmentWorks)
 
         //作品削除部
-        // 一旦コメントアウト　→ 完成したらコメントアウトを外す
-        const res = await fetch(urlDeleteWork)
-        const data = await res.json()
-        console.log(JSON.stringify(data)+"+res delete assessment data")
+        const resWork = await fetch(urlDeleteWork)
+        const dataWork = await resWork.json()
+        console.log(JSON.stringify(dataWork)+"+res delete assessment data")
         // 作品情報画面に移動
 
         await router.push({
@@ -122,4 +124,4 @@ export default function DeleteWork (props) {
     )
 };
 
-export default deleteAssessment
+// export default DeleteWork

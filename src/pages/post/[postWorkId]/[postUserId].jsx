@@ -147,6 +147,10 @@ const getOriginalDBData = async(params,history) => {
       const data = res.data()
       return data
     })
+    .catch((error) => {
+      console.log('postedWorksId DB get fail')
+      throw new Error(error)
+    }),
   ])
 
   console.log("+dBData[0]")
@@ -173,6 +177,8 @@ const getOriginalDBData = async(params,history) => {
     ,
     wInfo: {
       ...dBData[1],
+      createTime : dBData[1].createTime.toDate().toLocaleString("ja"),
+      updateTime : dBData[1].updateTime.toDate().toLocaleString("ja"),
     },
     postedWorksId : {
       ...dBData[2],
@@ -288,10 +294,6 @@ const handlerPostUserId = (props) => {
     })
     console.log("dispatched loadDb")
   }
-
-  // const getOriginalDBData = async() => {
-
-  // }
 
   useEffect(() => {
     if(isReady) {

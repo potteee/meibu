@@ -353,9 +353,6 @@ export const signUp = (
     }
 }
 
-//なんでこれここにあるんだろう。actionsにアクセスしていないのでapi配下で良さそう
-// →逆になんでactionsにアクセスしていないんだろうって考えた方が良さそう。
-// 　アクセスさせる。
 export const addPostedWork = (
     uid,
     workId,

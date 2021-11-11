@@ -140,24 +140,9 @@ const useStyles = {
     position : "relative",
     top : 10,
   },
-  // postingInlineNetabareBox: {
-  //   display : "inline",
-  //   // padding : "30px 0px 0px 0px", //margin,paddin意味ない
-  //   position : "relative",
-  //   top : 5,
-  //   left : 20,
-  // },
   postingInlineNetabareText: {
     fontSize : "10px",
   },
-  // postingNetabarePosition: {
-  //   position : "relative",
-  //   justifyContent:"center",
-  //   alignItems:"flex-end",
-  //   maxWidth : 630,
-  //   marginLeft: 'auto',
-  //   marginRight: 'auto',
-  // },
   postingCommentPosition: {
     position : "relative",
     top : "-2.0em",
@@ -368,13 +353,7 @@ const useStyles = {
     // minWidth : "14em",
     width : "80%"
   },
-  // freeWordSearchTag: {
-  //   position : "relative",
-  //   top : -10,
-  //   width : "100%",
-  //   justifyContent : "center",
-  //   alignItems : "center",
-  // },
+
   netabareGrid: {
     justifyContent : "flex-end",
     // alignItems : "flex-end",
@@ -1400,38 +1379,13 @@ const Posting = () => {
 
             <ItemExplanationSet middleTitle="メディア" text={workMedia}/>
 
-            {/* <TitleSpacing container item xs={12}>
-              <Grid container item xs={4} alignItems={"center"}>
-              <MiddleTitle>
-                    {"カテゴリ"}
-              </MiddleTitle>
-              </Grid>
-              <Grid container item xs={8} alignItems={"center"} */}
             <ItemExplanationSet middleTitle="カテゴリ" text={
               Object.keys(checkBoxState).map((map) => (
                 <>{checkBoxState[map] == true && (
-                  // <Grid container item xs={5} 
-                  //   justify={"flex-start"}
-                  //   sx={classes.h4LinkTag}
-                  // >
                   <>  {categoryMap[map]}</>
-                  // </Grid>
                 )}</>
               ))
             }/>
-{/* 
-                    {Object.keys(checkBoxState).map((map) => (
-                      <>{checkBoxState[map] == true && (
-                        <Grid container item xs={5} 
-                          justify={"flex-start"}
-                          sx={classes.h4LinkTag}
-                        >
-                          {categoryMap[map]}
-                        </Grid>
-                      )}</>
-                    ))}
-              </Grid>
-            </TitleSpacing> */}
           </>
         )}
           

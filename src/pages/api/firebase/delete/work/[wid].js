@@ -1,4 +1,4 @@
-const deleteWork = async({req,res) => { //{}内はファイルの[]内の名前にする
+const deleteWork = async(req,res) => { //{}内はファイルの[]内の名前にする
   console.log("apiStart deleteAssessment");
   var admin = require("firebase-admin");
 

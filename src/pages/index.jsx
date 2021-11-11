@@ -106,16 +106,21 @@ const News = ({worksData}) => {
 export async function getStaticProps(context) {
   // const [worksData, setWorksData] = useState(false);
 
-  let worksData = false;
+  let worksData = [];
 
   await getDocs(collection(db, 'wInfo'))
   .then((snapshot) => {
     snapshot.forEach((doc) => {
-      if(worksData == false) {
-        worksData = [doc.data()]
-      } else {
-        worksData = [...worksData , doc.data()]
-      }
+      // if(worksData == false) {
+      //   worksData = [doc.data()]
+      // } else {
+      //   worksData = [...worksData , doc.data()]
+      // }
+      worksData = [...worksData , {
+        ...doc.data(),
+        createTime : doc.data().createTime.toDate().toLocaleString("ja"),
+        updateTime : doc.data().updateTime.toDate().toLocaleString("ja"),
+      }]
     })
 
     // return {props : {worksData} }// {worksData : [...worksData]}

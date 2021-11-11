@@ -75,6 +75,10 @@ const initialState = {
   isAssessmenter : false, // isPublic == true で評価しているユーザが一人でもいるか。
   isMyAssessmentPublic : false,
   assessmentData : [], //評価者一覧のデータ
+  // MyAssessmentWorkTag : [],
+  // MyAssessmentIsLiked : false,
+  // MyAssessmentWorkScore : "",
+  deletable : false,
 }
 
 const reducer = (state, action) => {
@@ -122,7 +126,7 @@ const reducer = (state, action) => {
       },
     ]
   }
-  if(true){ // 自身が作品作成者であり、他の評価者がいない場合。
+  if(putState.deletable){ // 自身が作品作成者であり、他の評価者がいない場合。
     sdpActions = [ ...sdpActions,
       { icon: <DeleteIcon />,
         name: "作品を削除",
@@ -221,12 +225,35 @@ const getOriginalDBData = async(params,history) => {
       // alert('wInfo DB get fail')
       throw new Error(error)
     }),
+    //dBData[2]
+    // getDoc(doc(db, 'privateUsers', userId , 'postedWorksId', params.postWorkId))
+    // .then((res) => {
+    //   console.log("successed to get postedWorksId")
+    //   const data = res.data()
+    //   return data
+    // })
+    // .catch((error) => {
+    //   console.log('postedWorksId DB get fail')
+    //   throw new Error(error)
+    // }),
   ])
 
   console.log(dBData+"+dBData")
 
-  return {assessment: dBData[0], wInfo: dBData[1]}
-
+  // return {assessment: dBData[0], wInfo: dBData[1]}
+  return {assessment: dBData[0], 
+    wInfo: {
+      ...dBData[1],
+      createTime : dBData[1].createTime.toDate().toLocaleString("ja"),
+      updateTime : dBData[1].updateTime.toDate().toLocaleString("ja"),
+    },
+    // postedWorksId : {
+    //   ...dBData[2],
+    //   created_at : dBData[2].created_at.toDate().toLocaleString("ja"),
+    //   updated_at : dBData[2].updated_at.toDate().toLocaleString("ja"),
+    //   workWatchYear : dBData[2].workWatchYear.toDate().toLocaleString("ja"),
+    // }
+  }
 }
 
 //作品情報閲覧ページ
@@ -289,6 +316,7 @@ const Post = (props) => {
 
     let assessmentSnapshot = {}
     let wInfoSnapshot = {}
+    let postedWorksIdSnapshot = {}
 
     const isIncludesICW = Object.keys(RdInstantChangedWorksId).includes(workId)
 
@@ -301,7 +329,7 @@ const Post = (props) => {
       console.log("get original db")
       const params = { 
         postWorkId : workId,
-        postUserId : 'index',
+        // postUserId : 'index',
       }
 
       const history = 'Post' 
@@ -314,6 +342,7 @@ const Post = (props) => {
       console.log("get props")
       assessmentSnapshot = props.assessment
       wInfoSnapshot = props.wInfo
+      postedWorksIdSnapshot = props.postedWorksId
     }
 
     let isAssessmenterFlag = false
@@ -331,12 +360,10 @@ const Post = (props) => {
 
     console.log("RdAssessmentWorks")
     console.table(RdAssessmentWorks)
-    // console.log(RdAssessmentWorks[workId])
-    // console.log(RdAssessmentWorks[workId].["isLiked"])
+    console.log(JSON.stringify(postedWorksIdSnapshot)+"+postedWorksIdSnapshot@J")
 
     await dispatch({type:"loadDB" ,
       payload : {
-        //wInfoSnapshot
         isLoading : false,
         workName : wInfoSnapshot.workName,
         infoCount : wInfoSnapshot.winfoCount,
@@ -363,7 +390,6 @@ const Post = (props) => {
           ? Object.keys(RdIsBookmark).includes(workId) ? true : false 
           : false 
         ,
-          
         //postedWorksIdSnapshot
         //ログインユーザが「いいね」しているかどうか
         isLiked : RdAssessmentWorks?.[workId]?.["isLiked"], 
@@ -376,9 +402,12 @@ const Post = (props) => {
         isMyAssessmentPublic : RdAssessmentWorks?.[workId]?.["isPublic"] 
           ? true 
           : false
-        , 
-        //スピードダイアルのボタン
+        ,
         sdpActions : [],
+        // MyAssessmentWorkTag : postedWorksIdSnapshot.assessmentWorkTag,
+        // MyAssessmentIsLiked : postedWorksIdSnapshot.isLiked,
+        // MyAssessmentWorkScore : postedWorksIdSnapshot.workScore,
+        deletable : wInfoSnapshot.deletable,
       }
     })
   }
@@ -399,9 +428,6 @@ const Post = (props) => {
     return (
       <>     
         <ApplicationBar title="作品情報"/>
-        {/* <SCTypografyh5Top>
-          {"作品名"}
-        </SCTypografyh5Top>         */}
 
         <Typography variant="h5" component="h1">
           {state.workName}
@@ -623,19 +649,18 @@ const Post = (props) => {
         }
 
         {
-          workDeleteDialogFlag 
+          workDeleteDialogFlag
             ? <DeleteWork 
                 setWorkDeleteDialogFlag={setWorkDeleteDialogFlag} 
                 workId={workId}
-                workTag={state.workTag}
-                isLiked={state.isLiked}
-                workScore={state.workScore}
-                workWatchTimes={state.workWatchTimes}
+                // workTag={state.workTag}
+                // isLiked={state.isLiked}
+                // workScore={state.workScore}
+                // workWatchTimes={state.workWatchTimes}
                 dispatch={dispatch}
               />
             : ""
         }
-
         {(state.isLiked && state.isMyAssessmentPublic) ? <FavoriteIcon sx={classes.isLikedSignal}/> : null}
         {(state.isLiked && !state.isMyAssessmentPublic) ? <FavoriteTwoToneIcon sx={classes.isLikedSignal}/> : null}
         {(state.isBookmark && !state.isLiked) ? <CollectionsBookmarkIcon sx={classes.isLikedSignal}/> : null}
@@ -647,30 +672,29 @@ const Post = (props) => {
 }
 
 export async function getStaticPaths() {
-
-  let postWorkId = false
+  let postWorkId = []
   // const snapshot = await db.collection('wInfo').get()
   const snapshot = await getDocs(collection(db,'wInfo'))
-
   snapshot.forEach((doc) => {
-    if(postWorkId == false) {
-      postWorkId = [doc.data().workId]
-    } else {
-      postWorkId = [...postWorkId , doc.data().workId]
-    }
+    postWorkId = [...postWorkId , doc.data().workId]
+    // if(postWorkId.length == 0) {
+    //   postWorkId = [doc.data().workId]
+    // } else {
+    //   postWorkId = [...postWorkId , doc.data().workId]
+    // }
   })
 
   console.log("postWorkId")
   console.table(postWorkId)
 
   const paths = postWorkId.map((map) => (
-    { params: { postWorkId: map , postUserId : 'index'}}
+    // { params: { postWorkId: map , postUserId : 'index'}}
+    { params: { postWorkId: map }}
     // { params: { postWorkId: map }}
   ))
   
   console.log("paths")
   console.table(paths)
-  
   // return {paths:[],fallback : true}
   return {paths: paths,fallback : true}
 

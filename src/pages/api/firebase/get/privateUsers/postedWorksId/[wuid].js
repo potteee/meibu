@@ -1,6 +1,3 @@
-import React from 'react' 
-import firebase from 'firebase/app';
-
 const handlerGetPostWorksdId = async(req, res) => {
   console.log("apiStart");
   var admin = require("firebase-admin");
@@ -10,7 +7,6 @@ const handlerGetPostWorksdId = async(req, res) => {
   const userId = wuid.split('_')[1]
 
   //// admin SDK
-
   const initialized = admin.apps.some(app => app.name === "adminSDK");
   
   if(initialized){
