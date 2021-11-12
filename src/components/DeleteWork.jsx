@@ -65,7 +65,7 @@ export default function DeleteWork (props) {
                 isLiked:dataPostdWorksId.isLiked,
                 workScore:dataPostdWorksId.workScore,
             }) 
-        })
+        }) 
 
         // redux (userAssessmentWorks)    
         const aftAssessmentWorks = delete assessmentWorks[props.workId]
