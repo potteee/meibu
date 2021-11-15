@@ -36,6 +36,8 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
   
   const FirestoreSDK = admin.app('adminSDK').firestore();
 
+  res.status(200).json({workData : [{userName : "userName kari", uid: "userid kari"}]})
+
   // DB access
   // collectionGroupを使ったsubCollectionの検索はadminSDKにしかできない。
   await FirestoreSDK
@@ -70,7 +72,8 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
     // console.log(JSON.stringify(workData)+"++++workData")
 
     res.status(200).json({workData : workData})
-  // Redux access => cannot
+    // Redux access => cannot
+    
   })
   .catch((error) => {
   throw new Error(error)
