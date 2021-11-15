@@ -241,7 +241,7 @@ const getOriginalDBData = async(params,history) => {
   console.log(dBData+"+dBData")
 
   // return {assessment: dBData[0], wInfo: dBData[1]}
-  return {assessment: dBData[0], 
+  return {assessment: dBData[0].workData, 
     wInfo: {
       ...dBData[1],
       createTime : dBData[1].createTime.toDate().toLocaleString("ja"),
