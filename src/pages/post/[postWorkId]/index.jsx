@@ -189,7 +189,7 @@ const getOriginalDBData = async(params,history) => {
 
   //////////////////////////ここじゃね？・・？
   if (history == 'Post'){
-    assessmentUrl = `/api/firebase/get/assessmentSimple/${params.postWorkId}`
+    assessmentUrl = `/api/firebase/get/assessmentSimple/${params.postWorkId}` 
 
   } else {
     assessmentUrl = `${process.env.url}/api/firebase/get/assessmentSimple/${params.postWorkId}`
