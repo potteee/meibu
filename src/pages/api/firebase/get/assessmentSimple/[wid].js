@@ -36,7 +36,7 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
   
   const FirestoreSDK = admin.app('adminSDK').firestore();
 
-  res.status(200).json({workData : [{userName : "userName kari", uid: "userid kari"}]})
+  // res.status(200).json({workData : [{userName : "userName kari", uid: "userid kari"}]})
 
   // DB access
   // collectionGroupを使ったsubCollectionの検索はadminSDKにしかできない。
