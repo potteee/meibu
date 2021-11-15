@@ -1,5 +1,6 @@
 // post/[postWorkId]/index.jsx
-import React from 'react' 
+import React from 'react'
+import firebase from 'firebase/app';
 
 const handlerAssessmeent = async({ query: { wid } }, res) => {
   console.log("apiStart firebase/get/assessmentSimple/[wid].js");
