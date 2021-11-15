@@ -2,7 +2,7 @@
 import React from 'react' 
 
 const handlerAssessmeent = async({ query: { wid } }, res) => {
-  console.log("apiStart firebase/get/assessment/[wid].js");
+  console.log("apiStart firebase/get/assessmentSimple/[wid].js");
   var admin = require("firebase-admin");
   console.log(wid+"+workId api");
 
