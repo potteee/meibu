@@ -53,8 +53,7 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
     if(snapshot.docs.length != 0){
       snapshot.docs.map(map => {
         if(map.data()["uid"]){
-          workData = [...workData,({userName : map.data()["userName"], uid: map.data()["uid"]})]
-          // workData.push({userName : map.data()["userName"], uid: map.data()["uid"]})
+          workData = [...workData,{userName : map.data()["userName"], uid: map.data()["uid"]}]
           isEmpty = false
         }
       })
