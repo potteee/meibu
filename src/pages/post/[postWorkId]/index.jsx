@@ -192,7 +192,7 @@ const getOriginalDBData = async(params,history) => {
     assessmentUrl = `/api/firebase/get/assessmentSimple/${params.postWorkId}`
 
   } else {
-    assessmentUrl = `${process.env.url}/pages/api/firebase/get/assessmentSimple/${params.postWorkId}`
+    assessmentUrl = `${process.env.url}/api/firebase/get/assessmentSimple/${params.postWorkId}`
     // assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
   }
   console.log(assessmentUrl+"+assessmentUrl")
