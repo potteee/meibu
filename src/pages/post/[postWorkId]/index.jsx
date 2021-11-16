@@ -187,19 +187,12 @@ const getOriginalDBData = async(params,history) => {
 
   console.log(process.env.url+"+process.env.url")
 
-  //////////////////////////ここじゃね？・・？
-  // assessmentUrl = `/api/firebase/get/assessmentSimple/${params.postWorkId}` 
-  // assessmentUrl = `${process.env.url}/api/firebase/get/assessmentSimple/${params.postWorkId}`
-
   //リロード用
   if (history == 'Post'){
     assessmentUrl = `/api/firebase/get/assessment/${params.postWorkId}` 
-    // assessmentUrl = `/api/firebase/get/assessmentSimple/${params.postWorkId}` 
 
   } else {
-    ///ssgする時、こういう書き方する。（？）
-    // assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
-    // assessmentUrl = `${process.env.url}/api/firebase/get/assessmentSimple/${params.postWorkId}`
+    ///ssg
     assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
   }
 
