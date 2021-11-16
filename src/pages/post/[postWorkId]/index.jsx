@@ -189,14 +189,15 @@ const getOriginalDBData = async(params,history) => {
 
   //////////////////////////ここじゃね？・・？
   // assessmentUrl = `/api/firebase/get/assessmentSimple/${params.postWorkId}` 
-  if (history == 'Post'){
-    assessmentUrl = `/api/firebase/get/assessmentSimple/${params.postWorkId}` 
+  assessmentUrl = `${process.env.url}/api/firebase/get/assessmentSimple/${params.postWorkId}`
+  // if (history == 'Post'){
+  //   assessmentUrl = `/api/firebase/get/assessmentSimple/${params.postWorkId}` 
 
-  } else {
-    ///ssgする時、こういう書き方する。（？）
-    assessmentUrl = `${process.env.url}/api/firebase/get/assessmentSimple/${params.postWorkId}`
-    // assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
-  }
+  // } else {
+  //   ///ssgする時、こういう書き方する。（？）
+  //   assessmentUrl = `${process.env.url}/api/firebase/get/assessmentSimple/${params.postWorkId}`
+  //   // assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/assessment/${params.postWorkId}`
+  // }
   console.log(assessmentUrl+"+assessmentUrl")
 
   const dBData = await Promise.all([
