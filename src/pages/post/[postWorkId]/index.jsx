@@ -202,6 +202,9 @@ const getOriginalDBData = async(params,history) => {
     // assessmentUrl = `${process.env.url}/api/firebase/get/assessmentSimple/${params.postWorkId}`
     assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
   }
+
+////////////デプロイ方法が違う？？？SSGを初めてあげる時は特殊なんだっけ？？？
+
   console.log(assessmentUrl+"+assessmentUrl")
 
   const dBData = await Promise.all([
