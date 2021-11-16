@@ -711,7 +711,7 @@ export async function getStaticProps({ params }) {
 
   const history = 'Props'
 
-  const setDBData = await getOriginalDBData(params,history)
+  const setDBData = await getOriginalDBData(params,history) 
 
   console.log("setDBData")
   console.table(setDBData)
