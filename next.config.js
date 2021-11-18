@@ -1,6 +1,8 @@
 const isDevelop = process.env.NODE_ENV === "development"
 const isPreview = process.env.NODE_ENV === "preview"
 
+console.log(process.env.NODE_ENV+"+NODE_ENV")
+
 module.exports = {
   webpack5: false,
   webpack: config => {
@@ -18,7 +20,7 @@ module.exports = {
       ? 'http://localhost:3060' 
       : isPreview 
         ? process.env.API_ENDPOINT
-        : `https://lifenote.c` 
+        : `https://lifenote.ch` 
   }
 };
 
