@@ -18,7 +18,7 @@ module.exports = {
       ? 'http://localhost:3060' 
       : isPreview 
         ? process.env.API_ENDPOINT
-        : `https://lifenote.ch`
+        : `https://lifenote.ch` 
   }
 };
 
