@@ -1,7 +1,7 @@
-const isDevelop = process.env.NODE_ENV === "development"
-const isPreview = process.env.NODE_ENV === "preview"
+const isDevelop = process.env.NEXT_PUBLIC_NODE_ENV === "development"
+const isPreview = process.env.NEXT_PUBLIC_NODE_ENV === "preview"
 
-console.log(process.env.NODE_ENV+"+NODE_ENV")
+console.log(process.env.NEXT_PUBLIC_NODE_ENV+"+NODE_ENV")
 
 module.exports = {
   webpack5: false,
@@ -19,7 +19,7 @@ module.exports = {
     url : isDevelop 
       ? 'http://localhost:3060' 
       : isPreview 
-        ? process.env.API_ENDPOINT
+        ? process.env.NEXT_PUBLIC_API_ENDPOINT
         : process.env.NEXT_PUBLIC_URL 
         // : `https://lifenote.ch`  
   }
