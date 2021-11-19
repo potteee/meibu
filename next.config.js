@@ -21,7 +21,7 @@ module.exports = {
       : isPreview 
         ? process.env.API_ENDPOINT
         : process.env.NEXT_PUBLIC_URL 
-        // : `https://lifenote.ch` 
+        // : `https://lifenote.ch`  
   }
 };
 
