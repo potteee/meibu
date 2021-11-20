@@ -191,9 +191,13 @@ const getOriginalDBData = async(params,history) => {
   if (history == 'Post'){
     assessmentUrl = `/api/firebase/get/assessment/${params.postWorkId}` 
 
+  //ssg時
   } else {
-    ///ssg
-    assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
+    // assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
+    assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}/${context.preview
+      ? 'preview'
+      : ''
+    }`
   }
 
 ////////////デプロイ方法が違う？？？SSGを初めてあげる時は特殊なんだっけ？？？
