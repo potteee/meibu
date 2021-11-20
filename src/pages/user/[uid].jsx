@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 import { db } from '../../firebase/index'
 import GLoading from '../../components/GLoading';
 
-const userPage = ( props ) => {
+const userPage = ( props = null ) => {
 
   const router = useRouter()
   const { isReady } = useRouter()
