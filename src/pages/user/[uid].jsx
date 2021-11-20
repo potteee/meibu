@@ -110,7 +110,8 @@ export async function getStaticProps({ params }) {
         url = `${process.env.url}/api/firebase/user/${params.uid}/${process.env.NEXT_PUBLIC_NODE_ENV === "preview"
           ? 'preview'
           : ''
-      }`
+        }`
+      }
       // const url = `https://${process.env.url}/api/firebase/user/${params.uid}`
       // const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/user/${params.uid}`
       console.log(url+"+user url")
