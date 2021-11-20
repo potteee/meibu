@@ -9,6 +9,7 @@ import ApplicationBar from '../../components/applicationBar'
 import { useRouter } from 'next/router'
 import { db } from '../../firebase/index'
 import GLoading from '../../components/GLoading';
+import { isBuffer } from 'util';
 
 const userPage = ( props = null ) => {
 
@@ -101,9 +102,14 @@ export async function getStaticProps({ params }) {
   
     const fetcher = async() => { 
       // const url = `/api/firebase/user/${params.uid}`
-      const url = `${process.env.url}/api/firebase/user/${params.uid}/${context.preview 
-        ? 'preview'
-        : ''
+
+      let url = null
+      if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
+        url = `api/firebase/user/${params.uid}`
+      } else {
+        url = `${process.env.url}/api/firebase/user/${params.uid}/${process.env.NEXT_PUBLIC_NODE_ENV === "preview"
+          ? 'preview'
+          : ''
       }`
       // const url = `https://${process.env.url}/api/firebase/user/${params.uid}`
       // const url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/user/${params.uid}`
