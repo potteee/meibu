@@ -76,8 +76,8 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
     
   })
   .catch((error) => {
-  throw new Error(error)
-  res.json({ error });
+    throw new Error(error)
+    res.json({ error });
   })
 } 
 
