@@ -185,17 +185,27 @@ const getOriginalDBData = async(params,history) => {
 
   console.log(history+"+history")
 
-  console.log(process.env.url+"+process.env.url")
+  // console.log(process.env.url+"+process.env.url")
 
-  //リロード用
-  if (history == 'Post'){
-    assessmentUrl = `/api/firebase/get/assessment/${params.postWorkId}` 
+  // //リロード用
+  // if (history == 'Post'){
+  //   // assessmentUrl = `/api/firebase/get/assessment/${params.postWorkId}` 
+  //   assessmentUrl = `/api/firebase/get/assessment/${params.postWorkId}` 
 
-  //ssg時
-  } else {
-    // assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
+  // //ssg時
+  // } else {
+  //   // assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
+  //   assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
+  // }
+
+
+  if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
+    console.log(process.env.NEXT_PUBLIC_NODE_ENV+"NEXT_PUBLIC_NODE_ENV")
+    assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/assessment/${params.postWorkId}`
+  }else{
+    console.log(process.env.NEXT_PUBLIC_NODE_ENV+"NEXT_PUBLIC_NODE_ENV")
     assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
-  }
+  } 
 
 ////////////デプロイ方法が違う？？？SSGを初めてあげる時は特殊なんだっけ？？？
 

@@ -105,7 +105,7 @@ export async function getStaticProps({ params }) {
 
       let url = null
       if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
-        url = `api/firebase/user/${params.uid}`
+        url = `${process.env.NEXT_PUBLIC_URL}/api/firebase/user/${params.uid}`
       } else {
         url = `${process.env.url}/api/firebase/user/${params.uid}`
       }
