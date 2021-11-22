@@ -20,8 +20,8 @@ module.exports = {
       ? 'http://localhost:3060' 
       : isPreview 
         // ? process.env.NEXT_PUBLIC_API_ENDPOINT
-        ? `https://lifenote.ch`
-        // ? 'https://'+process.env.VERCEL_URL
+        // ? `https://lifenote.ch`
+        ? 'https://'+process.env.VERCEL_URL
         // : process.env.NEXT_PUBLIC_URL 
         // : process.env.VERCEL_URL
         : `https://lifenote.ch`

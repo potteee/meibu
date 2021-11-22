@@ -198,7 +198,6 @@ const getOriginalDBData = async(params,history) => {
   //   assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
   // }
 
-
   if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
     console.log(process.env.NEXT_PUBLIC_NODE_ENV+"NEXT_PUBLIC_NODE_ENV")
     assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/assessment/${params.postWorkId}`
@@ -207,8 +206,7 @@ const getOriginalDBData = async(params,history) => {
     assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
   } 
 
-////////////デプロイ方法が違う？？？SSGを初めてあげる時は特殊なんだっけ？？？
-
+  ////////////デプロイ方法が違う？？？SSGを初めてあげる時は特殊なんだっけ？？？ 
   console.log(assessmentUrl+"+assessmentUrl")
 
   const dBData = await Promise.all([
