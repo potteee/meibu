@@ -21,7 +21,7 @@ module.exports = {
       : isPreview 
         // ? process.env.NEXT_PUBLIC_API_ENDPOINT
         // ? `https://lifenote.ch`
-        ? process.env.VERCEL_URL
+        ? 'http://'+process.env.VERCEL_URL
         // : process.env.NEXT_PUBLIC_URL 
         // : process.env.VERCEL_URL
         : `https://lifenote.ch`
