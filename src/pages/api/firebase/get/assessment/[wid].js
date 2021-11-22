@@ -52,20 +52,17 @@ const handlerAssessmeent = async({ query: { wid } }, res) => {
     let workData = []
     let isEmpty = true
 
-    // if(JSON.stringify(snapshot.docs[0]._fieldsProto) != "{}"){
-    if(snapshot.docs.length != 0){
-      snapshot.docs.map(map => {
-        if(map.data()["uid"]){
-          workData = [...workData,{userName : map.data()["userName"], uid: map.data()["uid"]}]
-          isEmpty = false
-        }
-      })
-    }
+    // if(snapshot.docs.length != 0){
+    //   snapshot.docs.map(map => {
+    //     if(map.data()["uid"]){
+    //       workData = [...workData,{userName : map.data()["userName"], uid: map.data()["uid"]}]
+    //       isEmpty = false
+    //     }
+    //   })
     // }
     
     if(isEmpty){
       workData = [...workData,{userName : "非公開" , uid: "非公開"}]
-      // workData.push({userName : "非公開" , uid: "非公開"})
     }
 
     console.log(workData+"++++workData")
