@@ -181,7 +181,7 @@ const reducer = (state, action) => {
 
 const getOriginalDBData = async(params,history) => {
 
-  let assessmentUrl = ""
+  // let assessmentUrl = ""
 
   console.log(history+"+history")
 
@@ -198,16 +198,16 @@ const getOriginalDBData = async(params,history) => {
   //   assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
   // }
 
-  if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
-    console.log(process.env.NEXT_PUBLIC_NODE_ENV+"NEXT_PUBLIC_NODE_ENV")
-    assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/assessment/${params.postWorkId}`
-  }else{
-    console.log(process.env.NEXT_PUBLIC_NODE_ENV+"NEXT_PUBLIC_NODE_ENV")
-    assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
-  } 
+  // if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
+  //   console.log(process.env.NEXT_PUBLIC_NODE_ENV+"NEXT_PUBLIC_NODE_ENV")
+  //   assessmentUrl = `${process.env.NEXT_PUBLIC_URL}/api/firebase/get/assessment/${params.postWorkId}`
+  // }else{
+  //   console.log(process.env.NEXT_PUBLIC_NODE_ENV+"NEXT_PUBLIC_NODE_ENV")
+  //   assessmentUrl = `${process.env.url}/api/firebase/get/assessment/${params.postWorkId}`
+  // } 
 
   ////////////デプロイ方法が違う？？？SSGを初めてあげる時は特殊なんだっけ？？？ 
-  console.log(assessmentUrl+"+assessmentUrl")
+  // console.log(assessmentUrl+"+assessmentUrl")
 
   const dBData = await Promise.all([
     //dBData[0]　
@@ -217,7 +217,7 @@ const getOriginalDBData = async(params,history) => {
     //   heder : {'Content-Type': 'application/json'},
     //   body : JSON.stringify(params.postWorkId)
     // })
-    getDocs(doc(db, 'wInfo', params.postWorkId, 'assessment', uid))
+    getDocs(collection(db, 'wInfo', params.postWorkId, 'assessment'))
     .then(async(res)=> {
       // const data = await res.json()
       console.log("successed to get assessment")
@@ -267,11 +267,20 @@ const getOriginalDBData = async(params,history) => {
     //   throw new Error(error)
     // }),
   ])
+  
+  let workData = []  
+      // if(snapshot.docs.length != 0){
+    dBData[0].docs.map(map => {
+      if(map.data()["uid"]){
+        workData = [...workData,{userName : map.data()["userName"], uid: map.data()["uid"]}]
+      }
+    })
+    // }
 
   console.log(dBData+"+dBData")
 
   // return {assessment: dBData[0], wInfo: dBData[1]}
-  return {assessment: dBData[0].workData, 
+  return {assessment: workData, 
     wInfo: {
       ...dBData[1],
       createTime : dBData[1].createTime.toDate().toLocaleString("ja"),
