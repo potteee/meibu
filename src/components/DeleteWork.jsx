@@ -22,7 +22,6 @@ export default function DeleteWork (props) {
     // let openDialog = true
 
     const urlDeleteWork = `/api/firebase/delete/work/${props.workId}`
-    // const urlGetPostdWorksId = `/api/firebase/get/assessment/fulldata/${props.workId}`
     const urlGetPostdWorksId = `/api/firebase/get/privateUsers/postedWorksId/${props.workId}_${userId}`
     const urlDeleteAssessment = `/api/firebase/delete/assessment/${props.workId}_${userId}`
 

@@ -210,20 +210,37 @@ const getOriginalDBData = async(params,history) => {
   console.log(assessmentUrl+"+assessmentUrl")
 
   const dBData = await Promise.all([
-    //dBData[0]
-    fetch(assessmentUrl)
+    //dBData[0]　
+    /////////////////POSTで取る。////////mainに直接あげる。
+    // fetch(assessmentUrl, {
+    //   method : 'post',
+    //   heder : {'Content-Type': 'application/json'},
+    //   body : JSON.stringify(params.postWorkId)
+    // })
+    getDocs(doc(db, 'wInfo', params.postWorkId, 'assessment', uid))
     .then(async(res)=> {
-      const data = await res.json()
+      // const data = await res.json()
       console.log("successed to get assessment")
-      if (res.status !== 200) {
-        throw new Error(data.message)
-      }
-      return data
+      return res
+      // return data
     }).catch((error) => {
       // alert('assessment DB get fail')
       console.log('assessment DB get fail')
       throw new Error(error)
     }),
+    // fetch(assessmentUrl)　
+    // .then(async(res)=> {
+    //   const data = await res.json()
+    //   console.log("successed to get assessment")
+    //   if (res.status !== 200) {
+    //     throw new Error(data.message)
+    //   }
+    //   return data
+    // }).catch((error) => {
+    //   // alert('assessment DB get fail')
+    //   console.log('assessment DB get fail')
+    //   throw new Error(error)
+    // }),
     
     //dBData[1]
     // db.collection('wInfo').doc(params.postWorkId).get()
