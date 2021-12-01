@@ -10,9 +10,12 @@ import { auth, db} from "../firebase/index";
 import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import Backdrop from '@mui/material/Backdrop';
-import SpeedDial from '@mui/lab/SpeedDial';
-import SpeedDialIcon from '@mui/lab/SpeedDialIcon';
-import SpeedDialAction from '@mui/lab/SpeedDialAction';
+// import SpeedDial from '@mui/lab/SpeedDial';
+// import SpeedDialIcon from '@mui/lab/SpeedDialIcon';
+// import SpeedDialAction from '@mui/lab/SpeedDialAction';
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
 import CreateIcon from '@mui/icons-material/Create';
 
 // import like from 'src/components/speedDial/like'

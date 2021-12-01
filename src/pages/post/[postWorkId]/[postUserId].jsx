@@ -111,10 +111,12 @@ const reducer = (state,action) => {
 
 const getOriginalDBData = async(params,history) => {
 
-  console.log(history+"+history")
+  console.log(history+"+history") //"Main" or "Props"
+
+  // ここでhistory毎に分岐させなきゃなのでは？？？
 
   const dBData = await Promise.all([
-  //dBData[0]
+    //dBData[0]
     // db.collection('wInfo').doc(params.postWorkId).collection('assessment').doc(params.postUserId).get()
     getDoc(doc(db, 'wInfo', params.postWorkId, 'assessment', params.postUserId))
     .then((res)=> {
@@ -164,10 +166,10 @@ const getOriginalDBData = async(params,history) => {
     assessment: dBData[0] 
       ? {
         ...dBData[0],
-        createTime : dBData[0].createTime //型変換して入れ直してあげないとSerializableErrorで怒られる
-          ? dBData[0].createTime.toDate().toLocaleString("ja") 
-          : null
-        , //最近追加２０２１０８０６ 
+        // createTime : dBData[0].createTime //型変換して入れ直してあげないとSerializableErrorで怒られる
+        //   ? dBData[0].createTime.toDate().toLocaleString("ja") 
+        //   : null
+        // , //最近追加２０２１０８０６ 
         updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
         workWatchYear : dBData[0].workWatchYear
           ? dBData[0].workWatchYear.toDate().toLocaleString("ja")
@@ -230,7 +232,7 @@ const handlerPostUserId = (props) => {
 
     const isIncludesICW = Object.keys(RdInstantChangedWorksId).includes(postWorkId)
 
-    console.log(isIncludesICW+"isIncludesICW")
+    console.log(isIncludesICW+"+isIncludesICW")
 
     if(isIncludesICW &&
     RdInstantChangedWorksId?.[postWorkId].timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
@@ -553,6 +555,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   // 受け取ったパスパラーメータをもとに処理を行う
+  // * getStaticPropsではルートAPIにアクセスできない。
   console.log("params@staticProps")
   console.table(params)
 
