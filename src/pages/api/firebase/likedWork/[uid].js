@@ -57,7 +57,7 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
     // assessmentCategory : checkBoxState,
     updateTime : timestamp,
     // createTime : timestamp, //更新時はこのパラメータが更新されない様になってる→そもそも不要
-    // updateTime : new Date(),
+    // updateTime : new Date(), 
     workScore : ODB.workScore, // -1は初期値
     workWatchTimes : "" ,
     workWatchYear : null ,
