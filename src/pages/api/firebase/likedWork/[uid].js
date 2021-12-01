@@ -55,10 +55,12 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
     uid　: uid,
     userName : ODB.userName,
     // assessmentCategory : checkBoxState,
-    createTime : timestamp,
     updateTime : timestamp,
+    // createTime : timestamp, //更新時はこのパラメータが更新されない様になってる→そもそも不要
     // updateTime : new Date(),
     workScore : ODB.workScore, // -1は初期値
+    workWatchTimes : "" ,
+    workWatchYear : null ,
     workComment : ODB.workComment,
     workTag : ODB.workTag,
     // isPublic : isPublic,
@@ -75,20 +77,24 @@ const handlerPosting = async({ query: { uid }, body: dBody}, res) => {
     isSpoiler: ODB.isSpoiler,
     isLiked : ODB.isLiked,
     workScore: ODB.workScore,
+    workWatchTimes : "" ,
+    workWatchYear : null ,
   }
 
   const postedWorksId = {
-    assessmentWorkTag : ODB.assessmentWorkTag,
-    created_at : timestamp,
-    updated_at : timestamp,
     workId : ODB.workId,
     workName : ODB.workName,
     workMedia : ODB.workMedia,
     uid : uid,
+    created_at : timestamp,
+    updated_at : timestamp,
+    isPublic: ODB.isPublic,
     isLiked : ODB.isLiked,
     isSpoiler: ODB.isSpoiler,
-    isPublic: ODB.isPublic,
     workScore: ODB.workScore,
+    workWatchYear : "",
+    workWatchTimes : null,
+    assessmentWorkTag : ODB.assessmentWorkTag,
     workComment : ODB.workComment,
   }
 

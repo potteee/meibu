@@ -196,7 +196,7 @@ const postWInfoCreate = (
                     deletable : uid != snapshot.data()["winfoEditor"] ? false : snapshot.data()["deletable"],
                 }).then(() => {
                     console.log("successed to update Count & Score")
-                    return workId
+                    return workId //ここでリターンしたらダメでは？？
 
                 }).catch((error) => {
                     alert('failed to update Count & Score')
