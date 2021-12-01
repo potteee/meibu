@@ -153,7 +153,8 @@ export async function getStaticProps({ params }) {
       dBData[1].docs.map(ss2 => {
         console.log(JSON.stringify(ss2.data())+"++ss2.data()")
         pubPostedWorksId = [
-          ...pubPostedWorksId, 
+          ...pubPostedWorksId,
+          // ss2.data()
           {
             ...ss2.data(),
             workWatchYear : ss2.data().workWatchYear.toDate().toLocaleString("ja")
