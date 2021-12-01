@@ -146,7 +146,7 @@ export async function getStaticProps({ params }) {
 
       console.log(JSON.stringify(dBData[0])+"dBData[0]@j")
       console.log(JSON.stringify(dBData[1])+"dBData[1]@j")
-      // return {users : userData.data(),pubPostedWorksId: pubPostedWorksIdData.data()}
+      // return  {users : userData.data(),pubPostedWorksId: pubPostedWorksIdData.data()}
 
       let pubPostedWorksId = []
 
