@@ -444,25 +444,6 @@ const handlerPostUserId = (props) => {
           </Grid>
         </Grid>
 
-        {/* speedDialogで補完 */}
-        {/* リダックスのユーザ情報と作品のユーザ情報が同一の場合 */}
-        {/* {(postUserId == RdGetUid) 
-        ? (
-          <>
-            <Link href={{
-              pathname: "/post/posting",
-              query: { 
-                searchWord : state.workName,
-                workId : postWorkId,
-                infoMedia : state.workMedia,
-                firstPostFlag : 2, // 自分の作品を編集
-                },
-            }}>
-              <a>編集する</a>
-            </Link>
-          </>
-        ) : null } */}
-
         {isSignedIn && (<SpeedDialPosting
           workName={state.workName}
           workMedia={state.workMedia}

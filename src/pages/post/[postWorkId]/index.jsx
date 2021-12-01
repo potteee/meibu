@@ -269,12 +269,12 @@ const getOriginalDBData = async(params,history) => {
   ])
   
   let workData = []  
-      // if(snapshot.docs.length != 0){
-    dBData[0].docs.map(map => {
-      if(map.data()["uid"]){
-        workData = [...workData,{userName : map.data()["userName"], uid: map.data()["uid"]}]
-      }
-    })
+    // if(snapshot.docs.length != 0){
+  dBData[0].docs.map(map => {
+    if(map.data()["uid"]){
+      workData = [...workData,{userName : map.data()["userName"], uid: map.data()["uid"]}]
+    }
+  })
     // }
 
   console.log(dBData+"+dBData")
