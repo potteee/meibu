@@ -169,7 +169,7 @@ const getOriginalDBData = async(params,history) => {
         // createTime : dBData[0].createTime //型変換して入れ直してあげないとSerializableErrorで怒られる
         //   ? dBData[0].createTime.toDate().toLocaleString("ja") 
         //   : null
-        // , //最近追加２０２１０８０６ 
+        // , //最近追加２０２１０８０６ 　
         updateTime : dBData[0].updateTime.toDate().toLocaleString("ja"),
         workWatchYear : dBData[0].workWatchYear
           ? dBData[0].workWatchYear.toDate().toLocaleString("ja")
