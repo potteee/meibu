@@ -157,7 +157,9 @@ export async function getStaticProps({ params }) {
           // ss2.data()
           {
             ...ss2.data(),
-            workWatchYear : ss2.data().workWatchYear.toDate().toLocaleString("ja")
+            workWatchYear : ss2.data().workWatchYear
+              ? ss2.data().workWatchYear.toDate().toLocaleString("ja")
+              : null
           }
         ]
       })
