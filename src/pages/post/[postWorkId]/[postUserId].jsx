@@ -186,7 +186,9 @@ const getOriginalDBData = async(params,history) => {
       ...dBData[2],
       created_at : dBData[2].created_at.toDate().toLocaleString("ja"),
       updated_at : dBData[2].updated_at.toDate().toLocaleString("ja"),
-      workWatchYear : dBData[2].workWatchYear.toDate().toLocaleString("ja"),
+      workWatchYear : dBData[2].workWatchYear 
+        ? dBData[2].workWatchYear.toDate().toLocaleString("ja")
+        : null
     }
   }
 
