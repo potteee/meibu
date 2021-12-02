@@ -280,7 +280,8 @@ const getOriginalDBData = async(params,history) => {
   console.log(dBData+"+dBData")
 
   // return {assessment: dBData[0], wInfo: dBData[1]}
-  return {assessment: workData, 
+  return {
+    assessment: workData, 
     wInfo: {
       ...dBData[1],
       createTime : dBData[1].createTime.toDate().toLocaleString("ja"),
@@ -357,13 +358,15 @@ const Post = (props) => {
     let wInfoSnapshot = {}
     let postedWorksIdSnapshot = {}
 
+    //今回のセッションで変更しているかどうか。
     const isIncludesICW = Object.keys(RdInstantChangedWorksId).includes(workId)
+
 
     console.log(isIncludesICW+"isIncludesICW")
 
     if(isIncludesICW &&
     RdInstantChangedWorksId?.[workId].timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
-    //更新から１０分以内であれば、DBからデータ持ってくる
+    //更新からSSG_WAIT_SEC秒以内であれば、DBからデータ持ってくる
 
       console.log("get original db")
       const params = { 
@@ -389,7 +392,7 @@ const Post = (props) => {
       assessmentSnapshot.some((doc) => {
         //一つでも非公開以外があればフラグを立てる
         //(「公開可能情報なし」と表示しない)
-        console.log(JSON.stringify(doc,null,2)+"+doc")
+        // console.log(JSON.stringify(doc,null,2)+"+doc")
         if(doc.uid != "非公開") {
           isAssessmenterFlag = true
           return true;
