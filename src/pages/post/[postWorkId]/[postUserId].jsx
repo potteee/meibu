@@ -552,7 +552,8 @@ export async function getStaticPaths() {
   console.log("postedUserId paths")
   console.table(paths)
   
-  return {paths: paths,fallback : true}
+  return {paths: paths,fallback : blocking}
+  // return {paths: paths,fallback : true}
 }
 
 export async function getStaticProps({ params }) {
