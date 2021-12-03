@@ -416,7 +416,7 @@ const handlerPostUserId = (props) => {
               視聴年
             </Grid>
             <Grid item>
-              {state.workWatchYear.slice(0,4)}
+              {state.workWatchYear?.slice(0,4)}
             </Grid>
           </Grid>
           <Grid item container xs={3} direction={"column"} justifyContent={"center"} alignItems={"center"}>

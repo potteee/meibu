@@ -81,7 +81,8 @@ export async function getStaticPaths() {
     { params: {uid : map} }
   ))
   
-  return {paths: paths,fallback : true}
+  // return {paths: paths,fallback : true}
+  return {paths: paths,fallback : "blocking"}
 }
 
 // params には pathsの要素が一つずつ入ってその回数分getStaticPropsが呼び出される

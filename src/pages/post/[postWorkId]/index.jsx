@@ -738,7 +738,7 @@ export async function getStaticPaths() {
   console.log("paths")
   console.table(paths)
   // return {paths:[],fallback : true}
-  return {paths: paths,fallback : true}
+  return {paths: paths,fallback : "blocking"}
 
 }
 
