@@ -364,8 +364,9 @@ const Post = (props) => {
 
     console.log(isIncludesICW+"isIncludesICW")
 
-    if(isIncludesICW &&
-    RdInstantChangedWorksId?.[workId].timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
+    if(isIncludesICW){
+    // if(isIncludesICW &&
+    // RdInstantChangedWorksId?.[workId].timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
     //更新からSSG_WAIT_SEC秒以内であれば、DBからデータ持ってくる
 
       console.log("get original db")

@@ -563,6 +563,7 @@ export async function getStaticProps({ params }) {
   console.table(params)
 
   const setDBData = await getOriginalDBData(params,"Props")
+  ///////////////ここでDB読んでいいの？？？Pathsの方で呼べ木では
 
   console.log("setDBData")
   console.table(setDBData)
@@ -571,7 +572,7 @@ export async function getStaticProps({ params }) {
 
   return {
     props: setDBData,
-    // revalidate: 60,
+    revalidate: 60,
   }
 }
 
