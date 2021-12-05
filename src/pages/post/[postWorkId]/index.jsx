@@ -48,6 +48,7 @@ import workDelete from 'src/components/speedDial/workDelete'
 
 
 import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
+import { truncateSync } from 'fs';
 
 const initialState = {
   isLoading : true,
@@ -364,7 +365,7 @@ const Post = (props) => {
 
     console.log(isIncludesICW+"isIncludesICW")
 
-    if(isIncludesICW){
+    if(true)){
     // if(isIncludesICW &&
     // RdInstantChangedWorksId?.[workId].timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
     //更新からSSG_WAIT_SEC秒以内であれば、DBからデータ持ってくる
@@ -459,6 +460,7 @@ const Post = (props) => {
       getDBData()
     } 
   },[isReady]) //isReadyに変化があった場合は再描写してくれるからこれでいい。はず。
+
   console.log("state@[postWorkId]/index.js")
   console.table(state)
   console.log(JSON.stringify(RdInstantChangedWorksId)+"+RdInstantChangedWorkId")
