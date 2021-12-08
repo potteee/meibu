@@ -49,6 +49,7 @@ import workDelete from 'src/components/speedDial/workDelete'
 
 import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
 import { truncateSync } from 'fs';
+import { async } from '@firebase/util';
 
 const initialState = {
   isLoading : true,
@@ -368,7 +369,7 @@ const Post = (props) => {
     if(true){
     // if(isIncludesICW &&
     // RdInstantChangedWorksId?.[workId].timestamp.seconds >= timestamp.seconds - SSG_WAIT_SEC){
-    //更新からSSG_WAIT_SEC秒以内であれば、DBからデータ持ってくる
+    // 更新からSSG_WAIT_SEC秒以内であれば、DBからデータ持ってくる
 
       console.log("get original db")
       const params = { 
@@ -455,9 +456,9 @@ const Post = (props) => {
       }
     })
   }
-  useEffect(() => {
+  useEffect(async() => {
     if(isReady){ //これ挟まないとnext/routerのバグ(初期表示時にasPathがundefinedになる)を踏んでしまう。
-      getDBData()
+      await getDBData()
     } 
   },[isReady]) //isReadyに変化があった場合は再描写してくれるからこれでいい。はず。
 
