@@ -456,10 +456,12 @@ const Post = (props) => {
       }
     })
   }
-  useEffect(async() => {
-    if(isReady){ //これ挟まないとnext/routerのバグ(初期表示時にasPathがundefinedになる)を踏んでしまう。
-      await getDBData()
-    } 
+  useEffect(() => {
+    (async() => {
+      if(isReady){ //これ挟まないとnext/routerのバグ(初期表示時にasPathがundefinedになる)を踏んでしまう。
+        await getDBData()
+      }
+    })()
   },[isReady]) //isReadyに変化があった場合は再描写してくれるからこれでいい。はず。
 
   console.log("state@[postWorkId]/index.js")
