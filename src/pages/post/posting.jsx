@@ -1566,7 +1566,7 @@ const Posting = () => {
               } 
             }
             return <Grid
-              container item xs spacing={0}
+              container item spacing={0}
               sx={classes.firstTagItemGrid} xs={12}
             > 
               {postedTag.length
@@ -1903,7 +1903,7 @@ const Posting = () => {
             />
           </FormControl>
         }/>
-        <Grid container xs={12} sx={classes.netabareGrid}>
+        <Grid container item xs={12} sx={classes.netabareGrid}>
   　　　　　<FormControlLabel
             sx={classes.netabareLabel}
             control={
@@ -2000,7 +2000,8 @@ const Posting = () => {
                                     {...provided.dragHandleProps}
                                     sx={classes.winfoCreatorListItems}
                                   >
-                                    <Grid container xs>
+                                    {/* <Grid container xs> */}
+                                    <Grid container>
                                     {/* <Grid container xs justyfy="flexStart"> */}
                                       <Grid container item xs={2} justify="flex-end">
                                         <ListItemIcon
@@ -2152,7 +2153,7 @@ const Posting = () => {
               }/>
 
               <ItemExplanationSet middleTitle="表示画像" text={
-                <p>画像登録フォーム</p>
+                "画像登録フォーム"
               }/>
 
               {/* Step2 */}
