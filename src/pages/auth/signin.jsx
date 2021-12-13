@@ -143,7 +143,7 @@ const SignIn = () => {
 
         <CSHighLightBar>ログイン</CSHighLightBar>
 
-        <Grid container xs={12} 
+        <Grid container item xs={12} 
           sx={classes.mainGrid}
         >
           <Grid item xs={11}>
