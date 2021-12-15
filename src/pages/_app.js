@@ -23,7 +23,7 @@ import { StylesProvider } from '@mui/styles';
 import {SCmargin} from 'src/styles/SC/app/margin'
 import Box from '@mui/material/Box';
 import { updateUsersWithSignIn } from '../reducks/users/operations'
-import GetUserRedux　from 'src/foundations/share/getUserRedux'
+import GetUserRedux from 'src/foundations/share/getUserRedux'
 
 
 // NProgress.configure({ showSpinner: true, speed: 400, minimum: 0.25 })
@@ -112,12 +112,12 @@ const WrappedApp = ({Component, pageProps}) => {
     },[])
     
   useEffect(() => {      
-    // const handleStart = () => { setPageLoading(true); };
-    // const handleComplete = () => { setPageLoading(false); };
+    const handleStart = () => { setPageLoading(true); };
+    const handleComplete = () => { setPageLoading(false); };
 
-    // router.events.on('routeChangeStart', handleStart);
-    // router.events.on('routeChangeComplete', handleComplete);
-    // router.events.on('routeChangeError', handleComplete);
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
   },[router])
 
   if((isSignedIn == false && userID ) || pageLoading){

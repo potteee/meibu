@@ -12,6 +12,7 @@ module.exports = {
       net: 'empty',
       dns: 'empty',
       tls: 'empty',
+      optimizeFileTracing: false
     };
     return config;
   },
