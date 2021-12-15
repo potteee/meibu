@@ -4,7 +4,7 @@ const isPreview = process.env.NEXT_PUBLIC_NODE_ENV === "preview"
 console.log(process.env.NEXT_PUBLIC_NODE_ENV+"+NODE_ENV")
 
 module.exports = {
-  webpack5: false,
+  // webpack5: false,
   webpack: config => {
     config.node = {
       fs: 'empty',
