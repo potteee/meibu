@@ -21,7 +21,7 @@ module.exports = {
     // webpack の設定のカスタマイズを実行する
     // 重要: 変更された設定を返す
     config.plugins.push(new webpack.IgnorePlugin(/\/__tests__\//));
-    config.optimizeFileTracing = false;
+    // config.optimizeFileTracing = false;
     return config;
   },
   webpackDevMiddleware: config => {
@@ -29,6 +29,7 @@ module.exports = {
     // 重要: 変更された設定を返す
     return config;
   },
+  optimizeFileTracing : false,
   env : {
     url : isDevelop 
       ? 'http://localhost:3060' 
