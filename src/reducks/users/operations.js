@@ -113,7 +113,8 @@ export const signIn = (
         let signinResult = true
 
         if(gotEmails.length != 0){
-            for(let i = 0;i <= gotEmails.length;i++){
+            for(let i = 0;i < gotEmails.length;i++){
+            // for(let i = 0;i <= gotEmails.length;i++){
                 emailsQua++
                 console.log(gotEmails[i]+"+email in map")
 
@@ -125,7 +126,13 @@ export const signIn = (
                 try {
                     // await auth.signInWithEmailAndPassword(gotEmails[i], password)
                     await signInWithEmailAndPassword(auth, gotEmails[i], password)
-                    console.log("successed signin")
+                    .then(() => {
+                        console.log("successed signin")
+                    })
+                    .catch((error) => {
+                        console.log("fail signout in signin")
+                        alert(error)
+                    })
                     signinSucCount++
                     await auth.signOut()
                     .then(() => {

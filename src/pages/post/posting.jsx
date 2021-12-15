@@ -1342,7 +1342,8 @@ const Posting = () => {
       ))
 
       router.push({
-        pathname: '/post/'+workId+'/'+RdUserId,
+        pathname: '/post/'+workId,
+        // pathname: '/post/'+workId+'/'+RdUserId,
       })
     }).catch((error) => {
       alert('failed get workId')

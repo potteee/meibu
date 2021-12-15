@@ -121,6 +121,7 @@ const WrappedApp = ({Component, pageProps}) => {
   },[router])
 
   if((isSignedIn == false && userID ) || pageLoading){
+  // if((isSignedIn == false && userID ) || pageLoading){
     if(faFinished == false){ //reload
       console.log("return loading...")
       console.log(isSignedIn+"+isSignedIn")
@@ -145,22 +146,22 @@ const WrappedApp = ({Component, pageProps}) => {
     //ここのifチェックの時に、DBの値が入っていなかったら↑の条件にして...
     console.log("return Comp isSignedIn")
     return (
-        <StylesProvider injectFirst>
-          <CssBaseline/>
-          <SCmargin>
-            <Component {...pageProps} />
-          </SCmargin>
-        </StylesProvider>
+      <StylesProvider injectFirst>
+        <CssBaseline/>
+        <SCmargin>
+          <Component {...pageProps} />
+        </SCmargin>
+      </StylesProvider>
     )
   } else {//no login 
     console.log("return Comp nologin userr")
     return (
-        <StylesProvider injectFirst>
-          <CssBaseline/>
-          <SCmargin>
-            <Component {...pageProps} />
-          </SCmargin>
-        </StylesProvider>
+      <StylesProvider injectFirst>
+        <CssBaseline/>
+        <SCmargin>
+          <Component {...pageProps} />
+        </SCmargin>
+      </StylesProvider>
     )
   }
 }
