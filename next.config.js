@@ -4,16 +4,29 @@ const isPreview = process.env.NEXT_PUBLIC_NODE_ENV === "preview"
 console.log(process.env.NEXT_PUBLIC_NODE_ENV+"+NODE_ENV")
 
 module.exports = {
-  // webpack5: false,
-  webpack: config => {
-    config.node = {
-      fs: 'empty',
-      child_process: 'empty',
-      net: 'empty',
-      dns: 'empty',
-      tls: 'empty',
-      optimizeFileTracing: false
-    };
+  // // webpack5: false,
+  // webpack: config => {
+  //   config.node = {
+  //     fs: 'empty',
+  //     child_process: 'empty',
+  //     net: 'empty',
+  //     dns: 'empty',
+  //     tls: 'empty',
+  //     optimizeFileTracing: false
+  //   };
+  //   return config;
+// },
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // 注意: 上記で webpack を提供しているので、それを `require` するべきではない
+    // webpack の設定のカスタマイズを実行する
+    // 重要: 変更された設定を返す
+    config.plugins.push(new webpack.IgnorePlugin(/\/__tests__\//));
+    config.optimizeFileTracing = false;
+    return config;
+  },
+  webpackDevMiddleware: config => {
+    // webpack dev middleware の設定のカスタマイズを実行する
+    // 重要: 変更された設定を返す
     return config;
   },
   env : {
