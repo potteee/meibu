@@ -17,21 +17,26 @@ module.exports = {
   //   return config;
 // },
   future: { webpack5: true },
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // 注意: 上記で webpack を提供しているので、それを `require` するべきではない
-    // webpack の設定のカスタマイズを実行する
-    // 重要: 変更された設定を返す
-    // config.plugins.push(new webpack.IgnorePlugin(/\/__tests__\//));
-    // config.optimizeFileTracing = false;
-    config.node = {
-      fs: false,
-      child_process: false,
-      net: false,
-      dns: false,
-      tls: false,
-    };
+  webpack: function (config, options) {
+    console.log(options.webpack.version); // 4.44.1
+    config.experiments = {};
     return config;
   },
+  // webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+  //   // 注意: 上記で webpack を提供しているので、それを `require` するべきではない
+  //   // webpack の設定のカスタマイズを実行する
+  //   // 重要: 変更された設定を返す
+  //   // config.plugins.push(new webpack.IgnorePlugin(/\/__tests__\//));
+  //   // config.optimizeFileTracing = false;
+  //   config.node = {
+  //     fs: false,
+  //     child_process: false,
+  //     net: false,
+  //     dns: false,
+  //     tls: false,
+  //   };
+  //   return config;
+  // },
   // webpackDevMiddleware: config => {
   //   // webpack dev middleware の設定のカスタマイズを実行する
   //   // 重要: 変更された設定を返す
