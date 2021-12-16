@@ -48,7 +48,7 @@ import workDelete from 'src/components/speedDial/workDelete'
 
 
 import {SSG_WAIT_SEC} from 'src/foundations/share/GlobalConstant'
-import { truncateSync } from 'fs';
+// import { truncateSync } from 'fs';
 import { async } from '@firebase/util';
 
 const initialState = {
