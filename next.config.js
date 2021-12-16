@@ -29,7 +29,7 @@ module.exports = {
     // 重要: 変更された設定を返す
     return config;
   },
-  optimizeFileTracing : false,
+  // optimizeFileTracing : false,
   env : {
     url : isDevelop 
       ? 'http://localhost:3060' 
