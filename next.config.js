@@ -22,6 +22,13 @@ module.exports = {
     // 重要: 変更された設定を返す
     // config.plugins.push(new webpack.IgnorePlugin(/\/__tests__\//));
     // config.optimizeFileTracing = false;
+    config.node = {
+      fs: 'empty',
+      child_process: 'empty',
+      net: 'empty',
+      dns: 'empty',
+      tls: 'empty',
+    };
     return config;
   },
   // webpackDevMiddleware: config => {
