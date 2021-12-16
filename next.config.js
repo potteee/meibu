@@ -17,9 +17,18 @@ module.exports = {
   //   return config;
 // },
   future: { webpack5: true },
-  webpack: function (config, options) {
-    console.log(options.webpack.version); // 4.44.1
+  webpack: function (config, {isServer}) {
+    // console.log(options.webpack.version); // 4.44.1
     config.experiments = {};
+    if (!isServer) {
+      config.node = {
+        fs: 'empty',
+        child_process: 'empty',
+        net: 'empty',
+        dns: 'empty',
+        tls: 'empty',
+      };
+    }
     return config;
   },
   // webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
