@@ -16,6 +16,7 @@ module.exports = {
   //   };
   //   return config;
 // },
+  future: { webpack5: true },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // 注意: 上記で webpack を提供しているので、それを `require` するべきではない
     // webpack の設定のカスタマイズを実行する
