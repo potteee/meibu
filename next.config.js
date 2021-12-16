@@ -23,11 +23,11 @@ module.exports = {
     // config.plugins.push(new webpack.IgnorePlugin(/\/__tests__\//));
     // config.optimizeFileTracing = false;
     config.node = {
-      fs: 'empty',
-      child_process: 'empty',
-      net: 'empty',
-      dns: 'empty',
-      tls: 'empty',
+      fs: false,
+      child_process: false,
+      net: false,
+      dns: false,
+      tls: false,
     };
     return config;
   },
