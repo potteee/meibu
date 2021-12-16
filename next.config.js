@@ -19,7 +19,9 @@ module.exports = {
   future: { webpack5: true },
   webpack: function (config, {isServer}) {
     // console.log(options.webpack.version); // 4.44.1
-    config.experiments = {};
+    config.experiments = {
+      layers: true,
+    };
     // if (!isServer) {
     //   config.node = {
     //     fs: 'empty',
